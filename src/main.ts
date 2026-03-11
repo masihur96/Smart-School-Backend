@@ -23,7 +23,7 @@ async function bootstrap() {
         scheme: 'bearer',
         bearerFormat: 'JWT',
       },
-      'access-token',
+      'bearer',
     )
     .addTag('Auth', 'Authentication endpoints')
     .addTag('Users', 'User management endpoints')
