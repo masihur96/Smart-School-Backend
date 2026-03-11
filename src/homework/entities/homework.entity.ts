@@ -1,34 +1,31 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-export enum UserRole {
-  ADMIN = 'admin',
-  TEACHER = 'teacher',
-  STUDENT = 'student',
-}
-
 @Entity()
-export class User {
+export class Homework {
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  name: string;
-
-  @Column({ unique: true })
-  email: string;
+  classId: string;
 
   @Column()
-  password: string;
+  subjectId: string;
 
-  @Column({ type: 'enum', enum: UserRole })
-  role: UserRole;
+  @Column()
+  teacherId: string;
+
+  @Column()
+  title: string;
+
+  @Column({ type: 'text' })
+  description: string;
+
+  @Column({ type: 'date' })
+  dueDate: Date;
 
   @Column()
   schoolId: string;
-
-  @Column({ nullable: true })
-  phone: string;
 
   @CreateDateColumn()
   createdAt: Date;

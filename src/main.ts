@@ -1,8 +1,44 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+
+  // Enable validation pipes
+  app.useGlobalPipes(new ValidationPipe());
+
+  // Enable CORS
+  app.enableCors();
+
+  // Setup Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Smart School Backend API')
+    .setDescription('API documentation for Smart School Backend - A comprehensive school management system')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
+    .addTag('Auth', 'Authentication endpoints')
+    .addTag('Users', 'User management endpoints')
+    .addTag('Admin', 'Admin management endpoints')
+    .addTag('Teacher', 'Teacher operations endpoints')
+    .addTag('Student', 'Student endpoints')
+    .addTag('General', 'General endpoints')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
+  console.log(`Smart School Backend API is running on http://localhost:${port}`);
+  console.log(`Swagger documentation is available at http://localhost:${port}/api/docs`);
 }
 bootstrap();

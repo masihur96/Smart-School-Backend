@@ -1,34 +1,31 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-export enum UserRole {
-  ADMIN = 'admin',
-  TEACHER = 'teacher',
-  STUDENT = 'student',
-}
-
 @Entity()
-export class User {
+export class Marks {
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  name: string;
-
-  @Column({ unique: true })
-  email: string;
+  examId: string;
 
   @Column()
-  password: string;
+  studentId: string;
 
-  @Column({ type: 'enum', enum: UserRole })
-  role: UserRole;
+  @Column({ type: 'decimal', precision: 5, scale: 2 })
+  marksObtained: number;
+
+  @Column({ type: 'decimal', precision: 5, scale: 2 })
+  totalMarks: number;
+
+  @Column()
+  subjectId: string;
+
+  @Column()
+  teacherId: string;
 
   @Column()
   schoolId: string;
-
-  @Column({ nullable: true })
-  phone: string;
 
   @CreateDateColumn()
   createdAt: Date;
