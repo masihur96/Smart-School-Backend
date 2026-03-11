@@ -1,96 +1,108 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { CreateUserDto, UpdateUserDto } from '../users/dto/create-user.dto';
+import { CreateClassDto, UpdateClassDto } from '../classes/dto/create-class.dto';
+import { CreateSubjectDto, UpdateSubjectDto } from '../subjects/dto/create-subject.dto';
+import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
 export class AdminController {
   constructor(private adminService: AdminService) {}
 
-  // Users endpoints
+  // ─── Users ───────────────────────────────────────
   @Get('users')
   async getUsers(
     @Query('role') role?: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
   ) {
-    return await this.adminService.getUsers(role, page, limit);
+    return await this.adminService.getUsers(role as any, page, limit);
   }
 
   @Post('users')
-  async createUser(@Body() data: any) {
-    return await this.adminService.createUser(data);
+  @HttpCode(HttpStatus.CREATED)
+  async createUser(@Body() dto: CreateUserDto) {
+    return await this.adminService.createUser(dto);
   }
 
   @Put('users/:id')
-  async updateUser(@Param('id') id: string, @Body() data: any) {
-    return await this.adminService.updateUser(id, data);
+  async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return await this.adminService.updateUser(id, dto);
   }
 
   @Delete('users/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id') id: string) {
     return await this.adminService.deleteUser(id);
   }
 
-  // Classes endpoints
+  // ─── Classes ─────────────────────────────────────
   @Get('classes')
   async getClasses() {
     return await this.adminService.getClasses();
   }
 
   @Post('classes')
-  async createClass(@Body() data: any) {
-    return await this.adminService.createClass(data);
+  @HttpCode(HttpStatus.CREATED)
+  async createClass(@Body() dto: CreateClassDto) {
+    return await this.adminService.createClass(dto);
   }
 
   @Put('classes/:id')
-  async updateClass(@Param('id') id: string, @Body() data: any) {
-    return await this.adminService.updateClass(id, data);
+  async updateClass(@Param('id') id: string, @Body() dto: UpdateClassDto) {
+    return await this.adminService.updateClass(id, dto);
   }
 
   @Delete('classes/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteClass(@Param('id') id: string) {
     return await this.adminService.deleteClass(id);
   }
 
-  // Subjects endpoints
+  // ─── Subjects ────────────────────────────────────
   @Get('subjects')
   async getSubjects() {
     return await this.adminService.getSubjects();
   }
 
   @Post('subjects')
-  async createSubject(@Body() data: any) {
-    return await this.adminService.createSubject(data);
+  @HttpCode(HttpStatus.CREATED)
+  async createSubject(@Body() dto: CreateSubjectDto) {
+    return await this.adminService.createSubject(dto);
   }
 
   @Put('subjects/:id')
-  async updateSubject(@Param('id') id: string, @Body() data: any) {
-    return await this.adminService.updateSubject(id, data);
+  async updateSubject(@Param('id') id: string, @Body() dto: UpdateSubjectDto) {
+    return await this.adminService.updateSubject(id, dto);
   }
 
   @Delete('subjects/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteSubject(@Param('id') id: string) {
     return await this.adminService.deleteSubject(id);
   }
 
-  // Exams endpoints
+  // ─── Exams ───────────────────────────────────────
   @Get('exams')
   async getExams() {
     return await this.adminService.getExams();
   }
 
   @Post('exams')
-  async createExam(@Body() data: any) {
-    return await this.adminService.createExam(data);
+  @HttpCode(HttpStatus.CREATED)
+  async createExam(@Body() dto: CreateExamDto) {
+    return await this.adminService.createExam(dto);
   }
 
   @Put('exams/:id')
-  async updateExam(@Param('id') id: string, @Body() data: any) {
-    return await this.adminService.updateExam(id, data);
+  async updateExam(@Param('id') id: string, @Body() dto: UpdateExamDto) {
+    return await this.adminService.updateExam(id, dto);
   }
 
   @Delete('exams/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteExam(@Param('id') id: string) {
     return await this.adminService.deleteExam(id);
   }

@@ -1,30 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { ExamsService } from '../exams/exams.service';
 import { AttendanceService } from '../attendance/attendance.service';
 import { GeneralService } from '../general/general.service';
 import { HomeworkService } from '../homework/homework.service';
+import { MarksService } from '../marks/marks.service';
 
 @Injectable()
 export class StudentService {
   constructor(
-    private examsService: ExamsService,
     private attendanceService: AttendanceService,
     private generalService: GeneralService,
     private homeworkService: HomeworkService,
+    private marksService: MarksService,
   ) {}
 
-  // Get student exam results
+  // Get student exam results by leveraging MarksService
   async getResults(studentId: string) {
-    // Get all exams and filter by student
-    const exams = await this.examsService.findAllExams();
-    const allResults: any[] = [];
-    
-    for (const exam of exams) {
-      const examResults = await this.examsService.getResults(exam.id, studentId);
-      allResults.push(...examResults);
-    }
-    
-    return allResults;
+    return await this.marksService.findByStudent(studentId);
   }
 
   // Get student attendance

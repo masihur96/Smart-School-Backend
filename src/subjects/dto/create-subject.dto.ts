@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsString, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateSubjectDto {
   @IsString()
@@ -15,9 +15,15 @@ export class CreateSubjectDto {
 }
 
 export class UpdateSubjectDto {
+  @IsOptional()
   @IsString()
   name?: string;
 
+  @IsOptional()
   @IsString()
   code?: string;
+
+  @IsOptional()
+  @IsUUID()
+  classId?: string;
 }

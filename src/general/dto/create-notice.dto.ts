@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsString, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateNoticeDto {
   @IsString()
@@ -7,6 +7,7 @@ export class CreateNoticeDto {
   @IsString()
   description: string;
 
+  @IsOptional()
   @IsString()
   postedBy?: string;
 
@@ -15,9 +16,11 @@ export class CreateNoticeDto {
 }
 
 export class UpdateNoticeDto {
+  @IsOptional()
   @IsString()
   title?: string;
 
+  @IsOptional()
   @IsString()
   description?: string;
 }

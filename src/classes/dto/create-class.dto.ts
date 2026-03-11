@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsString, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateClassDto {
   @IsString()
@@ -12,9 +12,12 @@ export class CreateClassDto {
 }
 
 export class UpdateClassDto {
+  @IsOptional()
   @IsString()
   name?: string;
 
+  @IsOptional()
   @IsString()
   section?: string;
 }
+

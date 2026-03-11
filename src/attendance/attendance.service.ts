@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Attendance } from './entities/attendance.entity';
+import { SubmitAttendanceDto } from './dto/submit-attendance.dto';
 
 @Injectable()
 export class AttendanceService {
@@ -10,16 +11,38 @@ export class AttendanceService {
     private attendanceRepository: Repository<Attendance>,
   ) {}
 
-  async submitAttendance(data: any) {
-    const records = data.records.map(record => ({
-      ...record,
-      date: data.date,
-      takenBy: data.takenBy,
-      classId: data.classId,
-    }));
+  async submitAttendance(data: SubmitAttendanceDto) {
+    const results: Attendance[] = [];
     
-    const attendance = this.attendanceRepository.create(records);
-    return await this.attendanceRepository.save(attendance);
+    for (const record of data.records) {
+      // Check if attendance already exists for this student on this date and class
+      let attendance = await this.attendanceRepository.findOne({
+        where: {
+          studentId: record.studentId,
+          classId: data.classId,
+          date: data.date,
+        },
+      });
+
+      if (attendance) {
+        // Update existing record
+        attendance.status = record.status;
+        attendance.takenBy = data.takenBy;
+      } else {
+        // Create new record
+        attendance = this.attendanceRepository.create({
+          ...record,
+          date: data.date,
+          takenBy: data.takenBy,
+          classId: data.classId,
+          schoolId: 'placeholder-school-id', // Should ideally come from JWT or DTO
+        });
+      }
+      
+      results.push(await this.attendanceRepository.save(attendance));
+    }
+    
+    return results;
   }
 
   async getAttendance(classId: string, date?: string) {
@@ -34,6 +57,9 @@ export class AttendanceService {
   }
 
   async getStudentAttendance(studentId: string) {
-    return await this.attendanceRepository.find({ where: { studentId } });
+    return await this.attendanceRepository.find({ 
+      where: { studentId },
+      order: { date: 'DESC' }
+    });
   }
 }

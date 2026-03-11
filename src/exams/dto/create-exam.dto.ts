@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsNumber, IsUUID, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsDate, IsNumber, IsUUID, IsArray, ValidateNested, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateExamDto {
@@ -17,9 +17,11 @@ export class CreateExamDto {
 }
 
 export class UpdateExamDto {
+  @IsOptional()
   @IsString()
   name?: string;
 
+  @IsOptional()
   @IsDate()
   @Type(() => Date)
   date?: Date;
