@@ -1,19 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-// Auth & Users
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-
-// Role-based modules
 import { AdminModule } from './admin/admin.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { StudentModule } from './student/student.module';
-
-// Domain modules
 import { ClassesModule } from './classes/classes.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { ExamsModule } from './exams/exams.module';
@@ -22,7 +17,6 @@ import { MarksModule } from './marks/marks.module';
 import { HomeworkModule } from './homework/homework.module';
 import { GeneralModule } from './general/general.module';
 
-// Entities
 import { User } from './users/entities/user.entity';
 import { Class } from './classes/entities/class.entity';
 import { Subject } from './subjects/entities/subject.entity';
@@ -36,41 +30,30 @@ import { Routine } from './general/entities/routine.entity';
 
 @Module({
   imports: [
-    // Load environment variables globally
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT) || 5432,
+      username: process.env.DB_USERNAME || 'postgres',
+      password: process.env.DB_PASSWORD || '123456',
+      database: process.env.DB_NAME || 'smart_school',
+      entities: [User, Class, Subject, Exam, ExamResult, Attendance, Marks, Homework, Notice, Routine],
+      autoLoadEntities: true,
+      synchronize: true,
     }),
-
-    // Database configuration
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5432),
-        username: configService.get<string>('DB_USERNAME', 'postgres'),
-        password: configService.get<string>('DB_PASSWORD', '123456'),
-        database: configService.get<string>('DB_NAME', 'smart_school'),
-        entities: [
-          User,
-          Class,
-          Subject,
-          Exam,
-          ExamResult,
-          Attendance,
-          Marks,
-          Homework,
-          Notice,
-          Routine,
-        ],
-        synchronize: configService.get<string>('NODE_ENV') !== 'production',
-        logging: configService.get<string>('NODE_ENV') === 'development',
-      }),
-      inject: [ConfigService],
-    }),
-
-    // Feature modules
+    
+TypeOrmModule.forRoot({
+  type: 'postgres',
+  host: process.env.DB_HOST,
+  port: +process.env.DB_PORT,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  entities: [User, Class, Subject, Exam, ExamResult, Attendance, Marks, Homework, Notice, Routine],
+  autoLoadEntities: true,
+  synchronize: true,
+}),
+    
     AuthModule,
     UsersModule,
     AdminModule,
