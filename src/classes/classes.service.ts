@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Class } from './entities/class.entity';
+import { CreateClassDto, UpdateClassDto } from './dto/create-class.dto';
 
 @Injectable()
 export class ClassesService {
@@ -10,7 +11,7 @@ export class ClassesService {
     private classRepository: Repository<Class>,
   ) {}
 
-  async create(data: any) {
+  async create(data: CreateClassDto) {
     const newClass = this.classRepository.create(data);
     return await this.classRepository.save(newClass);
   }
@@ -23,7 +24,7 @@ export class ClassesService {
     return await this.classRepository.findOne({ where: { id } });
   }
 
-  async update(id: string, data: any) {
+  async update(id: string, data: UpdateClassDto) {
     await this.classRepository.update(id, data);
     return await this.classRepository.findOne({ where: { id } });
   }

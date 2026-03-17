@@ -11,11 +11,14 @@ export class Class {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   section: string;
 
-  @Column()
+  @Column({ nullable: true })
   schoolId: string;
+
+  @Column({ nullable: true })
+  description: string;
 
   @OneToMany(() => Subject, (subject) => subject.classEntity)
   subjects: Subject[];

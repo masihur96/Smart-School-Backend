@@ -1,33 +1,42 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ClassesService } from './classes.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { CreateClassDto, UpdateClassDto } from './dto/create-class.dto';
 
+@ApiTags('Admin')
+@ApiBearerAuth('bearer')
 @Controller('admin/classes')
 @UseGuards(JwtAuthGuard)
 export class ClassesController {
   constructor(private classesService: ClassesService) {}
 
   @Get()
+  @ApiOperation({ summary: 'Get all classes' })
   async findAll() {
     return await this.classesService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get class by ID' })
   async findOne(@Param('id') id: string) {
     return await this.classesService.findById(id);
   }
 
   @Post()
-  async create(@Body() data: any) {
+  @ApiOperation({ summary: 'Create a new class' })
+  async create(@Body() data: CreateClassDto) {
     return await this.classesService.create(data);
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() data: any) {
+  @ApiOperation({ summary: 'Update class' })
+  async update(@Param('id') id: string, @Body() data: UpdateClassDto) {
     return await this.classesService.update(id, data);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete class' })
   async delete(@Param('id') id: string) {
     return await this.classesService.delete(id);
   }

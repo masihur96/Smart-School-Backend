@@ -4,11 +4,17 @@ export class CreateClassDto {
   @IsString()
   name: string;
 
+  @IsOptional()
   @IsString()
   section: string;
 
+  @IsOptional()
   @IsUUID()
   schoolId: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
 
 export class UpdateClassDto {
@@ -19,5 +25,9 @@ export class UpdateClassDto {
   @IsOptional()
   @IsString()
   section?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
 
