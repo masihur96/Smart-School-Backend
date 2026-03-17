@@ -10,16 +10,16 @@ export class Subject {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   code: string;
 
   @ManyToOne(() => Class, (classEntity) => classEntity.subjects)
   classEntity: Class;
 
-  @Column()
+  @Column({ nullable: true })
   classId: string;
 
-  @Column()
+  @Column({ nullable: true })
   schoolId: string;
 
   @CreateDateColumn()
