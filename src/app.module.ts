@@ -16,6 +16,7 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { MarksModule } from './marks/marks.module';
 import { HomeworkModule } from './homework/homework.module';
 import { GeneralModule } from './general/general.module';
+import { SectionsModule } from './sections/sections.module';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/entities/user.entity';
 import { Class } from './classes/entities/class.entity';
@@ -27,6 +28,7 @@ import { Marks } from './marks/entities/marks.entity';
 import { Homework } from './homework/entities/homework.entity';
 import { Notice } from './general/entities/notice.entity';
 import { Routine } from './general/entities/routine.entity';
+import { Section } from './sections/entities/section.entity';
 
 @Module({
   imports: [
@@ -36,7 +38,7 @@ import { Routine } from './general/entities/routine.entity';
 TypeOrmModule.forRoot({
   type: 'postgres',
   url: process.env.DATABASE_URL,
-  entities: [User, Class, Subject, Exam, ExamResult, Attendance, Marks, Homework, Notice, Routine],
+  entities: [User, Class, Section, Subject, Exam, ExamResult, Attendance, Marks, Homework, Notice, Routine],
   autoLoadEntities: true,
   synchronize: true,
    ssl: {
@@ -56,6 +58,7 @@ TypeOrmModule.forRoot({
     MarksModule,
     HomeworkModule,
     GeneralModule,
+    SectionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
