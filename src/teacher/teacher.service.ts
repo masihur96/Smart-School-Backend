@@ -3,6 +3,9 @@ import { AttendanceService } from '../attendance/attendance.service';
 import { MarksService } from '../marks/marks.service';
 import { HomeworkService } from '../homework/homework.service';
 import { ExamsService } from '../exams/exams.service';
+import { UsersService } from '../users/users.service';
+import { CreateTeacherDto } from './dto/create-teacher.dto';
+import { UserRole } from '../users/entities/user.entity';
 
 @Injectable()
 export class TeacherService {
@@ -11,7 +14,15 @@ export class TeacherService {
     private marksService: MarksService,
     private homeworkService: HomeworkService,
     private examsService: ExamsService,
+    private usersService: UsersService,
   ) {}
+
+  async create(data: CreateTeacherDto) {
+    return await this.usersService.create({
+      ...data,
+      role: UserRole.TEACHER
+    });
+  }
 
   // Attendance
   async submitAttendance(data: any) {

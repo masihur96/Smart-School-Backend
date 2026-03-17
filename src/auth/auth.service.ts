@@ -28,17 +28,13 @@ export class AuthService {
 
     const payload = { sub: user.id, role: user.role };
     const accessToken = this.jwtService.sign(payload);
+    
+    const { password: _, ...userWithoutPassword } = user;
 
     return {
       accessToken,
       refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        schoolId: user.schoolId,
-      },
+      user: userWithoutPassword,
     };
   }
 

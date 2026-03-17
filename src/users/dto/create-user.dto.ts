@@ -27,6 +27,26 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @ApiProperty({ example: 'uuid-of-class', description: 'The class ID', required: false })
+  @IsOptional()
+  @IsUUID()
+  classId?: string;
+
+  @ApiProperty({ example: 'uuid-of-section', description: 'The section ID', required: false })
+  @IsOptional()
+  @IsUUID()
+  sectionId?: string;
+
+  @ApiProperty({ example: '101', description: 'The roll number', required: false })
+  @IsOptional()
+  @IsString()
+  rollNumber?: string;
+
+  @ApiProperty({ example: 'Senior Teacher', description: 'The designation', required: false })
+  @IsOptional()
+  @IsString()
+  designation?: string;
 }
 
 export class UpdateUserDto {
@@ -54,5 +74,25 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @ApiProperty({ example: 'uuid-of-class', description: 'The class ID', required: false })
+  @IsOptional()
+  @IsUUID()
+  classId?: string;
+
+  @ApiProperty({ example: 'uuid-of-section', description: 'The section ID', required: false })
+  @IsOptional()
+  @IsUUID()
+  sectionId?: string;
+
+  @ApiProperty({ example: '101', description: 'The roll number', required: false })
+  @IsOptional()
+  @IsString()
+  rollNumber?: string;
+
+  @ApiProperty({ example: 'Senior Teacher', description: 'The designation', required: false })
+  @IsOptional()
+  @IsString()
+  designation?: string;
 }
 

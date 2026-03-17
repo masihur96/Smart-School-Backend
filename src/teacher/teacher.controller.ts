@@ -4,11 +4,23 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { SubmitAttendanceDto } from '../attendance/dto/submit-attendance.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 import { CreateHomeworkDto, UpdateHomeworkDto } from '../homework/dto/create-homework.dto';
+import { CreateTeacherDto } from './dto/create-teacher.dto';
+import { Public } from '../auth/decorators/public.decorator';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Teacher')
 @Controller('teacher')
 @UseGuards(JwtAuthGuard)
 export class TeacherController {
   constructor(private teacherService: TeacherService) {}
+
+  @Post()
+  @Public()
+  @ApiOperation({ summary: 'Register a new teacher' })
+  @ApiResponse({ status: 201, description: 'The teacher has been successfully created.' })
+  async create(@Body() dto: CreateTeacherDto) {
+    return await this.teacherService.create(dto);
+  }
 
   // ─── Attendance ───────────────────────────────────
   @Post('attendance')

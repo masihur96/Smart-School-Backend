@@ -30,6 +30,18 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
+  @Column({ nullable: true })
+  classId: string;
+
+  @Column({ nullable: true })
+  sectionId: string;
+
+  @Column({ nullable: true })
+  rollNumber: string;
+
+  @Column({ nullable: true })
+  designation: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

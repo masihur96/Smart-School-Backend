@@ -5,13 +5,15 @@ import { AttendanceModule } from '../attendance/attendance.module';
 import { GeneralModule } from '../general/general.module';
 import { HomeworkModule } from '../homework/homework.module';
 import { MarksModule } from '../marks/marks.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     AttendanceModule, 
     GeneralModule, 
     HomeworkModule, 
-    MarksModule
+    MarksModule,
+    UsersModule
   ],
   providers: [StudentService],
   controllers: [StudentController],

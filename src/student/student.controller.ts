@@ -1,11 +1,23 @@
-import { Controller, Get, UseGuards, Request, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Request, Query } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { CreateStudentDto } from './dto/create-student.dto';
+import { Public } from '../auth/decorators/public.decorator';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Student')
 @Controller('student')
 @UseGuards(JwtAuthGuard)
 export class StudentController {
   constructor(private studentService: StudentService) {}
+
+  @Post()
+  @Public()
+  @ApiOperation({ summary: 'Register a new student' })
+  @ApiResponse({ status: 201, description: 'The student has been successfully created.' })
+  async create(@Body() dto: CreateStudentDto) {
+    return await this.studentService.create(dto);
+  }
 
   @Get('results')
   async getResults(@Request() req: any) {
