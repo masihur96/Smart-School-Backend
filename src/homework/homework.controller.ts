@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
 import { HomeworkService } from './homework.service';
-import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Teacher')
+@ApiBearerAuth('bearer')
 @Controller('homework')
-@UseGuards(JwtAuthGuard)
 export class HomeworkController {
   constructor(private homeworkService: HomeworkService) {}
 

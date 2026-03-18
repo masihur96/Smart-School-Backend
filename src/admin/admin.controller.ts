@@ -1,16 +1,14 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
-import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { CreateUserDto, UpdateUserDto } from '../users/dto/create-user.dto';
 import { CreateClassDto, UpdateClassDto } from '../classes/dto/create-class.dto';
 import { CreateSubjectDto, UpdateSubjectDto } from '../subjects/dto/create-subject.dto';
 import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
 
 @ApiTags('Admin')
-@ApiBearerAuth()
+@ApiBearerAuth('bearer')
 @Controller('admin')
-@UseGuards(JwtAuthGuard)
 export class AdminController {
   constructor(private adminService: AdminService) {}
 

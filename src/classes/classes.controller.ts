@@ -1,13 +1,11 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ClassesService } from './classes.service';
-import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { CreateClassDto, UpdateClassDto } from './dto/create-class.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
 @Controller('admin/classes')
-@UseGuards(JwtAuthGuard)
 export class ClassesController {
   constructor(private classesService: ClassesService) {}
 

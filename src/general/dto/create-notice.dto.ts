@@ -1,11 +1,19 @@
-import { IsString, IsUUID, IsOptional } from 'class-validator';
+import { IsString, IsUUID, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateNoticeDto {
   @IsString()
   title: string;
 
   @IsString()
-  description: string;
+  content: string;
+
+  @IsOptional()
+  @IsString()
+  audience?: string;
+
+  @IsOptional() 
+  @IsBoolean()
+  isImportent?: boolean;
 
   @IsOptional()
   @IsString()
@@ -22,7 +30,15 @@ export class UpdateNoticeDto {
 
   @IsOptional()
   @IsString()
-  description?: string;
+  content?: string;
+
+  @IsOptional()
+  @IsString()
+  audience?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isImportent?: boolean;
 }
 
 export class CreateRoutineDto {

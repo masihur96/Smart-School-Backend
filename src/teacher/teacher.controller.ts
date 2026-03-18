@@ -1,16 +1,15 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, Request, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { TeacherService } from './teacher.service';
-import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { SubmitAttendanceDto } from '../attendance/dto/submit-attendance.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 import { CreateHomeworkDto, UpdateHomeworkDto } from '../homework/dto/create-homework.dto';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { Public } from '../auth/decorators/public.decorator';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Teacher')
+@ApiBearerAuth('bearer')
 @Controller('teacher')
-@UseGuards(JwtAuthGuard)
 export class TeacherController {
   constructor(private teacherService: TeacherService) {}
 

@@ -1,13 +1,12 @@
-import { Controller, Get, Post, Body, UseGuards, Request, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Request, Query } from '@nestjs/common';
 import { StudentService } from './student.service';
-import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { Public } from '../auth/decorators/public.decorator';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Student')
+@ApiBearerAuth('bearer')
 @Controller('student')
-@UseGuards(JwtAuthGuard)
 export class StudentController {
   constructor(private studentService: StudentService) {}
 

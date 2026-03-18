@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Query, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
-import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Teacher')
+@ApiBearerAuth('bearer')
 @Controller('attendance')
-@UseGuards(JwtAuthGuard)
 export class AttendanceController {
   constructor(private attendanceService: AttendanceService) {}
 

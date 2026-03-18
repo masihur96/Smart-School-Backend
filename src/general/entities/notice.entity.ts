@@ -10,7 +10,13 @@ export class Notice {
   title: string;
 
   @Column({ type: 'text' })
-  description: string;
+  content: string;
+
+  @Column({ nullable: true })
+  audience: string;
+
+  @Column({ default: false })
+  isImportent: boolean;
 
   @Column({ nullable: true })
   postedBy: string;

@@ -1,65 +1,67 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GeneralService } from './general.service';
-import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { Public } from '../auth/decorators/public.decorator';
+import { CreateNoticeDto, UpdateNoticeDto, CreateRoutineDto } from './dto/create-notice.dto';
 
+@ApiTags('General')
+@ApiBearerAuth('bearer')
 @Controller('general')
 export class GeneralController {
   constructor(private generalService: GeneralService) {}
 
   // Notices - public endpoint for getting notices
+  @Public()
   @Get('notices')
   async getNotices() {
     return await this.generalService.getAllNotices();
   }
 
+  @Public()
   @Get('notices/:id')
   async getNoticeById(@Param('id') id: string) {
     return await this.generalService.getNoticeById(id);
   }
 
   @Post('notices')
-  @UseGuards(JwtAuthGuard)
-  async createNotice(@Body() data: any) {
+  async createNotice(@Body() data: CreateNoticeDto) {
     return await this.generalService.createNotice(data);
   }
 
   @Put('notices/:id')
-  @UseGuards(JwtAuthGuard)
-  async updateNotice(@Param('id') id: string, @Body() data: any) {
+  async updateNotice(@Param('id') id: string, @Body() data: UpdateNoticeDto) {
     return await this.generalService.updateNotice(id, data);
   }
 
   @Delete('notices/:id')
-  @UseGuards(JwtAuthGuard)
   async deleteNotice(@Param('id') id: string) {
     return await this.generalService.deleteNotice(id);
   }
 
   // Routine endpoints
+  @Public()
   @Get('routine/:classId')
   async getRoutineByClass(@Param('classId') classId: string) {
     return await this.generalService.getRoutineByClass(classId);
   }
 
+  @Public()
   @Get('routine')
   async getAllRoutines() {
     return await this.generalService.getAllRoutines();
   }
 
   @Post('routine')
-  @UseGuards(JwtAuthGuard)
-  async createRoutine(@Body() data: any) {
+  async createRoutine(@Body() data: CreateRoutineDto) {
     return await this.generalService.createRoutine(data);
   }
 
   @Put('routine/:id')
-  @UseGuards(JwtAuthGuard)
-  async updateRoutine(@Param('id') id: string, @Body() data: any) {
+  async updateRoutine(@Param('id') id: string, @Body() data: CreateRoutineDto) {
     return await this.generalService.updateRoutine(id, data);
   }
 
   @Delete('routine/:id')
-  @UseGuards(JwtAuthGuard)
   async deleteRoutine(@Param('id') id: string) {
     return await this.generalService.deleteRoutine(id);
   }

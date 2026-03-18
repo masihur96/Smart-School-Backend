@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt/jwt.guard';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -37,13 +40,14 @@ import { Section } from './sections/entities/section.entity';
     }),
 TypeOrmModule.forRoot({
   type: 'postgres',
-  url: process.env.DATABASE_URL,
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT, 10),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   entities: [User, Class, Section, Subject, Exam, ExamResult, Attendance, Marks, Homework, Notice, Routine],
   autoLoadEntities: true,
   synchronize: true,
-   ssl: {
-    rejectUnauthorized: false,
-  },
 }),
     
     AuthModule,
@@ -61,6 +65,16 @@ TypeOrmModule.forRoot({
     SectionsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+  ],
 })
 export class AppModule {}

@@ -1,13 +1,11 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { SectionsService } from './sections.service';
 import { CreateSectionDto, UpdateSectionDto } from './dto/create-section.dto';
-import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
 @Controller('admin/sections')
-@UseGuards(JwtAuthGuard)
 export class SectionsController {
   constructor(private readonly sectionsService: SectionsService) {}
 
