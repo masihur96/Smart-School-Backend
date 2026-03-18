@@ -26,6 +26,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (!user.isActive) {
+      throw new UnauthorizedException('Your account is deactivated');
+    }
+
     const payload = { sub: user.id, role: user.role };
     const accessToken = this.jwtService.sign(payload);
     

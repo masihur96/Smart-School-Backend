@@ -42,6 +42,9 @@ export class User {
   @Column({ nullable: true })
   designation: string;
 
+  @Column({ default: true })
+  isActive: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

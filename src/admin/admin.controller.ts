@@ -20,8 +20,9 @@ export class AdminController {
     @Query('role') role?: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
+    @Query('isActive') isActive?: boolean,
   ) {
-    return await this.adminService.getUsers(role as any, page, limit);
+    return await this.adminService.getUsers(role as any, page, limit, isActive);
   }
 
   @Post('users')

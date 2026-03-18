@@ -29,11 +29,15 @@ export class UsersService {
     return await this.userRepository.findOne({ where: { id } });
   }
 
-  async findAll(role?: UserRole, page: number = 1, limit: number = 20) {
+  async findAll(role?: UserRole, page: number = 1, limit: number = 20, isActive?: boolean) {
     const query = this.userRepository.createQueryBuilder('user');
     
     if (role) {
-      query.where('user.role = :role', { role });
+      query.andWhere('user.role = :role', { role });
+    }
+
+    if (isActive !== undefined) {
+      query.andWhere('user.isActive = :isActive', { isActive });
     }
     
     const total = await query.getCount();

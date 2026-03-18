@@ -18,8 +18,8 @@ export class AdminService {
     return await this.usersService.create(data);
   }
 
-  async getUsers(role?: any, page?: number, limit?: number) {
-    return await this.usersService.findAll(role, page, limit);
+  async getUsers(role?: any, page?: number, limit?: number, isActive?: boolean) {
+    return await this.usersService.findAll(role, page, limit, isActive);
   }
 
   async updateUser(id: string, data: any) {

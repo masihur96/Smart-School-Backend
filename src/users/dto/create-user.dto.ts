@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsEnum, IsUUID, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsEnum, IsUUID, IsOptional, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../entities/user.entity';
 
@@ -47,6 +47,12 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   designation?: string;
+
+  @ApiProperty({ example: true, description: 'Whether the user is active', required: false })
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+
 }
 
 export class UpdateUserDto {
@@ -94,5 +100,11 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   designation?: string;
+
+  @ApiProperty({ example: true, description: 'Whether the user is active', required: false })
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+
 }
 
