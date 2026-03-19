@@ -1,30 +1,54 @@
-import { IsString, IsDate, IsNumber, IsUUID, IsArray, ValidateNested, IsOptional } from 'class-validator';
+import { IsString, IsDateString, IsUUID, IsArray, ValidateNested, IsNumber, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateExamDto {
+  @ApiProperty({ example: 'Mid-Term Exam 2025' })
   @IsString()
-  name: string;
+  exam_name: string;
 
+  @ApiProperty({ example: 'uuid-of-class' })
   @IsUUID()
-  classId: string;
+  class_uid: string;
 
-  @IsDate()
-  @Type(() => Date)
-  date: Date;
-
+  @ApiProperty({ example: 'uuid-of-subject' })
   @IsUUID()
-  schoolId: string;
+  subject_uid: string;
+
+  @ApiProperty({ example: 'uuid-of-examiner-user' })
+  @IsUUID()
+  examiner_uid: string;
+
+  @ApiProperty({ example: '2025-06-15' })
+  @IsDateString()
+  date: string;
 }
 
 export class UpdateExamDto {
+  @ApiPropertyOptional({ example: 'Final Exam 2025' })
   @IsOptional()
   @IsString()
-  name?: string;
+  exam_name?: string;
 
+  @ApiPropertyOptional({ example: 'uuid-of-class' })
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  date?: Date;
+  @IsUUID()
+  class_uid?: string;
+
+  @ApiPropertyOptional({ example: 'uuid-of-subject' })
+  @IsOptional()
+  @IsUUID()
+  subject_uid?: string;
+
+  @ApiPropertyOptional({ example: 'uuid-of-examiner-user' })
+  @IsOptional()
+  @IsUUID()
+  examiner_uid?: string;
+
+  @ApiPropertyOptional({ example: '2025-07-20' })
+  @IsOptional()
+  @IsDateString()
+  date?: string;
 }
 
 export class SubmitMarksDto {

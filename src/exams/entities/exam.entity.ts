@@ -8,16 +8,19 @@ export class Exam {
   id: string;
 
   @Column()
-  name: string;
+  exam_name: string;
 
   @Column()
-  classId: string;
+  class_uid: string;
+
+  @Column()
+  subject_uid: string;
+
+  @Column()
+  examiner_uid: string;
 
   @Column({ type: 'date' })
-  date: Date;
-
-  @Column()
-  schoolId: string;
+  date: string;
 
   @OneToMany(() => ExamResult, (result) => result.exam)
   results: ExamResult[];
