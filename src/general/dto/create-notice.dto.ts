@@ -65,8 +65,7 @@ export class CreateRoutineDto {
   schoolId: string;
 
   @IsString()
-  @IsOptional()
-  roomNumber?: string;
+  roomNumber: string;
 }
 
 export class UpdateRoutineDto extends PartialType(CreateRoutineDto) {}

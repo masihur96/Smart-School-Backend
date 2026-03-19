@@ -18,10 +18,10 @@ export class Routine {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true })
+  @Column()
   classId: string;
 
-  @Column({ nullable: true })
+  @Column()
   subjectId: string;
 
   @Column()
@@ -36,7 +36,7 @@ export class Routine {
   @Column({ type: 'time' })
   endTime: string;
 
-  @Column({ nullable: true })
+  @Column()
   roomNumber: string;
 
   @Column()
