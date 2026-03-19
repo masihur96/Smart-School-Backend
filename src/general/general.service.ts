@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notice } from './entities/notice.entity';
-import { Routine } from './entities/routine.entity';
+import { Routine, Day } from './entities/routine.entity';
 
 @Injectable()
 export class GeneralService {
@@ -61,6 +61,13 @@ export class GeneralService {
 
   async deleteRoutine(id: string) {
     return await this.routineRepository.delete(id);
+  }
+
+  async getRoutineByTeacherAndDay(teacherId: string, day: Day) {
+    return await this.routineRepository.find({
+      where: { teacherId, day },
+      relations: ['classEntity', 'subjectEntity']
+    });
   }
 
   private formatTime(timeStr: string): string {

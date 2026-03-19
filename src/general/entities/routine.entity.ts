@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Class } from '../../classes/entities/class.entity';
+import { Subject } from '../../subjects/entities/subject.entity';
 
 export enum Day {
   MONDAY = 'Monday',
@@ -17,10 +18,10 @@ export class Routine {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   classId: string;
 
-  @Column()
+  @Column({ nullable: true })
   subjectId: string;
 
   @Column()
@@ -42,7 +43,12 @@ export class Routine {
   schoolId: string;
 
   @ManyToOne(() => Class, (classEntity) => classEntity.routines)
+  @JoinColumn({ name: 'classId' })
   classEntity: Class;
+
+  @ManyToOne(() => Subject)
+  @JoinColumn({ name: 'subjectId' })
+  subjectEntity: Subject;
 
   @CreateDateColumn()
   createdAt: Date;

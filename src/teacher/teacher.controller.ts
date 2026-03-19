@@ -85,4 +85,14 @@ export class TeacherController {
   async getExams() {
     return await this.teacherService.getExams();
   }
+
+  @Get('todays-classes')
+  @ApiOperation({ summary: 'Get today\'s classes for the logged-in teacher' })
+  async getTodaysClasses(
+    @Request() req,
+    @Query('date') date?: string,
+  ) {
+    const teacherId = req.user.userId;
+    return await this.teacherService.getTodaysClasses(teacherId, date);
+  }
 }

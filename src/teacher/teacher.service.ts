@@ -4,6 +4,8 @@ import { MarksService } from '../marks/marks.service';
 import { HomeworkService } from '../homework/homework.service';
 import { ExamsService } from '../exams/exams.service';
 import { UsersService } from '../users/users.service';
+import { GeneralService } from '../general/general.service';
+import { Day } from '../general/entities/routine.entity';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UserRole } from '../users/entities/user.entity';
 
@@ -15,7 +17,23 @@ export class TeacherService {
     private homeworkService: HomeworkService,
     private examsService: ExamsService,
     private usersService: UsersService,
+    private generalService: GeneralService,
   ) {}
+
+  async getTodaysClasses(teacherId: string, date?: string) {
+    const targetDate = date ? new Date(date) : new Date();
+    const days = [
+      Day.SUNDAY,
+      Day.MONDAY,
+      Day.TUESDAY,
+      Day.WEDNESDAY,
+      Day.THURSDAY,
+      Day.FRIDAY,
+      Day.SATURDAY,
+    ];
+    const day = days[targetDate.getDay()];
+    return await this.generalService.getRoutineByTeacherAndDay(teacherId, day);
+  }
 
   async create(data: CreateTeacherDto) {
     return await this.usersService.create({
