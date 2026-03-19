@@ -1,4 +1,5 @@
 import { IsString, IsUUID, IsOptional, IsBoolean } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
 
 export class CreateNoticeDto {
   @IsString()
@@ -62,15 +63,10 @@ export class CreateRoutineDto {
 
   @IsUUID()
   schoolId: string;
+
+  @IsString()
+  @IsOptional()
+  roomNumber?: string;
 }
 
-export class UpdateRoutineDto {
-  @IsString()
-  day?: string;
-
-  @IsString()
-  startTime?: string;
-
-  @IsString()
-  endTime?: string;
-}
+export class UpdateRoutineDto extends PartialType(CreateRoutineDto) {}

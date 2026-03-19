@@ -35,6 +35,9 @@ export class Routine {
   @Column({ type: 'time' })
   endTime: string;
 
+  @Column({ nullable: true })
+  roomNumber: string;
+
   @Column()
   schoolId: string;
 

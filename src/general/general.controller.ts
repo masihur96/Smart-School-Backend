@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GeneralService } from './general.service';
 import { Public } from '../auth/decorators/public.decorator';
-import { CreateNoticeDto, UpdateNoticeDto, CreateRoutineDto } from './dto/create-notice.dto';
+import { CreateNoticeDto, UpdateNoticeDto, CreateRoutineDto, UpdateRoutineDto } from './dto/create-notice.dto';
 
 @ApiTags('General')
 @ApiBearerAuth('bearer')
@@ -57,7 +57,7 @@ export class GeneralController {
   }
 
   @Put('routine/:id')
-  async updateRoutine(@Param('id') id: string, @Body() data: CreateRoutineDto) {
+  async updateRoutine(@Param('id') id: string, @Body() data: UpdateRoutineDto) {
     return await this.generalService.updateRoutine(id, data);
   }
 
