@@ -5,7 +5,7 @@ import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 import { CreateHomeworkDto, UpdateHomeworkDto } from '../homework/dto/create-homework.dto';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { Public } from '../auth/decorators/public.decorator';
-import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('Teacher')
 @ApiBearerAuth('bearer')
@@ -24,6 +24,25 @@ export class TeacherController {
   // ─── Attendance ───────────────────────────────────
   @Post('attendance')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Submit attendance for a class' })
+  @ApiBody({
+    type: SubmitAttendanceDto,
+    examples: {
+      sample: {
+        summary: 'Sample attendance payload',
+        value: {
+          date: '2026-03-20',
+          takenBy: 'uuid-teacher-001',
+          classId: 'uuid-class-001',
+          records: [
+            { studentId: 'uuid-student-001', status: 'present' },
+            { studentId: 'uuid-student-002', status: 'absent' },
+            { studentId: 'uuid-student-003', status: 'leave' },
+          ],
+        },
+      },
+    },
+  })
   async submitAttendance(@Body() dto: SubmitAttendanceDto) {
     return await this.teacherService.submitAttendance(dto);
   }
