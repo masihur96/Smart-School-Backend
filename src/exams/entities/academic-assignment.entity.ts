@@ -9,14 +9,14 @@ export class AcademicAssignment {
   @Column()
   examId: string;
 
-  @Column()
-  class_uid: string;
+  @Column({ type: 'jsonb', nullable: true })
+  class: { uuid: string; name: string };
 
-  @Column()
-  subject_uid: string;
+  @Column({ type: 'jsonb', nullable: true })
+  subject: { uuid: string; name: string };
 
-  @Column()
-  examiner_uid: string;
+  @Column({ type: 'jsonb', nullable: true })
+  examiner: { uuid: string; name: string };
 
   @Column({ type: 'date' })
   date: string;

@@ -4,7 +4,9 @@ import { Repository } from 'typeorm';
 import { Exam } from './entities/exam.entity';
 import { ExamResult } from './entities/exam-result.entity';
 import { AcademicAssignment } from './entities/academic-assignment.entity';
-
+import { Class } from '../classes/entities/class.entity';
+import { Subject } from '../subjects/entities/subject.entity';
+import { User } from '../users/entities/user.entity';
 @Injectable()
 export class ExamsService {
   constructor(
@@ -14,6 +16,12 @@ export class ExamsService {
     private examResultRepository: Repository<ExamResult>,
     @InjectRepository(AcademicAssignment)
     private academicAssignmentRepository: Repository<AcademicAssignment>,
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
+    @InjectRepository(Subject)
+    private subjectRepository: Repository<Subject>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async createExam(data: any) {
@@ -44,9 +52,21 @@ export class ExamsService {
       throw new NotFoundException(`Exam with ID ${examId} not found`);
     }
 
+    const classEntity = await this.classRepository.findOne({ where: { id: data.class_uid } });
+    if (!classEntity) throw new NotFoundException(`Class with ID ${data.class_uid} not found`);
+
+    const subjectEntity = await this.subjectRepository.findOne({ where: { id: data.subject_uid } });
+    if (!subjectEntity) throw new NotFoundException(`Subject with ID ${data.subject_uid} not found`);
+
+    const examinerEntity = await this.userRepository.findOne({ where: { id: data.examiner_uid } });
+    if (!examinerEntity) throw new NotFoundException(`Examiner with ID ${data.examiner_uid} not found`);
+
     const assignment = this.academicAssignmentRepository.create({
-      ...data,
       examId,
+      date: data.date,
+      class: { uuid: classEntity.id, name: classEntity.name },
+      subject: { uuid: subjectEntity.id, name: subjectEntity.name },
+      examiner: { uuid: examinerEntity.id, name: examinerEntity.name },
     });
     return await this.academicAssignmentRepository.save(assignment);
   }
