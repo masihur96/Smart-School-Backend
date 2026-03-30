@@ -13,7 +13,7 @@ export class Notice {
   content: string;
 
   @Column({ nullable: true })
-  audience: string;
+  targetAudience: string;
 
   @Column({ default: false })
   isImportent: boolean;

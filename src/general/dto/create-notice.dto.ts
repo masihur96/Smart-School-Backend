@@ -1,25 +1,31 @@
 import { IsString, IsUUID, IsOptional, IsBoolean } from 'class-validator';
-import { PartialType } from '@nestjs/swagger';
+import { PartialType, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateNoticeDto {
+  @ApiProperty({ example: 'Welcome Back!' })
   @IsString()
   title: string;
 
+  @ApiProperty({ example: 'School reopens next Monday.' })
   @IsString()
   content: string;
 
+  @ApiPropertyOptional({ example: 'Students' })
   @IsOptional()
   @IsString()
-  audience?: string;
+  targetAudience?: string;
 
+  @ApiPropertyOptional({ example: true })
   @IsOptional() 
   @IsBoolean()
   isImportent?: boolean;
 
+  @ApiPropertyOptional({ example: 'Principal' })
   @IsOptional()
   @IsString()
   postedBy?: string;
 
+  @ApiProperty({ example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' })
   @IsUUID()
   schoolId: string;
 }
@@ -35,7 +41,7 @@ export class UpdateNoticeDto {
 
   @IsOptional()
   @IsString()
-  audience?: string;
+  targetAudience?: string;
 
   @IsOptional()
   @IsBoolean()
