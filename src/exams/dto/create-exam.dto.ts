@@ -7,21 +7,20 @@ export class CreateExamDto {
   @IsString()
   exam_name: string;
 
-  @ApiProperty({ example: 'uuid-of-class' })
-  @IsUUID()
-  class_uid: string;
+  @ApiPropertyOptional({ example: 'First term exam for all classes' })
+  @IsOptional()
+  @IsString()
+  description?: string;
 
-  @ApiProperty({ example: 'uuid-of-subject' })
-  @IsUUID()
-  subject_uid: string;
-
-  @ApiProperty({ example: 'uuid-of-examiner-user' })
-  @IsUUID()
-  examiner_uid: string;
-
-  @ApiProperty({ example: '2025-06-15' })
+  @ApiPropertyOptional({ example: '2025-06-15' })
+  @IsOptional()
   @IsDateString()
-  date: string;
+  start_date?: string;
+
+  @ApiPropertyOptional({ example: '2025-06-30' })
+  @IsOptional()
+  @IsDateString()
+  end_date?: string;
 }
 
 export class UpdateExamDto {
@@ -30,25 +29,20 @@ export class UpdateExamDto {
   @IsString()
   exam_name?: string;
 
-  @ApiPropertyOptional({ example: 'uuid-of-class' })
+  @ApiPropertyOptional({ example: 'Final examination details' })
   @IsOptional()
-  @IsUUID()
-  class_uid?: string;
-
-  @ApiPropertyOptional({ example: 'uuid-of-subject' })
-  @IsOptional()
-  @IsUUID()
-  subject_uid?: string;
-
-  @ApiPropertyOptional({ example: 'uuid-of-examiner-user' })
-  @IsOptional()
-  @IsUUID()
-  examiner_uid?: string;
+  @IsString()
+  description?: string;
 
   @ApiPropertyOptional({ example: '2025-07-20' })
   @IsOptional()
   @IsDateString()
-  date?: string;
+  start_date?: string;
+
+  @ApiPropertyOptional({ example: '2025-07-30' })
+  @IsOptional()
+  @IsDateString()
+  end_date?: string;
 }
 
 export class SubmitMarksDto {

@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Exam } from './entities/exam.entity';
 import { ExamResult } from './entities/exam-result.entity';
+import { AcademicAssignment } from './entities/academic-assignment.entity';
 
 @Injectable()
 export class ExamsService {
@@ -11,6 +12,8 @@ export class ExamsService {
     private examRepository: Repository<Exam>,
     @InjectRepository(ExamResult)
     private examResultRepository: Repository<ExamResult>,
+    @InjectRepository(AcademicAssignment)
+    private academicAssignmentRepository: Repository<AcademicAssignment>,
   ) {}
 
   async createExam(data: any) {
@@ -19,20 +22,33 @@ export class ExamsService {
   }
 
   async findAllExams() {
-    return await this.examRepository.find({ relations: ['results'] });
+    return await this.examRepository.find({ relations: ['assignments', 'results'] });
   }
 
   async findExamById(id: string) {
-    return await this.examRepository.findOne({ where: { id }, relations: ['results'] });
+    return await this.examRepository.findOne({ where: { id }, relations: ['assignments', 'results'] });
   }
 
   async updateExam(id: string, data: any) {
     await this.examRepository.update(id, data);
-    return await this.examRepository.findOne({ where: { id } });
+    return await this.examRepository.findOne({ where: { id }, relations: ['assignments'] });
   }
 
   async deleteExam(id: string) {
     return await this.examRepository.delete(id);
+  }
+
+  async addAcademicAssignment(examId: string, data: any) {
+    const exam = await this.examRepository.findOne({ where: { id: examId } });
+    if (!exam) {
+      throw new NotFoundException(`Exam with ID ${examId} not found`);
+    }
+
+    const assignment = this.academicAssignmentRepository.create({
+      ...data,
+      examId,
+    });
+    return await this.academicAssignmentRepository.save(assignment);
   }
 
   async submitMarks(data: any) {

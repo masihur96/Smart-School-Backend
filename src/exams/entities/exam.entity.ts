@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { ExamResult } from '../../exams/entities/exam-result.entity';
+import { ExamResult } from './exam-result.entity';
+import { AcademicAssignment } from './academic-assignment.entity';
 
 @Entity()
 export class Exam {
@@ -10,20 +11,20 @@ export class Exam {
   @Column()
   exam_name: string;
 
-  @Column()
-  class_uid: string;
+  @Column({ nullable: true })
+  description: string;
 
-  @Column()
-  subject_uid: string;
+  @Column({ type: 'date', nullable: true })
+  start_date: string;
 
-  @Column()
-  examiner_uid: string;
-
-  @Column({ type: 'date' })
-  date: string;
+  @Column({ type: 'date', nullable: true })
+  end_date: string;
 
   @OneToMany(() => ExamResult, (result) => result.exam)
   results: ExamResult[];
+
+  @OneToMany(() => AcademicAssignment, (assignment) => assignment.exam)
+  assignments: AcademicAssignment[];
 
   @CreateDateColumn()
   createdAt: Date;

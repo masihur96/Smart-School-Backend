@@ -80,4 +80,8 @@ export class AdminService {
   async deleteExam(id: string) {
     return await this.examsService.deleteExam(id);
   }
+
+  async addAcademicAssignment(examId: string, data: any) {
+    return await this.examsService.addAcademicAssignment(examId, data);
+  }
 }

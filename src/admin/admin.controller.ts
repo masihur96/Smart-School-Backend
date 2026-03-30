@@ -5,6 +5,7 @@ import { CreateUserDto, UpdateUserDto } from '../users/dto/create-user.dto';
 import { CreateClassDto, UpdateClassDto } from '../classes/dto/create-class.dto';
 import { CreateSubjectDto, UpdateSubjectDto } from '../subjects/dto/create-subject.dto';
 import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
+import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assignment.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
@@ -96,6 +97,15 @@ export class AdminController {
   @HttpCode(HttpStatus.CREATED)
   async createExam(@Body() dto: CreateExamDto) {
     return await this.adminService.createExam(dto);
+  }
+
+  @Post('exams/:id/assignments')
+  @HttpCode(HttpStatus.CREATED)
+  async addAcademicAssignment(
+    @Param('id') id: string,
+    @Body() dto: CreateAcademicAssignmentDto,
+  ) {
+    return await this.adminService.addAcademicAssignment(id, dto);
   }
 
   @Put('exams/:id')

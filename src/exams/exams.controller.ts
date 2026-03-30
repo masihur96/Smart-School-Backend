@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { CreateAcademicAssignmentDto } from './dto/create-academic-assignment.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
@@ -11,6 +12,15 @@ export class ExamsController {
   @Post()
   async createExam(@Body() data: any) {
     return await this.examsService.createExam(data);
+  }
+
+  @Post(':id/assignments')
+  @HttpCode(HttpStatus.CREATED)
+  async addAcademicAssignment(
+    @Param('id') id: string,
+    @Body() dto: CreateAcademicAssignmentDto,
+  ) {
+    return await this.examsService.addAcademicAssignment(id, dto);
   }
 
   @Get()
