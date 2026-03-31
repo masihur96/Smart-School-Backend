@@ -14,7 +14,10 @@ export class AttendanceController {
   }
 
   @Get()
-  async getAttendance(@Query('classId') classId: string, @Query('date') date?: string) {
+  async getAttendance(
+    @Query('classId') classId: string,
+    @Query('date') date?: string,
+  ) {
     return await this.attendanceService.getAttendance(classId, date);
   }
 

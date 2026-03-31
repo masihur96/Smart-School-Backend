@@ -13,7 +13,7 @@ export class MarksService {
 
   async submitMarks(data: SubmitMarksDto) {
     const results: Marks[] = [];
-    
+
     for (const markItem of data.marks) {
       // Check if marks already exist for this student, exam, and subject
       let marksEntry = await this.marksRepository.findOne({
@@ -38,31 +38,31 @@ export class MarksService {
           schoolId: data.schoolId,
         });
       }
-      
+
       results.push(await this.marksRepository.save(marksEntry));
     }
-    
+
     return results;
   }
 
   async getMarks(examId?: string, studentId?: string) {
     const query = this.marksRepository.createQueryBuilder('marks');
-    
+
     if (examId) {
       query.andWhere('marks.examId = :examId', { examId });
     }
-    
+
     if (studentId) {
       query.andWhere('marks.studentId = :studentId', { studentId });
     }
-    
+
     return await query.getMany();
   }
 
   async findByStudent(studentId: string) {
     return await this.marksRepository.find({
       where: { studentId },
-      order: { createdAt: 'DESC' }
+      order: { createdAt: 'DESC' },
     });
   }
 }

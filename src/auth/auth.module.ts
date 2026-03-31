@@ -10,13 +10,15 @@ import { UsersModule } from '../users/users.module';
 @Module({
   imports: [
     PassportModule,
-     ConfigModule,
+    ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET', 'your-secret-key'),
-        signOptions: { expiresIn: '24h' },
-      }),
+      useFactory: async (configService: ConfigService) => {
+        return {
+          secret: configService.get<string>('JWT_SECRET', 'your-secret-key'),
+          signOptions: { expiresIn: '1d' },
+        };
+      },
       inject: [ConfigService],
     }),
     forwardRef(() => UsersModule),

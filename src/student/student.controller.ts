@@ -2,7 +2,12 @@ import { Controller, Get, Post, Body, Request, Query } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { Public } from '../auth/decorators/public.decorator';
-import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 @ApiTags('Student')
 @ApiBearerAuth('bearer')
@@ -13,7 +18,10 @@ export class StudentController {
   @Post()
   @Public()
   @ApiOperation({ summary: 'Register a new student' })
-  @ApiResponse({ status: 201, description: 'The student has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The student has been successfully created.',
+  })
   async create(@Body() dto: CreateStudentDto) {
     return await this.studentService.create(dto);
   }

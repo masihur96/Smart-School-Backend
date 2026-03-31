@@ -1,11 +1,32 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Query, Request, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  Query,
+  Request,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { TeacherService } from './teacher.service';
 import { SubmitAttendanceDto } from '../attendance/dto/submit-attendance.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
-import { CreateHomeworkDto, UpdateHomeworkDto } from '../homework/dto/create-homework.dto';
+import {
+  CreateHomeworkDto,
+  UpdateHomeworkDto,
+} from '../homework/dto/create-homework.dto';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { Public } from '../auth/decorators/public.decorator';
-import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
 
 @ApiTags('Teacher')
 @ApiBearerAuth('bearer')
@@ -16,7 +37,10 @@ export class TeacherController {
   @Post()
   @Public()
   @ApiOperation({ summary: 'Register a new teacher' })
-  @ApiResponse({ status: 201, description: 'The teacher has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The teacher has been successfully created.',
+  })
   async create(@Body() dto: CreateTeacherDto) {
     return await this.teacherService.create(dto);
   }
@@ -106,11 +130,8 @@ export class TeacherController {
   }
 
   @Get('todays-classes')
-  @ApiOperation({ summary: 'Get today\'s classes for the logged-in teacher' })
-  async getTodaysClasses(
-    @Request() req,
-    @Query('date') date?: string,
-  ) {
+  @ApiOperation({ summary: "Get today's classes for the logged-in teacher" })
+  async getTodaysClasses(@Request() req, @Query('date') date?: string) {
     const teacherId = req.user.userId;
     return await this.teacherService.getTodaysClasses(teacherId, date);
   }

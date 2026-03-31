@@ -7,6 +7,12 @@ import { AcademicAssignment } from './entities/academic-assignment.entity';
 import { Class } from '../classes/entities/class.entity';
 import { Subject } from '../subjects/entities/subject.entity';
 import { User } from '../users/entities/user.entity';
+import {
+  CreateExamDto,
+  UpdateExamDto,
+  SubmitMarksDto,
+} from './dto/create-exam.dto';
+import { CreateAcademicAssignmentDto } from './dto/create-academic-assignment.dto';
 @Injectable()
 export class ExamsService {
   constructor(
@@ -24,22 +30,30 @@ export class ExamsService {
     private userRepository: Repository<User>,
   ) {}
 
-  async createExam(data: any) {
+  async createExam(data: CreateExamDto) {
     const exam = this.examRepository.create(data);
     return await this.examRepository.save(exam);
   }
 
   async findAllExams() {
-    return await this.examRepository.find({ relations: ['assignments', 'results'] });
+    return await this.examRepository.find({
+      relations: ['assignments', 'results'],
+    });
   }
 
   async findExamById(id: string) {
-    return await this.examRepository.findOne({ where: { id }, relations: ['assignments', 'results'] });
+    return await this.examRepository.findOne({
+      where: { id },
+      relations: ['assignments', 'results'],
+    });
   }
 
-  async updateExam(id: string, data: any) {
+  async updateExam(id: string, data: UpdateExamDto) {
     await this.examRepository.update(id, data);
-    return await this.examRepository.findOne({ where: { id }, relations: ['assignments'] });
+    return await this.examRepository.findOne({
+      where: { id },
+      relations: ['assignments'],
+    });
   }
 
   async deleteExam(id: string) {
@@ -52,23 +66,42 @@ export class ExamsService {
       throw new NotFoundException(`Exam with ID ${id} not found`);
     }
     await this.examRepository.update(id, { isPublished });
-    return await this.examRepository.findOne({ where: { id }, relations: ['assignments'] });
+    return await this.examRepository.findOne({
+      where: { id },
+      relations: ['assignments'],
+    });
   }
 
-  async addAcademicAssignment(examId: string, data: any) {
+  async addAcademicAssignment(
+    examId: string,
+    data: CreateAcademicAssignmentDto,
+  ) {
     const exam = await this.examRepository.findOne({ where: { id: examId } });
     if (!exam) {
       throw new NotFoundException(`Exam with ID ${examId} not found`);
     }
 
-    const classEntity = await this.classRepository.findOne({ where: { id: data.class_uid } });
-    if (!classEntity) throw new NotFoundException(`Class with ID ${data.class_uid} not found`);
+    const classEntity = await this.classRepository.findOne({
+      where: { id: data.class_uid },
+    });
+    if (!classEntity)
+      throw new NotFoundException(`Class with ID ${data.class_uid} not found`);
 
-    const subjectEntity = await this.subjectRepository.findOne({ where: { id: data.subject_uid } });
-    if (!subjectEntity) throw new NotFoundException(`Subject with ID ${data.subject_uid} not found`);
+    const subjectEntity = await this.subjectRepository.findOne({
+      where: { id: data.subject_uid },
+    });
+    if (!subjectEntity)
+      throw new NotFoundException(
+        `Subject with ID ${data.subject_uid} not found`,
+      );
 
-    const examinerEntity = await this.userRepository.findOne({ where: { id: data.examiner_uid } });
-    if (!examinerEntity) throw new NotFoundException(`Examiner with ID ${data.examiner_uid} not found`);
+    const examinerEntity = await this.userRepository.findOne({
+      where: { id: data.examiner_uid },
+    });
+    if (!examinerEntity)
+      throw new NotFoundException(
+        `Examiner with ID ${data.examiner_uid} not found`,
+      );
 
     const assignment = this.academicAssignmentRepository.create({
       examId,
@@ -80,22 +113,25 @@ export class ExamsService {
     return await this.academicAssignmentRepository.save(assignment);
   }
 
-  async submitMarks(data: any) {
-    const results = this.examResultRepository.create(data.marks.map(mark => ({
-      ...mark,
-      examId: data.examId,
-    })));
+  async submitMarks(data: SubmitMarksDto) {
+    const results = this.examResultRepository.create(
+      data.marks.map((mark) => ({
+        ...mark,
+        examId: data.examId,
+      })),
+    );
     return await this.examResultRepository.save(results);
   }
 
   async getResults(examId: string, studentId?: string) {
-    const query = this.examResultRepository.createQueryBuilder('result')
+    const query = this.examResultRepository
+      .createQueryBuilder('result')
       .where('result.examId = :examId', { examId });
-    
+
     if (studentId) {
       query.andWhere('result.studentId = :studentId', { studentId });
     }
-    
+
     return await query.getMany();
   }
 }

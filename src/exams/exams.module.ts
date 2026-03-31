@@ -10,7 +10,16 @@ import { Subject } from '../subjects/entities/subject.entity';
 import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Exam, ExamResult, AcademicAssignment, Class, Subject, User])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Exam,
+      ExamResult,
+      AcademicAssignment,
+      Class,
+      Subject,
+      User,
+    ]),
+  ],
   providers: [ExamsService],
   controllers: [ExamsController],
   exports: [ExamsService],

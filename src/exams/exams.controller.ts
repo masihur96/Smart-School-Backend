@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Param, Put, Patch, Delete, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Patch,
+  Delete,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { CreateAcademicAssignmentDto } from './dto/create-academic-assignment.dto';
@@ -61,7 +73,10 @@ export class ExamsController {
   }
 
   @Get('results/:examId')
-  async getResults(@Param('examId') examId: string, @Query('studentId') studentId?: string) {
+  async getResults(
+    @Param('examId') examId: string,
+    @Query('studentId') studentId?: string,
+  ) {
     return await this.examsService.getResults(examId, studentId);
   }
 }

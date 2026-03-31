@@ -14,7 +14,10 @@ export class MarksController {
   }
 
   @Get()
-  async getMarks(@Query('examId') examId?: string, @Query('studentId') studentId?: string) {
+  async getMarks(
+    @Query('examId') examId?: string,
+    @Query('studentId') studentId?: string,
+  ) {
     return await this.marksService.getMarks(examId, studentId);
   }
 }

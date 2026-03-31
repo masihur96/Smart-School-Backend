@@ -20,7 +20,7 @@ export class StudentService {
   async create(dto: CreateStudentDto) {
     return await this.usersService.create({
       ...dto,
-      role: UserRole.STUDENT
+      role: UserRole.STUDENT,
     });
   }
 

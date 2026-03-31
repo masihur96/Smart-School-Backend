@@ -9,11 +9,11 @@ import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
-    AttendanceModule, 
-    GeneralModule, 
-    HomeworkModule, 
+    AttendanceModule,
+    GeneralModule,
+    HomeworkModule,
     MarksModule,
-    UsersModule
+    UsersModule,
   ],
   providers: [StudentService],
   controllers: [StudentController],

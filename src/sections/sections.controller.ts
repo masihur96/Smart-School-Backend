@@ -1,5 +1,18 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { SectionsService } from './sections.service';
 import { CreateSectionDto, UpdateSectionDto } from './dto/create-section.dto';
 
@@ -11,7 +24,10 @@ export class SectionsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new section' })
-  @ApiResponse({ status: 201, description: 'The section has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The section has been successfully created.',
+  })
   async create(@Body() createSectionDto: CreateSectionDto) {
     return await this.sectionsService.create(createSectionDto);
   }
@@ -30,7 +46,10 @@ export class SectionsController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update section' })
-  async update(@Param('id') id: string, @Body() updateSectionDto: UpdateSectionDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateSectionDto: UpdateSectionDto,
+  ) {
     return await this.sectionsService.update(id, updateSectionDto);
   }
 

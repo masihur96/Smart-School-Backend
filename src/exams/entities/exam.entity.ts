@@ -1,10 +1,16 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { ExamResult } from './exam-result.entity';
 import { AcademicAssignment } from './academic-assignment.entity';
 
 @Entity()
 export class Exam {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

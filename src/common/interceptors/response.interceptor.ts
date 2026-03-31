@@ -11,9 +11,14 @@ import { map } from 'rxjs/operators';
 export class ResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data) => {
+      map((data: unknown) => {
         // If the response already has message and statusCode, return as is (for error responses)
-        if (data?.message && data?.statusCode) {
+        if (
+          data &&
+          typeof data === 'object' &&
+          'message' in data &&
+          'statusCode' in data
+        ) {
           return data;
         }
 

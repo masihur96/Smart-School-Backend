@@ -9,7 +9,14 @@ import { UsersModule } from '../users/users.module';
 import { GeneralModule } from '../general/general.module';
 
 @Module({
-  imports: [AttendanceModule, MarksModule, HomeworkModule, ExamsModule, UsersModule, GeneralModule],
+  imports: [
+    AttendanceModule,
+    MarksModule,
+    HomeworkModule,
+    ExamsModule,
+    UsersModule,
+    GeneralModule,
+  ],
   providers: [TeacherService],
   controllers: [TeacherController],
   exports: [TeacherService],

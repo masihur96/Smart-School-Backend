@@ -1,9 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+} from 'typeorm';
 import { Exam } from './exam.entity';
 
 @Entity()
 export class ExamResult {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

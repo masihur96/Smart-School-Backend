@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Class } from '../../classes/entities/class.entity';
 import { Subject } from '../../subjects/entities/subject.entity';
 
@@ -14,7 +22,6 @@ export enum Day {
 
 @Entity()
 export class Routine {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

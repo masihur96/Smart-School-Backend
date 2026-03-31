@@ -14,7 +14,7 @@ export class GeneralService {
   ) {}
 
   // Notices
-  async createNotice(data: any) {
+  async createNotice(data: Partial<Notice>) {
     const notice = this.noticeRepository.create(data);
     return await this.noticeRepository.save(notice);
   }
@@ -27,7 +27,7 @@ export class GeneralService {
     return await this.noticeRepository.findOne({ where: { id } });
   }
 
-  async updateNotice(id: string, data: any) {
+  async updateNotice(id: string, data: Partial<Notice>) {
     await this.noticeRepository.update(id, data);
     return await this.noticeRepository.findOne({ where: { id } });
   }
@@ -37,7 +37,7 @@ export class GeneralService {
   }
 
   // Routines
-  async createRoutine(data: any) {
+  async createRoutine(data: Partial<Routine>) {
     if (data.startTime) data.startTime = this.formatTime(data.startTime);
     if (data.endTime) data.endTime = this.formatTime(data.endTime);
     const routine = this.routineRepository.create(data);
@@ -52,7 +52,7 @@ export class GeneralService {
     return await this.routineRepository.find();
   }
 
-  async updateRoutine(id: string, data: any) {
+  async updateRoutine(id: string, data: Partial<Routine>) {
     if (data.startTime) data.startTime = this.formatTime(data.startTime);
     if (data.endTime) data.endTime = this.formatTime(data.endTime);
     await this.routineRepository.update(id, data);
@@ -66,7 +66,7 @@ export class GeneralService {
   async getRoutineByTeacherAndDay(teacherId: string, day: Day) {
     return await this.routineRepository.find({
       where: { teacherId, day },
-      relations: ['classEntity', 'subjectEntity']
+      relations: ['classEntity', 'subjectEntity'],
     });
   }
 

@@ -31,7 +31,10 @@ export class SectionsService {
     return section;
   }
 
-  async update(id: string, updateSectionDto: UpdateSectionDto): Promise<Section> {
+  async update(
+    id: string,
+    updateSectionDto: UpdateSectionDto,
+  ): Promise<Section> {
     await this.sectionRepository.update(id, updateSectionDto);
     return this.findOne(id);
   }

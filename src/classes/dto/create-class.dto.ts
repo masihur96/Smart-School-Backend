@@ -22,4 +22,3 @@ export class UpdateClassDto {
   @IsString()
   description?: string;
 }
-

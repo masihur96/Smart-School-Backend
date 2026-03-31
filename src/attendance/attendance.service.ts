@@ -13,7 +13,7 @@ export class AttendanceService {
 
   async submitAttendance(data: SubmitAttendanceDto) {
     const results: Attendance[] = [];
-    
+
     for (const record of data.records) {
       // Check if attendance already exists for this student on this date and class
       let attendance = await this.attendanceRepository.findOne({
@@ -38,28 +38,29 @@ export class AttendanceService {
           schoolId: 'placeholder-school-id', // Should ideally come from JWT or DTO
         });
       }
-      
+
       results.push(await this.attendanceRepository.save(attendance));
     }
-    
+
     return results;
   }
 
   async getAttendance(classId: string, date?: string) {
-    const query = this.attendanceRepository.createQueryBuilder('attendance')
+    const query = this.attendanceRepository
+      .createQueryBuilder('attendance')
       .where('attendance.classId = :classId', { classId });
-    
+
     if (date) {
       query.andWhere('attendance.date = :date', { date });
     }
-    
+
     return await query.getMany();
   }
 
   async getStudentAttendance(studentId: string) {
-    return await this.attendanceRepository.find({ 
+    return await this.attendanceRepository.find({
       where: { studentId },
-      order: { date: 'DESC' }
+      order: { date: 'DESC' },
     });
   }
 }

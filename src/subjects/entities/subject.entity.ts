@@ -1,9 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+} from 'typeorm';
 import { Class } from '../../classes/entities/class.entity';
 
 @Entity()
 export class Subject {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

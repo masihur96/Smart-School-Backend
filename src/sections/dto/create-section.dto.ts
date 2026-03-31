@@ -6,17 +6,28 @@ export class CreateSectionDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 'uuid', description: 'The ID of the class this section belongs to' })
+  @ApiProperty({
+    example: 'uuid',
+    description: 'The ID of the class this section belongs to',
+  })
   @IsUUID()
   classId: string;
 }
 
 export class UpdateSectionDto {
-  @ApiProperty({ example: 'Section B', description: 'The name of the section', required: false })
+  @ApiProperty({
+    example: 'Section B',
+    description: 'The name of the section',
+    required: false,
+  })
   @IsString()
   name?: string;
 
-  @ApiProperty({ example: 'uuid', description: 'The ID of the class this section belongs to', required: false })
+  @ApiProperty({
+    example: 'uuid',
+    description: 'The ID of the class this section belongs to',
+    required: false,
+  })
   @IsUUID()
   classId?: string;
 }

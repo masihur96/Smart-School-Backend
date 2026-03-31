@@ -3,6 +3,18 @@ import { UsersService } from '../users/users.service';
 import { ClassesService } from '../classes/classes.service';
 import { SubjectsService } from '../subjects/subjects.service';
 import { ExamsService } from '../exams/exams.service';
+import { UserRole } from '../users/entities/user.entity';
+import { CreateUserDto, UpdateUserDto } from '../users/dto/create-user.dto';
+import {
+  CreateClassDto,
+  UpdateClassDto,
+} from '../classes/dto/create-class.dto';
+import {
+  CreateSubjectDto,
+  UpdateSubjectDto,
+} from '../subjects/dto/create-subject.dto';
+import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
+import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assignment.dto';
 
 @Injectable()
 export class AdminService {
@@ -14,15 +26,20 @@ export class AdminService {
   ) {}
 
   // User management
-  async createUser(data: any) {
+  async createUser(data: CreateUserDto) {
     return await this.usersService.create(data);
   }
 
-  async getUsers(role?: any, page?: number, limit?: number, isActive?: boolean) {
+  async getUsers(
+    role?: UserRole,
+    page?: number,
+    limit?: number,
+    isActive?: boolean,
+  ) {
     return await this.usersService.findAll(role, page, limit, isActive);
   }
 
-  async updateUser(id: string, data: any) {
+  async updateUser(id: string, data: UpdateUserDto) {
     return await this.usersService.update(id, data);
   }
 
@@ -31,7 +48,7 @@ export class AdminService {
   }
 
   // Class management
-  async createClass(data: any) {
+  async createClass(data: CreateClassDto) {
     return await this.classesService.create(data);
   }
 
@@ -39,7 +56,7 @@ export class AdminService {
     return await this.classesService.findAll();
   }
 
-  async updateClass(id: string, data: any) {
+  async updateClass(id: string, data: UpdateClassDto) {
     return await this.classesService.update(id, data);
   }
 
@@ -48,7 +65,7 @@ export class AdminService {
   }
 
   // Subject management
-  async createSubject(data: any) {
+  async createSubject(data: CreateSubjectDto) {
     return await this.subjectsService.create(data);
   }
 
@@ -56,7 +73,7 @@ export class AdminService {
     return await this.subjectsService.findAll();
   }
 
-  async updateSubject(id: string, data: any) {
+  async updateSubject(id: string, data: UpdateSubjectDto) {
     return await this.subjectsService.update(id, data);
   }
 
@@ -65,7 +82,7 @@ export class AdminService {
   }
 
   // Exam management
-  async createExam(data: any) {
+  async createExam(data: CreateExamDto) {
     return await this.examsService.createExam(data);
   }
 
@@ -73,7 +90,7 @@ export class AdminService {
     return await this.examsService.findAllExams();
   }
 
-  async updateExam(id: string, data: any) {
+  async updateExam(id: string, data: UpdateExamDto) {
     return await this.examsService.updateExam(id, data);
   }
 
@@ -81,7 +98,10 @@ export class AdminService {
     return await this.examsService.deleteExam(id);
   }
 
-  async addAcademicAssignment(examId: string, data: any) {
+  async addAcademicAssignment(
+    examId: string,
+    data: CreateAcademicAssignmentDto,
+  ) {
     return await this.examsService.addAcademicAssignment(examId, data);
   }
 }

@@ -1,5 +1,12 @@
-import { IsString, IsUUID, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsUUID,
+  IsOptional,
+  IsBoolean,
+  IsEnum,
+} from 'class-validator';
 import { PartialType, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Day } from '../entities/routine.entity';
 
 export class CreateNoticeDto {
   @ApiProperty({ example: 'Welcome Back!' })
@@ -16,7 +23,7 @@ export class CreateNoticeDto {
   targetAudience?: string;
 
   @ApiPropertyOptional({ example: true })
-  @IsOptional() 
+  @IsOptional()
   @IsBoolean()
   isImportent?: boolean;
 
@@ -58,8 +65,8 @@ export class CreateRoutineDto {
   @IsUUID()
   teacherId: string;
 
-  @IsString()
-  day: string;
+  @IsEnum(Day)
+  day: Day;
 
   @IsString()
   startTime: string;

@@ -8,6 +8,9 @@ import { GeneralService } from '../general/general.service';
 import { Day } from '../general/entities/routine.entity';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UserRole } from '../users/entities/user.entity';
+import { SubmitAttendanceDto } from '../attendance/dto/submit-attendance.dto';
+import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
+import { CreateHomeworkDto } from '../homework/dto/create-homework.dto';
 
 @Injectable()
 export class TeacherService {
@@ -38,12 +41,12 @@ export class TeacherService {
   async create(data: CreateTeacherDto) {
     return await this.usersService.create({
       ...data,
-      role: UserRole.TEACHER
+      role: UserRole.TEACHER,
     });
   }
 
   // Attendance
-  async submitAttendance(data: any) {
+  async submitAttendance(data: SubmitAttendanceDto) {
     return await this.attendanceService.submitAttendance(data);
   }
 
@@ -52,7 +55,7 @@ export class TeacherService {
   }
 
   // Marks
-  async submitMarks(data: any) {
+  async submitMarks(data: SubmitMarksDto) {
     return await this.marksService.submitMarks(data);
   }
 
@@ -61,7 +64,7 @@ export class TeacherService {
   }
 
   // Homework
-  async createHomework(data: any) {
+  async createHomework(data: CreateHomeworkDto) {
     return await this.homeworkService.create(data);
   }
 

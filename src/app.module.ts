@@ -35,21 +35,33 @@ import { Section } from './sections/entities/section.entity';
 
 @Module({
   imports: [
-     ConfigModule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true,
     }),
-TypeOrmModule.forRoot({
-  type: 'postgres',
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT, 10),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  entities: [User, Class, Section, Subject, Exam, ExamResult, Attendance, Marks, Homework, Notice, Routine],
-  autoLoadEntities: true,
-  synchronize: true,
-}),
-    
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      entities: [
+        User,
+        Class,
+        Section,
+        Subject,
+        Exam,
+        ExamResult,
+        Attendance,
+        Marks,
+        Homework,
+        Notice,
+        Routine,
+      ],
+      autoLoadEntities: true,
+      synchronize: true,
+    }),
+
     AuthModule,
     UsersModule,
     AdminModule,

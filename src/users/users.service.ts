@@ -11,7 +11,7 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(data: any) {
+  async create(data: Partial<User>) {
     const { password, ...rest } = data;
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = this.userRepository.create({
@@ -29,9 +29,14 @@ export class UsersService {
     return await this.userRepository.findOne({ where: { id } });
   }
 
-  async findAll(role?: UserRole, page: number = 1, limit: number = 20, isActive?: boolean) {
+  async findAll(
+    role?: UserRole,
+    page: number = 1,
+    limit: number = 20,
+    isActive?: boolean,
+  ) {
     const query = this.userRepository.createQueryBuilder('user');
-    
+
     if (role) {
       query.andWhere('user.role = :role', { role });
     }
@@ -39,21 +44,24 @@ export class UsersService {
     if (isActive !== undefined) {
       query.andWhere('user.isActive = :isActive', { isActive });
     }
-    
+
     const total = await query.getCount();
-    const data = await query.skip((page - 1) * limit).take(limit).getMany();
-    
+    const data = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
+
     return { total, page, limit, data };
   }
 
-  async update(id: string, data: any) {
+  async update(id: string, data: Partial<User>) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) return null;
-    
+
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }
-    
+
     await this.userRepository.update(id, data);
     return await this.userRepository.findOne({ where: { id } });
   }

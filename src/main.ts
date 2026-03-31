@@ -19,7 +19,9 @@ async function bootstrap() {
   // Setup Swagger
   const config = new DocumentBuilder()
     .setTitle('Smart School Backend API')
-    .setDescription('API documentation for Smart School Backend - A comprehensive school management system')
+    .setDescription(
+      'API documentation for Smart School Backend - A comprehensive school management system',
+    )
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -42,7 +44,14 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
-  console.log(`Smart School Backend API is running on http://localhost:${port}`);
-  console.log(`Swagger documentation is available at http://localhost:${port}/api/docs`);
+  console.log(
+    `Smart School Backend API is running on http://localhost:${port}`,
+  );
+  console.log(
+    `Swagger documentation is available at http://localhost:${port}/api/docs`,
+  );
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

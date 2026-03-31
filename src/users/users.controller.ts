@@ -1,5 +1,19 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { Public } from '../auth/decorators/public.decorator';
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
@@ -13,7 +27,10 @@ export class UsersController {
   @Post()
   @Public()
   @ApiOperation({ summary: 'Create a new user (Registration)' })
-  @ApiResponse({ status: 201, description: 'The user has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully created.',
+  })
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
   }

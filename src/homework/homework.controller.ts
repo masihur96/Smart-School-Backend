@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { HomeworkService } from './homework.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
@@ -14,7 +23,10 @@ export class HomeworkController {
   }
 
   @Get()
-  async findAll(@Query('classId') classId?: string, @Query('subjectId') subjectId?: string) {
+  async findAll(
+    @Query('classId') classId?: string,
+    @Query('subjectId') subjectId?: string,
+  ) {
     return await this.homeworkService.findAll(classId, subjectId);
   }
 
