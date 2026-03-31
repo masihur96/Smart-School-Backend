@@ -20,6 +20,9 @@ export class Exam {
   @Column({ type: 'date', nullable: true })
   end_date: string;
 
+  @Column({ default: false })
+  isPublished: boolean;
+
   @OneToMany(() => ExamResult, (result) => result.exam)
   results: ExamResult[];
 

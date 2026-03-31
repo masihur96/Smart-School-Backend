@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Patch, Delete, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { ExamsService } from './exams.service';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { CreateAcademicAssignmentDto } from './dto/create-academic-assignment.dto';
+import { CreateExamDto, UpdateExamDto } from './dto/create-exam.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
@@ -10,7 +11,8 @@ export class ExamsController {
   constructor(private examsService: ExamsService) {}
 
   @Post()
-  async createExam(@Body() data: any) {
+  @ApiOperation({ summary: 'Create a new exam' })
+  async createExam(@Body() data: CreateExamDto) {
     return await this.examsService.createExam(data);
   }
 
@@ -34,8 +36,18 @@ export class ExamsController {
   }
 
   @Put(':id')
-  async updateExam(@Param('id') id: string, @Body() data: any) {
+  @ApiOperation({ summary: 'Update exam details' })
+  async updateExam(@Param('id') id: string, @Body() data: UpdateExamDto) {
     return await this.examsService.updateExam(id, data);
+  }
+
+  @Patch(':id/publish')
+  @ApiOperation({ summary: 'Publish or unpublish an exam' })
+  async publishExam(
+    @Param('id') id: string,
+    @Body() body: { isPublished: boolean },
+  ) {
+    return await this.examsService.setPublishStatus(id, body.isPublished);
   }
 
   @Delete(':id')

@@ -46,6 +46,15 @@ export class ExamsService {
     return await this.examRepository.delete(id);
   }
 
+  async setPublishStatus(id: string, isPublished: boolean) {
+    const exam = await this.examRepository.findOne({ where: { id } });
+    if (!exam) {
+      throw new NotFoundException(`Exam with ID ${id} not found`);
+    }
+    await this.examRepository.update(id, { isPublished });
+    return await this.examRepository.findOne({ where: { id }, relations: ['assignments'] });
+  }
+
   async addAcademicAssignment(examId: string, data: any) {
     const exam = await this.examRepository.findOne({ where: { id: examId } });
     if (!exam) {

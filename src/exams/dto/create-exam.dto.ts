@@ -1,4 +1,4 @@
-import { IsString, IsDateString, IsUUID, IsArray, ValidateNested, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsDateString, IsUUID, IsArray, ValidateNested, IsNumber, IsOptional, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -21,6 +21,11 @@ export class CreateExamDto {
   @IsOptional()
   @IsDateString()
   end_date?: string;
+
+  @ApiPropertyOptional({ example: false, description: 'Whether the exam is published' })
+  @IsOptional()
+  @IsBoolean()
+  isPublished?: boolean;
 }
 
 export class UpdateExamDto {
@@ -43,6 +48,11 @@ export class UpdateExamDto {
   @IsOptional()
   @IsDateString()
   end_date?: string;
+
+  @ApiPropertyOptional({ example: true, description: 'Whether the exam is published' })
+  @IsOptional()
+  @IsBoolean()
+  isPublished?: boolean;
 }
 
 export class SubmitMarksDto {
