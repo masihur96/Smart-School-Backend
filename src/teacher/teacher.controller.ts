@@ -97,6 +97,25 @@ export class TeacherController {
   // ─── Homework ─────────────────────────────────────
   @Post('homework')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new homework assignment' })
+  @ApiBody({
+    type: CreateHomeworkDto,
+    examples: {
+      sample: {
+        summary: 'Sample homework payload',
+        value: {
+          classId: 'uuid-class-001',
+          subjectId: 'uuid-subject-001',
+          teacherId: 'uuid-teacher-001',
+          title: 'Mathematics Homework - Algebra',
+          description: 'Solve exercises 1 to 10 from Chapter 3.',
+          dueDate: '2026-04-05',
+          sectionId: 'uuid-section-001',
+          schoolId: 'uuid-school-001',
+        },
+      },
+    },
+  })
   async createHomework(@Body() dto: CreateHomeworkDto) {
     return await this.teacherService.createHomework(dto);
   }

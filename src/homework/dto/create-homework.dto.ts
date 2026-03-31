@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsUUID } from 'class-validator';
+import { IsString, IsDate, IsUUID, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateHomeworkDto {
@@ -20,6 +20,10 @@ export class CreateHomeworkDto {
   @IsDate()
   @Type(() => Date)
   dueDate: Date;
+
+  @IsUUID()
+  @IsOptional()
+  sectionId?: string;
 
   @IsUUID()
   schoolId: string;

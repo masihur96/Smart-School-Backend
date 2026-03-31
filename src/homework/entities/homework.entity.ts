@@ -29,6 +29,9 @@ export class Homework {
   @Column({ type: 'date' })
   dueDate: Date;
 
+  @Column({ nullable: true })
+  sectionId: string;
+
   @Column()
   schoolId: string;
 
