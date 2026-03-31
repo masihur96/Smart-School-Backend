@@ -96,6 +96,7 @@ export class TeacherController {
 
   // ─── Homework ─────────────────────────────────────
   @Post('homework')
+  @Public()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new homework assignment' })
   @ApiBody({

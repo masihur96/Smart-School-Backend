@@ -2,13 +2,13 @@ import { IsString, IsDate, IsUUID, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateHomeworkDto {
-  @IsUUID()
+  @IsString()
   classId: string;
 
-  @IsUUID()
+  @IsString()
   subjectId: string;
 
-  @IsUUID()
+  @IsString()
   teacherId: string;
 
   @IsString()
@@ -21,11 +21,11 @@ export class CreateHomeworkDto {
   @Type(() => Date)
   dueDate: Date;
 
-  @IsUUID()
+  @IsString()
   @IsOptional()
   sectionId?: string;
 
-  @IsUUID()
+  @IsString()
   schoolId: string;
 }
 
