@@ -60,6 +60,7 @@ import { Section } from './sections/entities/section.entity';
       ],
       autoLoadEntities: true,
       synchronize: true,
+      logging: false,
     }),
 
     AuthModule,
