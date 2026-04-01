@@ -27,6 +27,32 @@ export class AttendanceService {
     private sectionsService: SectionsService,
   ) {}
 
+  private normalizeDate(date: string | Date): string {
+    if (date instanceof Date) {
+      return date.toISOString().split('T')[0];
+    }
+    const dateStr = date;
+    // If it's already YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      return dateStr;
+    }
+    // If it's DD/MM/YYYY
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+      const [day, month, year] = dateStr.split('/');
+      return `${year}-${month}-${day}`;
+    }
+    // Fallback to JS Date parsing if possible
+    try {
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        return d.toISOString().split('T')[0];
+      }
+    } catch (e) {
+      this.logger.warn(`Failed to normalize date: ${dateStr}`);
+    }
+    return dateStr;
+  }
+
   async submitAttendance(data: SubmitAttendanceDto) {
     const results: Attendance[] = [];
 
@@ -36,7 +62,7 @@ export class AttendanceService {
         where: {
           studentId: record.studentId,
           classId: data.classId,
-          date: data.date,
+          date: this.normalizeDate(data.date) as any,
         },
       });
 
@@ -48,7 +74,7 @@ export class AttendanceService {
         // Create new record
         attendance = this.attendanceRepository.create({
           ...record,
-          date: data.date,
+          date: this.normalizeDate(data.date) as any,
           takenBy: data.takenBy,
           classId: data.classId,
           schoolId: 'placeholder-school-id', // Should ideally come from JWT or DTO
@@ -67,7 +93,8 @@ export class AttendanceService {
       .where('attendance.classId = :classId', { classId });
 
     if (date) {
-      query.andWhere('attendance.date = :date', { date });
+      const normalizedDate = this.normalizeDate(date);
+      query.andWhere('attendance.date = :date', { date: normalizedDate });
     }
 
     return await query.getMany();
