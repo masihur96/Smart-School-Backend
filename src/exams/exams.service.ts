@@ -57,6 +57,60 @@ export class ExamsService {
       throw new NotFoundException(`Exam with ID ${id} not found`);
     }
 
+    if (data.assignments) {
+      const updatedAssignments = await Promise.all(
+        data.assignments.map(async (assignDto) => {
+          const classEntity = await this.classRepository.findOne({
+            where: { id: assignDto.class_uid },
+          });
+          const subjectEntity = await this.subjectRepository.findOne({
+            where: { id: assignDto.subject_uid },
+          });
+          const examinerEntity = await this.userRepository.findOne({
+            where: { id: assignDto.examiner_uid },
+          });
+
+          if (!classEntity)
+            throw new NotFoundException(
+              `Class with ID ${assignDto.class_uid} not found`,
+            );
+          if (!subjectEntity)
+            throw new NotFoundException(
+              `Subject with ID ${assignDto.subject_uid} not found`,
+            );
+          if (!examinerEntity)
+            throw new NotFoundException(
+              `Examiner with ID ${assignDto.examiner_uid} not found`,
+            );
+
+          return this.academicAssignmentRepository.create({
+            id: assignDto.id,
+            examId: id,
+            date: assignDto.date,
+            class: { uuid: classEntity.id, name: classEntity.name },
+            subject: { uuid: subjectEntity.id, name: subjectEntity.name },
+            examiner: { uuid: examinerEntity.id, name: examinerEntity.name },
+          });
+        }),
+      );
+
+      const existingAssignmentIds = exam.assignments.map((a) => a.id);
+      const newAssignmentIds = updatedAssignments
+        .map((a) => a.id)
+        .filter((aId) => aId);
+      const idsToRemove = existingAssignmentIds.filter(
+        (aId) => !newAssignmentIds.includes(aId),
+      );
+
+      if (idsToRemove.length > 0) {
+        await this.academicAssignmentRepository.delete(idsToRemove);
+      }
+
+      exam.assignments = updatedAssignments;
+      
+      delete data.assignments;
+    }
+
     // Merge data into the existing exam entity
     Object.assign(exam, data);
 
