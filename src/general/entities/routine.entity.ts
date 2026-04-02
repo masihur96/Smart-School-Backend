@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Class } from '../../classes/entities/class.entity';
 import { Subject } from '../../subjects/entities/subject.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum Day {
   MONDAY = 'Monday',
@@ -31,7 +32,7 @@ export class Routine {
   @Column()
   subjectId: string;
 
-  @Column()
+  @Column({ nullable: true })
   teacherId: string;
 
   @Column({ type: 'enum', enum: Day })
@@ -56,6 +57,10 @@ export class Routine {
   @ManyToOne(() => Subject)
   @JoinColumn({ name: 'subjectId' })
   subjectEntity: Subject;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'teacherId' })
+  teacherEntity: User;
 
   @CreateDateColumn()
   createdAt: Date;

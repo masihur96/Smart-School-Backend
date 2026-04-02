@@ -11,7 +11,7 @@ export class GeneralService {
     private noticeRepository: Repository<Notice>,
     @InjectRepository(Routine)
     private routineRepository: Repository<Routine>,
-  ) {}
+  ) { }
 
   // Notices
   async createNotice(data: Partial<Notice>) {
@@ -45,7 +45,10 @@ export class GeneralService {
   }
 
   async getRoutineByClass(classId: string) {
-    return await this.routineRepository.find({ where: { classId } });
+    return await this.routineRepository.find({
+      where: { classId },
+      relations: ['classEntity', 'subjectEntity', 'teacherEntity'],
+    });
   }
 
   async getAllRoutines() {
@@ -66,7 +69,7 @@ export class GeneralService {
   async getRoutineByTeacherAndDay(teacherId: string, day: Day) {
     return await this.routineRepository.find({
       where: { teacherId, day },
-      relations: ['classEntity', 'subjectEntity'],
+      relations: ['classEntity', 'subjectEntity', 'teacherEntity'],
     });
   }
 
