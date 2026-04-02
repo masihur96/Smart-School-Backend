@@ -11,7 +11,7 @@ export class GeneralService {
     private noticeRepository: Repository<Notice>,
     @InjectRepository(Routine)
     private routineRepository: Repository<Routine>,
-  ) { }
+  ) {}
 
   // Notices
   async createNotice(data: Partial<Notice>) {

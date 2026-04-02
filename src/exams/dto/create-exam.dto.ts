@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CreateAcademicAssignmentDto } from './create-academic-assignment.dto';
 
 export class CreateExamDto {
   @ApiProperty({ example: 'Mid-Term Exam 2025' })
@@ -38,6 +39,13 @@ export class CreateExamDto {
   @IsOptional()
   @IsBoolean()
   isPublished?: boolean;
+
+  @ApiPropertyOptional({ type: [CreateAcademicAssignmentDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateAcademicAssignmentDto)
+  assignments?: CreateAcademicAssignmentDto[];
 }
 
 export class UpdateExamDto {
@@ -68,6 +76,13 @@ export class UpdateExamDto {
   @IsOptional()
   @IsBoolean()
   isPublished?: boolean;
+
+  @ApiPropertyOptional({ type: [CreateAcademicAssignmentDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateAcademicAssignmentDto)
+  assignments?: CreateAcademicAssignmentDto[];
 }
 
 export class SubmitMarksDto {

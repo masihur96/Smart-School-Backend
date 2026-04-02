@@ -49,11 +49,18 @@ export class ExamsService {
   }
 
   async updateExam(id: string, data: UpdateExamDto) {
-    await this.examRepository.update(id, data);
-    return await this.examRepository.findOne({
+    const exam = await this.examRepository.findOne({
       where: { id },
       relations: ['assignments'],
     });
+    if (!exam) {
+      throw new NotFoundException(`Exam with ID ${id} not found`);
+    }
+
+    // Merge data into the existing exam entity
+    Object.assign(exam, data);
+
+    return await this.examRepository.save(exam);
   }
 
   async deleteExam(id: string) {

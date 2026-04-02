@@ -29,10 +29,12 @@ export class Exam {
   @Column({ default: false })
   isPublished: boolean;
 
-  @OneToMany(() => ExamResult, (result) => result.exam)
+  @OneToMany(() => ExamResult, (result) => result.exam, { cascade: true })
   results: ExamResult[];
 
-  @OneToMany(() => AcademicAssignment, (assignment) => assignment.exam)
+  @OneToMany(() => AcademicAssignment, (assignment) => assignment.exam, {
+    cascade: true,
+  })
   assignments: AcademicAssignment[];
 
   @CreateDateColumn()

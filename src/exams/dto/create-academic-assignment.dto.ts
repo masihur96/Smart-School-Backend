@@ -1,7 +1,12 @@
-import { IsUUID, IsDateString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsUUID, IsDateString, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateAcademicAssignmentDto {
+  @ApiPropertyOptional({ example: 'uuid-of-assignment' })
+  @IsOptional()
+  @IsUUID()
+  id?: string;
+
   @ApiProperty({ example: 'uuid-of-class' })
   @IsUUID()
   class_uid: string;

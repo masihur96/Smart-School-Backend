@@ -172,7 +172,10 @@ export class MonthlyAttendanceSummaryDto {
   @ApiProperty({ example: 4, description: 'Month (1-12)' })
   month: number;
 
-  @ApiProperty({ example: 100, description: 'Total present count for the month' })
+  @ApiProperty({
+    example: 100,
+    description: 'Total present count for the month',
+  })
   totalPresent: number;
 
   @ApiProperty({ example: 10, description: 'Total absent count for the month' })
@@ -181,7 +184,10 @@ export class MonthlyAttendanceSummaryDto {
   @ApiProperty({ example: 5, description: 'Total leave count for the month' })
   totalLeave: number;
 
-  @ApiProperty({ example: 86.96, description: 'Attendance percentage for the month' })
+  @ApiProperty({
+    example: 86.96,
+    description: 'Attendance percentage for the month',
+  })
   attendancePercentage: number;
 }
 

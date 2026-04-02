@@ -198,18 +198,32 @@ export class AttendanceService {
       });
 
       // Filter by class/section if needed (though the query already did it, but good to ensure consistency)
-      // Actually, the aggregation might return only rows with data. 
+      // Actually, the aggregation might return only rows with data.
       // If we want to include all classes even with 0 records, we'd need more logic.
       // But for a dashboard overview, showing only active ones is often fine.
 
-      const grandTotalPresent = data.reduce((sum, item) => sum + item.totalPresent, 0);
-      const grandTotalAbsent = data.reduce((sum, item) => sum + item.totalAbsent, 0);
-      const grandTotalLeave = data.reduce((sum, item) => sum + item.totalLeave, 0);
-      const grandTotalRecords = data.reduce((sum, item) => sum + item.totalRecords, 0);
+      const grandTotalPresent = data.reduce(
+        (sum, item) => sum + item.totalPresent,
+        0,
+      );
+      const grandTotalAbsent = data.reduce(
+        (sum, item) => sum + item.totalAbsent,
+        0,
+      );
+      const grandTotalLeave = data.reduce(
+        (sum, item) => sum + item.totalLeave,
+        0,
+      );
+      const grandTotalRecords = data.reduce(
+        (sum, item) => sum + item.totalRecords,
+        0,
+      );
 
       const overallAttendancePercentage =
         grandTotalRecords > 0
-          ? parseFloat(((grandTotalPresent / grandTotalRecords) * 100).toFixed(2))
+          ? parseFloat(
+              ((grandTotalPresent / grandTotalRecords) * 100).toFixed(2),
+            )
           : 0;
 
       return {
@@ -233,7 +247,10 @@ export class AttendanceService {
   async getMonthlyAttendanceOverview(
     query: MonthlyAttendanceOverviewQueryDto,
   ): Promise<MonthlyAttendanceOverviewResponseDto> {
-    const year = parseInt(query.year || new Date().getFullYear().toString(), 10);
+    const year = parseInt(
+      query.year || new Date().getFullYear().toString(),
+      10,
+    );
     const monthlyData = [];
 
     for (let month = 1; month <= 12; month++) {
