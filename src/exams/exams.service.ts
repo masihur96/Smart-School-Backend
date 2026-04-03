@@ -174,6 +174,16 @@ export class ExamsService {
     return await this.academicAssignmentRepository.save(assignment);
   }
 
+  async findAssignmentsByExaminer(examinerId: string) {
+    // using query builder to use exact JSON containment or just TypeORM's find options
+    const query = this.academicAssignmentRepository
+      .createQueryBuilder('assignment')
+      .where(`assignment.examiner->>'uuid' = :examinerId`, { examinerId });
+      
+    // Return all assignments with related exam info
+    return await query.leftJoinAndSelect('assignment.exam', 'exam').getMany();
+  }
+
   async submitMarks(data: SubmitMarksDto) {
     const results = this.examResultRepository.create(
       data.marks.map((mark) => ({

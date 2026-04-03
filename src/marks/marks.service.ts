@@ -65,4 +65,8 @@ export class MarksService {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async deleteMark(id: string) {
+    return await this.marksRepository.delete(id);
+  }
 }

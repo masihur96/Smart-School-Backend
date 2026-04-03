@@ -23,6 +23,7 @@ import {
 } from '../subjects/dto/create-subject.dto';
 import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
 import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assignment.dto';
+import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
@@ -134,5 +135,26 @@ export class AdminController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteExam(@Param('id') id: string) {
     return await this.adminService.deleteExam(id);
+  }
+
+  // ─── Marks ───────────────────────────────────────
+  @Post('marks')
+  @HttpCode(HttpStatus.CREATED)
+  async submitMarks(@Body() dto: SubmitMarksDto) {
+    return await this.adminService.submitMarks(dto);
+  }
+
+  @Get('marks')
+  async getMarks(
+    @Query('examId') examId?: string,
+    @Query('studentId') studentId?: string,
+  ) {
+    return await this.adminService.getMarks(examId, studentId);
+  }
+
+  @Delete('marks/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteMark(@Param('id') id: string) {
+    return await this.adminService.deleteMark(id);
   }
 }

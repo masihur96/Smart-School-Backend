@@ -80,18 +80,98 @@ export class TeacherController {
   }
 
   // ─── Marks ───────────────────────────────────────
+  @Get('assigned-subjects')
+  async getAssignedSubjects(@Request() req) {
+    return await this.teacherService.getAssignedSubjectsAndStudents(
+      req.user.userId,
+    );
+  }
+
   @Post('marks')
   @HttpCode(HttpStatus.CREATED)
-  async submitMarks(@Body() dto: SubmitMarksDto) {
-    return await this.teacherService.submitMarks(dto);
+  @ApiOperation({ summary: 'Submit marks for students in an assigned subject' })
+  @ApiBody({
+    type: SubmitMarksDto,
+    examples: {
+      sample: {
+        summary: 'Sample marks payload',
+        value: {
+          examId: 'uuid-exam-001',
+          teacherId: 'uuid-teacher-001',
+          schoolId: 'uuid-school-001',
+          marks: [
+            {
+              studentId: 'uuid-student-001',
+              subjectId: 'uuid-subject-001',
+              marksObtained: 85.5,
+              totalMarks: 100,
+              remarks: 'Good progress',
+            },
+            {
+              studentId: 'uuid-student-002',
+              subjectId: 'uuid-subject-001',
+              marksObtained: 92.0,
+              totalMarks: 100,
+              remarks: 'Excellent',
+            },
+          ],
+        },
+      },
+    },
+  })
+  async submitMarks(@Body() dto: SubmitMarksDto, @Request() req) {
+    return await this.teacherService.submitMarks(dto, req.user.userId);
   }
 
   @Get('marks')
   async getMarks(
+    @Request() req,
     @Query('examId') examId?: string,
     @Query('studentId') studentId?: string,
   ) {
-    return await this.teacherService.getMarks(examId, studentId);
+    return await this.teacherService.getMarks(
+      req.user.userId,
+      examId,
+      studentId,
+    );
+  }
+
+  @Get('assignments/exams')
+  async getAssignedExams(@Request() req) {
+    return await this.teacherService.getAssignedExams(req.user.userId);
+  }
+
+  @Get('assignments/exams/:examId/classes')
+  async getAssignedClasses(@Param('examId') examId: string, @Request() req) {
+    return await this.teacherService.getAssignedClasses(req.user.userId, examId);
+  }
+
+  @Get('assignments/exams/:examId/classes/:classId/students')
+  async getAssignedStudents(
+    @Param('examId') examId: string,
+    @Param('classId') classId: string,
+    @Request() req,
+  ) {
+    return await this.teacherService.getAssignedStudents(
+      req.user.userId,
+      examId,
+      classId,
+    );
+  }
+
+  @Get('assignments/exams/:examId/classes/:classId/students/:studentId/subjects')
+  async getAssignedSubjectsWithMarks(
+    @Param('examId') examId: string,
+    @Param('classId') classId: string,
+    @Param('studentId') studentId: string,
+    @Request() req,
+  ) {
+    return await this.teacherService.getAssignedSubjectsWithMarks(
+      req.user.userId,
+      examId,
+      classId,
+      studentId,
+    );
   }
 
   // ─── Homework ─────────────────────────────────────

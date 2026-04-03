@@ -15,6 +15,8 @@ import {
 } from '../subjects/dto/create-subject.dto';
 import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
 import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assignment.dto';
+import { MarksService } from '../marks/marks.service';
+import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 
 @Injectable()
 export class AdminService {
@@ -23,6 +25,7 @@ export class AdminService {
     private classesService: ClassesService,
     private subjectsService: SubjectsService,
     private examsService: ExamsService,
+    private marksService: MarksService,
   ) {}
 
   // User management
@@ -103,5 +106,18 @@ export class AdminService {
     data: CreateAcademicAssignmentDto,
   ) {
     return await this.examsService.addAcademicAssignment(examId, data);
+  }
+
+  // Marks management
+  async submitMarks(data: SubmitMarksDto) {
+    return await this.marksService.submitMarks(data);
+  }
+
+  async getMarks(examId?: string, studentId?: string) {
+    return await this.marksService.getMarks(examId, studentId);
+  }
+
+  async deleteMark(id: string) {
+    return await this.marksService.deleteMark(id);
   }
 }
