@@ -9,7 +9,7 @@ export class MarksService {
   constructor(
     @InjectRepository(Marks)
     private marksRepository: Repository<Marks>,
-  ) {}
+  ) { }
 
   async submitMarks(data: SubmitMarksDto) {
     const results: Marks[] = [];
@@ -62,6 +62,7 @@ export class MarksService {
   async findByStudent(studentId: string) {
     return await this.marksRepository.find({
       where: { studentId },
+      relations: ['exam', 'student', 'subject', 'teacher'],
       order: { createdAt: 'DESC' },
     });
   }
