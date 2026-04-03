@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { StudentHomework } from './student-homework.entity';
 
 @Entity()
 export class Homework {
@@ -40,4 +42,7 @@ export class Homework {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => StudentHomework, (sh) => sh.homework)
+  studentHomeworks: StudentHomework[];
 }

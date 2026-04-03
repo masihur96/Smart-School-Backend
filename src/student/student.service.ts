@@ -40,7 +40,48 @@ export class StudentService {
   }
 
   // Get homework
-  async getHomework(classId?: string) {
-    return await this.homeworkService.findAll(classId);
+  async getHomework(studentId: string) {
+    return await this.homeworkService.getHomeworkForStudent(studentId);
+  }
+
+  // Get student performance report
+  async getPerformanceReport(studentId: string) {
+    const attendance = await this.attendanceService.getStudentAttendance(
+      studentId,
+    );
+    const homework = await this.homeworkService.getHomeworkForStudent(
+      studentId,
+    );
+
+    const totalAttendance = attendance.length;
+    const presentCount = attendance.filter(
+      (a) => a.status === 'present',
+    ).length;
+    const attendancePercentage =
+      totalAttendance > 0 ? (presentCount / totalAttendance) * 100 : 0;
+
+    const totalHomework = homework.length;
+    const completedHomework = homework.filter(
+      (h) => h.status === 'done',
+    ).length;
+    const homeworkPercentage =
+      totalHomework > 0 ? (completedHomework / totalHomework) * 100 : 0;
+
+    return {
+      studentId,
+      attendance: {
+        total: totalAttendance,
+        present: presentCount,
+        percentage: parseFloat(attendancePercentage.toFixed(2)),
+      },
+      homework: {
+        total: totalHomework,
+        completed: completedHomework,
+        percentage: parseFloat(homeworkPercentage.toFixed(2)),
+      },
+      overallPerformance: parseFloat(
+        ((attendancePercentage + homeworkPercentage) / 2).toFixed(2),
+      ),
+    };
   }
 }

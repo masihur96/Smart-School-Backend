@@ -7,9 +7,11 @@ import {
   Put,
   Delete,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { HomeworkService } from './homework.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { StudentHomeworkStatus } from './entities/student-homework.entity';
 
 @ApiTags('Teacher')
 @ApiBearerAuth('bearer')
@@ -28,6 +30,31 @@ export class HomeworkController {
     @Query('subjectId') subjectId?: string,
   ) {
     return await this.homeworkService.findAll(classId, subjectId);
+  }
+
+  @Get('student/:studentId')
+  async getHomeworkForStudent(@Param('studentId') studentId: string) {
+    return await this.homeworkService.getHomeworkForStudent(studentId);
+  }
+
+  @Get('details/:homeworkId')
+  async getHomeworkDetails(@Param('homeworkId') homeworkId: string) {
+    return await this.homeworkService.getHomeworkStatusByHomeworkId(homeworkId);
+  }
+
+  @Patch('status/:studentHomeworkId')
+  async updateStatus(
+    @Param('studentHomeworkId') studentHomeworkId: string,
+    @Body('status') status: StudentHomeworkStatus,
+    @Body('teacherId') teacherId: string,
+    @Body('comment') comment?: string,
+  ) {
+    return await this.homeworkService.updateStudentStatus(
+      studentHomeworkId,
+      status,
+      teacherId,
+      comment,
+    );
   }
 
   @Get(':id')

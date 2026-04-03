@@ -73,4 +73,17 @@ export class UsersService {
   async validatePassword(password: string, hash: string): Promise<boolean> {
     return await bcrypt.compare(password, hash);
   }
+
+  async findStudentsByClass(classId: string, sectionId?: string) {
+    const query = this.userRepository
+      .createQueryBuilder('user')
+      .where('user.role = :role', { role: UserRole.STUDENT })
+      .andWhere('user.classId = :classId', { classId });
+
+    if (sectionId) {
+      query.andWhere('user.sectionId = :sectionId', { sectionId });
+    }
+
+    return await query.getMany();
+  }
 }

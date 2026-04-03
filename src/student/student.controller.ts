@@ -42,7 +42,12 @@ export class StudentController {
   }
 
   @Get('homework')
-  async getHomework(@Query('classId') classId?: string) {
-    return await this.studentService.getHomework(classId);
+  async getHomework(@Request() req: any) {
+    return await this.studentService.getHomework(req.user.userId);
+  }
+
+  @Get('performance-report')
+  async getPerformanceReport(@Request() req: any) {
+    return await this.studentService.getPerformanceReport(req.user.userId);
   }
 }
