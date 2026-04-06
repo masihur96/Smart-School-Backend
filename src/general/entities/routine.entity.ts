@@ -10,6 +10,7 @@ import {
 import { Class } from '../../classes/entities/class.entity';
 import { Subject } from '../../subjects/entities/subject.entity';
 import { User } from '../../users/entities/user.entity';
+import { Section } from '../../sections/entities/section.entity';
 
 export enum Day {
   MONDAY = 'Monday',
@@ -34,6 +35,9 @@ export class Routine {
 
   @Column({ nullable: true })
   teacherId: string;
+
+  @Column({ nullable: true })
+  sectionId: string;
 
   @Column({ type: 'enum', enum: Day })
   day: Day;
@@ -61,6 +65,10 @@ export class Routine {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'teacherId' })
   teacherEntity: User;
+
+  @ManyToOne(() => Section, (section) => section.routines)
+  @JoinColumn({ name: 'sectionId' })
+  sectionEntity: Section;
 
   @CreateDateColumn()
   createdAt: Date;

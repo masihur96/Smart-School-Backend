@@ -44,10 +44,19 @@ export class GeneralService {
     return await this.routineRepository.save(routine);
   }
 
-  async getRoutineByClass(classId: string) {
+  async getRoutineByClass(classId: string, sectionId?: string) {
+    const where: any = { classId };
+    if (sectionId) {
+      where.sectionId = sectionId;
+    }
     return await this.routineRepository.find({
-      where: { classId },
-      relations: ['classEntity', 'subjectEntity', 'teacherEntity'],
+      where,
+      relations: [
+        'classEntity',
+        'subjectEntity',
+        'teacherEntity',
+        'sectionEntity',
+      ],
     });
   }
 

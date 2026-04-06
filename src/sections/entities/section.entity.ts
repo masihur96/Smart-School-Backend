@@ -8,6 +8,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Class } from '../../classes/entities/class.entity';
+import { Routine } from '../../general/entities/routine.entity';
+import { OneToMany } from 'typeorm';
 
 @Entity('sections')
 export class Section {
@@ -23,6 +25,10 @@ export class Section {
   @ManyToOne(() => Class, (classEntity) => classEntity.sections)
   @JoinColumn({ name: 'classId' })
   classEntity: Class;
+
+  @OneToMany(() => Routine, (routine) => routine.sectionEntity)
+  @JoinColumn({ name: 'sectionId' })
+  routines: Routine[];
 
   @CreateDateColumn()
   createdAt: Date;

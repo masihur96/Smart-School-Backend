@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GeneralService } from './general.service';
@@ -54,8 +55,11 @@ export class GeneralController {
   // Routine endpoints
   @Public()
   @Get('routine/:classId')
-  async getRoutineByClass(@Param('classId') classId: string) {
-    return await this.generalService.getRoutineByClass(classId);
+  async getRoutineByClass(
+    @Param('classId') classId: string,
+    @Query('sectionId') sectionId?: string,
+  ) {
+    return await this.generalService.getRoutineByClass(classId, sectionId);
   }
 
   @Public()
