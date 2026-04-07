@@ -78,7 +78,7 @@ export class GeneralService {
   async getRoutineByTeacherAndDay(teacherId: string, day: Day) {
     return await this.routineRepository.find({
       where: { teacherId, day },
-      relations: ['classEntity', 'subjectEntity', 'teacherEntity'],
+      relations: ['classEntity', 'subjectEntity', 'teacherEntity', 'sectionEntity'],
     });
   }
 
