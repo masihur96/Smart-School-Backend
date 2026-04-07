@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GeneralService } from './general.service';
+import { UsersService } from '../users/users.service';
 import { Public } from '../auth/decorators/public.decorator';
 import {
   CreateNoticeDto,
@@ -22,7 +23,10 @@ import {
 @ApiBearerAuth('bearer')
 @Controller('general')
 export class GeneralController {
-  constructor(private generalService: GeneralService) {}
+  constructor(
+    private generalService: GeneralService,
+    private usersService: UsersService,
+  ) {}
 
   // Notices - public endpoint for getting notices
   @Public()
@@ -81,5 +85,15 @@ export class GeneralController {
   @Delete('routine/:id')
   async deleteRoutine(@Param('id') id: string) {
     return await this.generalService.deleteRoutine(id);
+  }
+
+  // Students endpoint
+  @Public()
+  @Get('students/:classId')
+  async getStudentsByClass(
+    @Param('classId') classId: string,
+    @Query('sectionId') sectionId?: string,
+  ) {
+    return await this.usersService.findStudentsByClass(classId, sectionId);
   }
 }
