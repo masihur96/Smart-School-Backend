@@ -27,9 +27,10 @@ export class HomeworkController {
   @Get()
   async findAll(
     @Query('classId') classId?: string,
+    @Query('sectionId') sectionId?: string,
     @Query('subjectId') subjectId?: string,
   ) {
-    return await this.homeworkService.findAll(classId, subjectId);
+    return await this.homeworkService.findAll(classId, subjectId, sectionId);
   }
 
   @Get('student/:studentId')

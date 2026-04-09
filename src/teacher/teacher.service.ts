@@ -10,7 +10,8 @@ import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UserRole } from '../users/entities/user.entity';
 import { SubmitAttendanceDto } from '../attendance/dto/submit-attendance.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
-import { CreateHomeworkDto } from '../homework/dto/create-homework.dto';
+import { CreateHomeworkDto, UpdateHomeworkDto } from '../homework/dto/create-homework.dto';
+import { StudentHomeworkStatus } from '../homework/entities/student-homework.entity';
 
 @Injectable()
 export class TeacherService {
@@ -242,11 +243,47 @@ export class TeacherService {
     return await this.homeworkService.create(data);
   }
 
-  async getHomework(classId?: string, subjectId?: string) {
-    return await this.homeworkService.findAll(classId, subjectId);
+  async getHomework(classId?: string, subjectId?: string, sectionId?: string) {
+    return await this.homeworkService.findAll(classId, subjectId, sectionId);
   }
 
-  async updateHomework(id: string, data: any) {
+  async getHomeworkById(id: string) {
+    return await this.homeworkService.findById(id);
+  }
+
+  async getHomeworkStudentStatuses(homeworkId: string) {
+    return await this.homeworkService.getHomeworkStatusByHomeworkId(homeworkId);
+  }
+
+  async updateStudentHomeworkStatus(
+    studentHomeworkId: string,
+    status: StudentHomeworkStatus,
+    teacherId: string,
+    comment?: string,
+  ) {
+    return await this.homeworkService.updateStudentStatus(
+      studentHomeworkId,
+      status,
+      teacherId,
+      comment,
+    );
+  }
+
+  async bulkUpdateHomeworkStatus(
+    homeworkId: string,
+    status: StudentHomeworkStatus,
+    teacherId: string,
+    comment?: string,
+  ) {
+    return await this.homeworkService.bulkUpdateStudentStatuses(
+      homeworkId,
+      status,
+      teacherId,
+      comment,
+    );
+  }
+
+  async updateHomework(id: string, data: UpdateHomeworkDto) {
     return await this.homeworkService.update(id, data);
   }
 

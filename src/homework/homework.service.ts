@@ -45,22 +45,29 @@ export class HomeworkService {
     return savedHomework;
   }
 
-  async findAll(classId?: string, subjectId?: string) {
+  async findAll(classId?: string, subjectId?: string, sectionId?: string) {
     const query = this.homeworkRepository.createQueryBuilder('homework');
+    const conditions: string[] = [];
+    const params: Record<string, string> = {};
 
     if (classId) {
-      query.where('homework.classId = :classId', { classId });
+      conditions.push('homework.classId = :classId');
+      params.classId = classId;
     }
-
     if (subjectId) {
-      if (classId) {
-        query.andWhere('homework.subjectId = :subjectId', { subjectId });
-      } else {
-        query.where('homework.subjectId = :subjectId', { subjectId });
-      }
+      conditions.push('homework.subjectId = :subjectId');
+      params.subjectId = subjectId;
+    }
+    if (sectionId) {
+      conditions.push('homework.sectionId = :sectionId');
+      params.sectionId = sectionId;
     }
 
-    return await query.getMany();
+    if (conditions.length > 0) {
+      query.where(conditions.join(' AND '), params);
+    }
+
+    return await query.orderBy('homework.createdAt', 'DESC').getMany();
   }
 
   async findById(id: string) {
@@ -108,6 +115,33 @@ export class HomeworkService {
     return await this.studentHomeworkRepository.find({
       where: { homeworkId },
       relations: ['student'],
+      order: { createdAt: 'ASC' },
     });
+  }
+
+  async bulkUpdateStudentStatuses(
+    homeworkId: string,
+    status: StudentHomeworkStatus,
+    teacherId: string,
+    comment?: string,
+  ) {
+    const studentHomeworks = await this.studentHomeworkRepository.find({
+      where: { homeworkId },
+    });
+
+    if (studentHomeworks.length === 0) {
+      return { updated: 0 };
+    }
+
+    await this.studentHomeworkRepository.update(
+      studentHomeworks.map((sh) => sh.id),
+      { status, updatedBy: teacherId, ...(comment ? { comment } : {}) },
+    );
+
+    return {
+      updated: studentHomeworks.length,
+      status,
+      homeworkId,
+    };
   }
 }
