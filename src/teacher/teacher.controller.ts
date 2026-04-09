@@ -227,6 +227,34 @@ export class TeacherController {
     return await this.teacherService.getHomeworkStudentStatuses(id);
   }
 
+  @Patch('homework/:id/students/bulk')
+  @ApiOperation({ summary: 'Update ALL students status for a homework (pending | done)' })
+  @ApiBody({
+    type: BulkUpdateHomeworkStatusDto,
+    examples: {
+      markAllDone: {
+        summary: 'Mark all students done',
+        value: { status: 'done', comment: 'All completed in class.' },
+      },
+      resetAll: {
+        summary: 'Reset all to pending',
+        value: { status: 'pending' },
+      },
+    },
+  })
+  async bulkUpdateStudentStatuses(
+    @Param('id') homeworkId: string,
+    @Body() dto: BulkUpdateHomeworkStatusDto,
+    @Request() req,
+  ) {
+    return await this.teacherService.bulkUpdateHomeworkStatus(
+      homeworkId,
+      dto.status,
+      req.user.userId,
+      dto.comment,
+    );
+  }
+
   @Patch('homework/:id/students/:studentHomeworkId')
   @ApiOperation({ summary: 'Update a single student homework status (pending | done)' })
   @ApiBody({
@@ -250,34 +278,6 @@ export class TeacherController {
   ) {
     return await this.teacherService.updateStudentHomeworkStatus(
       studentHomeworkId,
-      dto.status,
-      req.user.userId,
-      dto.comment,
-    );
-  }
-
-  @Patch('homework/:id/students/bulk')
-  @ApiOperation({ summary: 'Update ALL students status for a homework (pending | done)' })
-  @ApiBody({
-    type: BulkUpdateHomeworkStatusDto,
-    examples: {
-      markAllDone: {
-        summary: 'Mark all students done',
-        value: { status: 'done', comment: 'All completed in class.' },
-      },
-      resetAll: {
-        summary: 'Reset all to pending',
-        value: { status: 'pending' },
-      },
-    },
-  })
-  async bulkUpdateStudentStatuses(
-    @Param('id') homeworkId: string,
-    @Body() dto: BulkUpdateHomeworkStatusDto,
-    @Request() req,
-  ) {
-    return await this.teacherService.bulkUpdateHomeworkStatus(
-      homeworkId,
       dto.status,
       req.user.userId,
       dto.comment,

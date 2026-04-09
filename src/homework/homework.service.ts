@@ -125,21 +125,18 @@ export class HomeworkService {
     teacherId: string,
     comment?: string,
   ) {
-    const studentHomeworks = await this.studentHomeworkRepository.find({
-      where: { homeworkId },
-    });
-
-    if (studentHomeworks.length === 0) {
-      return { updated: 0 };
+    const updateData: any = { status, updatedBy: teacherId };
+    if (comment !== undefined) {
+      updateData.comment = comment;
     }
 
-    await this.studentHomeworkRepository.update(
-      studentHomeworks.map((sh) => sh.id),
-      { status, updatedBy: teacherId, ...(comment ? { comment } : {}) },
+    const result = await this.studentHomeworkRepository.update(
+      { homeworkId },
+      updateData,
     );
 
     return {
-      updated: studentHomeworks.length,
+      updated: result.affected ?? 0,
       status,
       homeworkId,
     };
