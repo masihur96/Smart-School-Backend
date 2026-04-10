@@ -21,6 +21,7 @@ import { HomeworkModule } from './homework/homework.module';
 import { GeneralModule } from './general/general.module';
 import { SectionsModule } from './sections/sections.module';
 import { PricingModule } from './pricing/pricing.module';
+import { SubscriptionModule } from './subscriptions/subscription.module';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/entities/user.entity';
 import { Class } from './classes/entities/class.entity';
@@ -34,6 +35,7 @@ import { Notice } from './general/entities/notice.entity';
 import { Routine } from './general/entities/routine.entity';
 import { Section } from './sections/entities/section.entity';
 import { PricingPlan } from './pricing/entities/pricing-plan.entity';
+import { Subscription } from './subscriptions/entities/subscription.entity';
 
 @Module({
   imports: [
@@ -60,6 +62,7 @@ import { PricingPlan } from './pricing/entities/pricing-plan.entity';
         Notice,
         Routine,
         PricingPlan,
+        Subscription,
       ],
       autoLoadEntities: true,
       synchronize: true,
@@ -80,6 +83,7 @@ import { PricingPlan } from './pricing/entities/pricing-plan.entity';
     GeneralModule,
     SectionsModule,
     PricingModule,
+    SubscriptionModule,
   ],
   controllers: [AppController],
   providers: [

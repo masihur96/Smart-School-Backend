@@ -86,4 +86,13 @@ export class UsersService {
 
     return await query.getMany();
   }
+
+  async countStudentsBySchool(schoolId: string): Promise<number> {
+    return await this.userRepository.count({
+      where: {
+        schoolId,
+        role: UserRole.STUDENT,
+      },
+    });
+  }
 }
