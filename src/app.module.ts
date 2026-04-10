@@ -36,6 +36,8 @@ import { Routine } from './general/entities/routine.entity';
 import { Section } from './sections/entities/section.entity';
 import { PricingPlan } from './pricing/entities/pricing-plan.entity';
 import { Subscription } from './subscriptions/entities/subscription.entity';
+import { School } from './schools/entities/school.entity';
+import { SuperadminModule } from './superadmin/superadmin.module';
 
 @Module({
   imports: [
@@ -63,6 +65,7 @@ import { Subscription } from './subscriptions/entities/subscription.entity';
         Routine,
         PricingPlan,
         Subscription,
+        School,
       ],
       autoLoadEntities: true,
       synchronize: true,
@@ -84,6 +87,7 @@ import { Subscription } from './subscriptions/entities/subscription.entity';
     SectionsModule,
     PricingModule,
     SubscriptionModule,
+    SuperadminModule,
   ],
   controllers: [AppController],
   providers: [

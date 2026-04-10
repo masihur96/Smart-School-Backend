@@ -11,6 +11,11 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { AdminService } from './admin.service';
 import { CreateUserDto, UpdateUserDto } from '../users/dto/create-user.dto';
 import {
@@ -27,6 +32,8 @@ import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
+@Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('admin')
 export class AdminController {
   constructor(private adminService: AdminService) {}

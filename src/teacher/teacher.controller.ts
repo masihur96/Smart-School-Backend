@@ -24,6 +24,11 @@ import {
 } from '../homework/dto/create-homework.dto';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { Public } from '../auth/decorators/public.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { UseGuards } from '@nestjs/common';
 import {
   ApiOperation,
   ApiResponse,
@@ -34,6 +39,8 @@ import {
 
 @ApiTags('Teacher')
 @ApiBearerAuth('bearer')
+@Roles(UserRole.TEACHER, UserRole.SUPER_ADMIN)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('teacher')
 export class TeacherController {
   constructor(private teacherService: TeacherService) {}

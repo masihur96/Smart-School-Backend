@@ -3,6 +3,11 @@ import { PricingService } from './pricing.service';
 import { CreatePricingPlanDto, UpdatePricingPlanDto } from './dto/pricing-plan.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 
 @ApiTags('Pricing')
 @Controller('pricing')
@@ -42,22 +47,28 @@ export class PricingController {
   }
 
   @ApiBearerAuth('bearer')
+  @Roles(UserRole.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
-  @ApiOperation({ summary: 'Create a new pricing plan (Admin only)' })
+  @ApiOperation({ summary: 'Create a new pricing plan (Superadmin only)' })
   createPlan(@Body() createPricingPlanDto: CreatePricingPlanDto) {
     return this.pricingService.create(createPricingPlanDto);
   }
 
   @ApiBearerAuth('bearer')
+  @Roles(UserRole.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')
-  @ApiOperation({ summary: 'Update an existing pricing plan (Admin only)' })
+  @ApiOperation({ summary: 'Update an existing pricing plan (Superadmin only)' })
   updatePlan(@Param('id') id: string, @Body() updatePricingPlanDto: UpdatePricingPlanDto) {
     return this.pricingService.update(id, updatePricingPlanDto);
   }
 
   @ApiBearerAuth('bearer')
+  @Roles(UserRole.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a pricing plan (Admin only)' })
+  @ApiOperation({ summary: 'Delete a pricing plan (Superadmin only)' })
   deletePlan(@Param('id') id: string) {
     return this.pricingService.delete(id);
   }

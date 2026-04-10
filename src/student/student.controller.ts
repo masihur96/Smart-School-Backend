@@ -2,6 +2,11 @@ import { Controller, Get, Post, Body, Request, Query } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { Public } from '../auth/decorators/public.decorator';
+import { UseGuards } from '@nestjs/common';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import {
   ApiOperation,
   ApiResponse,
@@ -11,6 +16,8 @@ import {
 
 @ApiTags('Student')
 @ApiBearerAuth('bearer')
+@Roles(UserRole.STUDENT, UserRole.SUPER_ADMIN)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('student')
 export class StudentController {
   constructor(private studentService: StudentService) {}

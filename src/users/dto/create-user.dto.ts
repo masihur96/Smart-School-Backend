@@ -40,9 +40,11 @@ export class CreateUserDto {
   @ApiProperty({
     example: 'uuid-of-school',
     description: 'The school ID the user belongs to',
+    required: false,
   })
+  @IsOptional()
   @IsUUID()
-  schoolId: string;
+  schoolId?: string;
 
   @ApiProperty({
     example: '+1234567890',
