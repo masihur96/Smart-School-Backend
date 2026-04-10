@@ -103,7 +103,7 @@ export class ExamsService {
       );
 
       if (idsToRemove.length > 0) {
-        await this.academicAssignmentRepository.delete(idsToRemove);
+        await this.academicAssignmentRepository.softDelete(idsToRemove);
       }
 
       exam.assignments = updatedAssignments;
@@ -118,7 +118,7 @@ export class ExamsService {
   }
 
   async deleteExam(id: string) {
-    return await this.examRepository.delete(id);
+    return await this.examRepository.softDelete(id);
   }
 
   async setPublishStatus(id: string, isPublished: boolean) {

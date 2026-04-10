@@ -83,7 +83,7 @@ export class HomeworkService {
   }
 
   async delete(id: string) {
-    return await this.homeworkRepository.delete(id);
+    return await this.homeworkRepository.softDelete(id);
   }
 
   async updateStudentStatus(

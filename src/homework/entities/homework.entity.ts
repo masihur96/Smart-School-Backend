@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   OneToMany,
 } from 'typeorm';
 import { StudentHomework } from './student-homework.entity';
@@ -42,6 +43,9 @@ export class Homework {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date | null;
 
   @OneToMany(() => StudentHomework, (sh) => sh.homework)
   studentHomeworks: StudentHomework[];

@@ -33,7 +33,7 @@ export class GeneralService {
   }
 
   async deleteNotice(id: string) {
-    return await this.noticeRepository.delete(id);
+    return await this.noticeRepository.softDelete(id);
   }
 
   // Routines
@@ -72,7 +72,7 @@ export class GeneralService {
   }
 
   async deleteRoutine(id: string) {
-    return await this.routineRepository.delete(id);
+    return await this.routineRepository.softDelete(id);
   }
 
   async getRoutineByTeacherAndDay(teacherId: string, day: Day) {

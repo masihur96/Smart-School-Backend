@@ -68,6 +68,6 @@ export class MarksService {
   }
 
   async deleteMark(id: string) {
-    return await this.marksRepository.delete(id);
+    return await this.marksRepository.softDelete(id);
   }
 }

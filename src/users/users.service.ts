@@ -67,7 +67,7 @@ export class UsersService {
   }
 
   async delete(id: string) {
-    return await this.userRepository.delete(id);
+    return await this.userRepository.softDelete(id);
   }
 
   async validatePassword(password: string, hash: string): Promise<boolean> {

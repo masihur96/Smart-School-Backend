@@ -30,6 +30,6 @@ export class ClassesService {
   }
 
   async delete(id: string) {
-    return await this.classRepository.delete(id);
+    return await this.classRepository.softDelete(id);
   }
 }

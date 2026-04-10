@@ -30,6 +30,6 @@ export class SubjectsService {
   }
 
   async delete(id: string) {
-    return await this.subjectRepository.delete(id);
+    return await this.subjectRepository.softDelete(id);
   }
 }

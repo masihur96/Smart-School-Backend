@@ -380,6 +380,6 @@ export class AttendanceService {
   }
 
   async deleteTeacherAttendance(id: string) {
-    return await this.teacherAttendanceRepository.delete(id);
+    return await this.teacherAttendanceRepository.softDelete(id);
   }
 }

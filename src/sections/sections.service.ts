@@ -40,7 +40,7 @@ export class SectionsService {
   }
 
   async remove(id: string): Promise<void> {
-    const result = await this.sectionRepository.delete(id);
+    const result = await this.sectionRepository.softDelete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Section with ID ${id} not found`);
     }
