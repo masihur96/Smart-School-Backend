@@ -20,6 +20,7 @@ import { MarksModule } from './marks/marks.module';
 import { HomeworkModule } from './homework/homework.module';
 import { GeneralModule } from './general/general.module';
 import { SectionsModule } from './sections/sections.module';
+import { PricingModule } from './pricing/pricing.module';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/entities/user.entity';
 import { Class } from './classes/entities/class.entity';
@@ -32,6 +33,7 @@ import { Homework } from './homework/entities/homework.entity';
 import { Notice } from './general/entities/notice.entity';
 import { Routine } from './general/entities/routine.entity';
 import { Section } from './sections/entities/section.entity';
+import { PricingPlan } from './pricing/entities/pricing-plan.entity';
 
 @Module({
   imports: [
@@ -57,6 +59,7 @@ import { Section } from './sections/entities/section.entity';
         Homework,
         Notice,
         Routine,
+        PricingPlan,
       ],
       autoLoadEntities: true,
       synchronize: true,
@@ -76,6 +79,7 @@ import { Section } from './sections/entities/section.entity';
     HomeworkModule,
     GeneralModule,
     SectionsModule,
+    PricingModule,
   ],
   controllers: [AppController],
   providers: [
@@ -90,4 +94,4 @@ import { Section } from './sections/entities/section.entity';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
