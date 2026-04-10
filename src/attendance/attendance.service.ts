@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Attendance, AttendanceStatus } from './entities/attendance.entity';
@@ -13,7 +13,9 @@ import {
 import { UsersService } from '../users/users.service';
 import { ClassesService } from '../classes/classes.service';
 import { SectionsService } from '../sections/sections.service';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
+import { TeacherAttendance } from './entities/teacher-attendance.entity';
+import { SubmitTeacherAttendanceDto } from './dto/submit-teacher-attendance.dto';
 
 @Injectable()
 export class AttendanceService {
@@ -22,10 +24,28 @@ export class AttendanceService {
   constructor(
     @InjectRepository(Attendance)
     private attendanceRepository: Repository<Attendance>,
+    @InjectRepository(TeacherAttendance)
+    private teacherAttendanceRepository: Repository<TeacherAttendance>,
     private usersService: UsersService,
     private classesService: ClassesService,
     private sectionsService: SectionsService,
   ) {}
+
+  private getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+    const R = 6371e3; // metres
+    const φ1 = (lat1 * Math.PI) / 180; // φ, λ in radians
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const d = R * c; // in metres
+    return d;
+  }
 
   private normalizeDate(date: string | Date): string {
     if (date instanceof Date) {
@@ -274,5 +294,92 @@ export class AttendanceService {
       year,
       data: monthlyData,
     };
+  }
+
+  // Teacher Attendance
+  async submitTeacherAttendance(
+    teacherId: string,
+    data: SubmitTeacherAttendanceDto,
+  ) {
+    const teacher = await this.usersService.findById(teacherId);
+    if (!teacher || teacher.role !== UserRole.TEACHER) {
+      throw new NotFoundException('Teacher not found');
+    }
+
+    if (!teacher.lat || !teacher.lon) {
+      throw new BadRequestException(
+        'Teacher location not set. Please contact admin.',
+      );
+    }
+
+    const distance = this.getDistance(
+      data.lat,
+      data.lon,
+      Number(teacher.lat),
+      Number(teacher.lon),
+    );
+    const radius = teacher.radius || 100; // default 100m
+
+    if (distance > radius) {
+      throw new BadRequestException(
+        `You are out of range. Distance: ${distance.toFixed(
+          2,
+        )}m, Allowed Radius: ${radius}m`,
+      );
+    }
+
+    const today = this.normalizeDate(new Date());
+    const existing = await this.teacherAttendanceRepository.findOne({
+      where: {
+        teacherId,
+        date: today as any,
+      },
+    });
+
+    if (existing) {
+      throw new BadRequestException('Attendance already submitted for today');
+    }
+
+    const attendance = this.teacherAttendanceRepository.create({
+      teacherId,
+      schoolId: teacher.schoolId,
+      lat: data.lat,
+      lon: data.lon,
+      distanceFromCenter: distance,
+      date: today as any,
+      time: new Date().toLocaleTimeString('en-GB'), // 24h format
+      status: 'present',
+    });
+
+    return await this.teacherAttendanceRepository.save(attendance);
+  }
+
+  async getTeacherAttendance(
+    schoolId?: string,
+    teacherId?: string,
+    date?: string,
+  ) {
+    const query = this.teacherAttendanceRepository.createQueryBuilder('ta');
+
+    if (schoolId) {
+      query.andWhere('ta.schoolId = :schoolId', { schoolId });
+    }
+
+    if (teacherId) {
+      query.andWhere('ta.teacherId = :teacherId', { teacherId });
+    }
+
+    if (date) {
+      const normalizedDate = this.normalizeDate(date);
+      query.andWhere('ta.date = :date', { date: normalizedDate });
+    }
+
+    query.orderBy('ta.date', 'DESC').addOrderBy('ta.time', 'DESC');
+
+    return await query.getMany();
+  }
+
+  async deleteTeacherAttendance(id: string) {
+    return await this.teacherAttendanceRepository.delete(id);
   }
 }

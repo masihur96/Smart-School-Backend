@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { TeacherService } from './teacher.service';
 import { SubmitAttendanceDto } from '../attendance/dto/submit-attendance.dto';
+import { SubmitTeacherAttendanceDto } from '../attendance/dto/submit-teacher-attendance.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 import {
   CreateHomeworkDto,
@@ -80,6 +81,31 @@ export class TeacherController {
     @Query('date') date?: string,
   ) {
     return await this.teacherService.getAttendance(classId, date);
+  }
+
+  @Post('self-attendance')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Submit self-attendance for teacher' })
+  async submitSelfAttendance(
+    @Body() dto: SubmitTeacherAttendanceDto,
+    @Request() req,
+  ) {
+    const teacherId = req.user.userId;
+    return await this.teacherService.submitTeacherAttendance(
+      teacherId,
+      dto,
+    );
+  }
+
+  @Get('self-attendance')
+  @ApiOperation({ summary: 'Get own attendance records' })
+  async getSelfAttendance(@Request() req, @Query('date') date?: string) {
+    const teacherId = req.user.userId;
+    return await this.teacherService.getTeacherAttendance(
+      undefined,
+      teacherId,
+      date,
+    );
   }
 
   // ─── Marks ───────────────────────────────────────

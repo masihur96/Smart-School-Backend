@@ -9,6 +9,7 @@ import { Day } from '../general/entities/routine.entity';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UserRole } from '../users/entities/user.entity';
 import { SubmitAttendanceDto } from '../attendance/dto/submit-attendance.dto';
+import { SubmitTeacherAttendanceDto } from '../attendance/dto/submit-teacher-attendance.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 import { CreateHomeworkDto, UpdateHomeworkDto } from '../homework/dto/create-homework.dto';
 import { StudentHomeworkStatus } from '../homework/entities/student-homework.entity';
@@ -53,6 +54,28 @@ export class TeacherService {
 
   async getAttendance(classId: string, date?: string) {
     return await this.attendanceService.getAttendance(classId, date);
+  }
+
+  async submitTeacherAttendance(
+    teacherId: string,
+    data: SubmitTeacherAttendanceDto,
+  ) {
+    return await this.attendanceService.submitTeacherAttendance(
+      teacherId,
+      data,
+    );
+  }
+
+  async getTeacherAttendance(
+    schoolId?: string,
+    teacherId?: string,
+    date?: string,
+  ) {
+    return await this.attendanceService.getTeacherAttendance(
+      schoolId,
+      teacherId,
+      date,
+    );
   }
 
   // Marks

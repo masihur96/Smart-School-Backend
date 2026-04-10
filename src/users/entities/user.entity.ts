@@ -50,6 +50,15 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ type: 'decimal', precision: 10, scale: 8, nullable: true })
+  lat: number;
+
+  @Column({ type: 'decimal', precision: 11, scale: 8, nullable: true })
+  lon: number;
+
+  @Column({ type: 'float', nullable: true })
+  radius: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

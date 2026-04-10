@@ -5,6 +5,7 @@ import {
   IsUUID,
   IsOptional,
   IsBoolean,
+  IsNumber,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../entities/user.entity';
@@ -88,14 +89,36 @@ export class CreateUserDto {
   @IsString()
   designation?: string;
 
-  @ApiProperty({
-    example: true,
-    description: 'Whether the user is active',
-    required: false,
-  })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @ApiProperty({
+    example: 23.8103,
+    description: 'The latitude of the teacher center point',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  lat?: number;
+
+  @ApiProperty({
+    example: 90.4125,
+    description: 'The longitude of the teacher center point',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  lon?: number;
+
+  @ApiProperty({
+    example: 100,
+    description: 'The radius in meters for geofenced attendance',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  radius?: number;
 }
 
 export class UpdateUserDto {
@@ -181,12 +204,34 @@ export class UpdateUserDto {
   @IsString()
   designation?: string;
 
-  @ApiProperty({
-    example: true,
-    description: 'Whether the user is active',
-    required: false,
-  })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @ApiProperty({
+    example: 23.8103,
+    description: 'The latitude of the teacher center point',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  lat?: number;
+
+  @ApiProperty({
+    example: 90.4125,
+    description: 'The longitude of the teacher center point',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  lon?: number;
+
+  @ApiProperty({
+    example: 100,
+    description: 'The radius in meters for geofenced attendance',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  radius?: number;
 }
