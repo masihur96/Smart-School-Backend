@@ -6,9 +6,11 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToOne,
+  JoinColumn,
   Index,
 } from 'typeorm';
 import { PricingPlan } from '../../pricing/entities/pricing-plan.entity';
+import { School } from '../../schools/entities/school.entity';
 
 @Entity('subscriptions')
 export class Subscription {
@@ -18,6 +20,10 @@ export class Subscription {
   @Index()
   @Column()
   schoolId: string;
+
+  @ManyToOne(() => School, { eager: false, createForeignKeyConstraints: false })
+  @JoinColumn({ name: 'schoolId', referencedColumnName: 'schoolId' })
+  school: School;
 
   @ManyToOne(() => PricingPlan, { eager: true })
   pricingPlan: PricingPlan;

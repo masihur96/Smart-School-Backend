@@ -57,7 +57,7 @@ export class SubscriptionService {
   async getActiveSubscription(schoolId: string) {
     const subscription = await this.subscriptionRepository.findOne({
       where: { schoolId, isActive: true },
-      relations: ['pricingPlan'],
+      relations: ['pricingPlan', 'school'],
     });
 
     if (!subscription) {
@@ -69,7 +69,7 @@ export class SubscriptionService {
 
   async getAllSchoolSubscriptions() {
     return await this.subscriptionRepository.find({
-      relations: ['pricingPlan'],
+      relations: ['pricingPlan', 'school'],
       order: { createdAt: 'DESC' },
     });
   }
