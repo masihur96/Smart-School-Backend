@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription } from './entities/subscription.entity';
 import { AssignSubscriptionDto } from './dto/assign-subscription.dto';
+import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { PricingService } from '../pricing/pricing.service';
 import { UsersService } from '../users/users.service';
 
@@ -72,5 +73,36 @@ export class SubscriptionService {
       relations: ['pricingPlan', 'school'],
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async update(id: string, updateDto: UpdateSubscriptionDto) {
+    const subscription = await this.subscriptionRepository.findOne({ where: { id } });
+    if (!subscription) {
+      throw new NotFoundException(`Subscription with ID ${id} not found`);
+    }
+
+    if (updateDto.pricingPlanId) {
+       const plan = await this.pricingService.findOne(updateDto.pricingPlanId);
+       if (!plan) throw new NotFoundException('Pricing Plan not found');
+       subscription.pricingPlan = plan;
+    }
+
+    if (updateDto.schoolId) {
+       subscription.schoolId = updateDto.schoolId;
+    }
+
+    if (updateDto.startDate !== undefined) subscription.startDate = updateDto.startDate;
+    if (updateDto.endDate !== undefined) subscription.endDate = updateDto.endDate;
+    if (updateDto.isActive !== undefined) subscription.isActive = updateDto.isActive;
+
+    return await this.subscriptionRepository.save(subscription);
+  }
+
+  async remove(id: string) {
+    const subscription = await this.subscriptionRepository.findOne({ where: { id } });
+    if (!subscription) {
+      throw new NotFoundException(`Subscription with ID ${id} not found`);
+    }
+    return await this.subscriptionRepository.softRemove(subscription);
   }
 }

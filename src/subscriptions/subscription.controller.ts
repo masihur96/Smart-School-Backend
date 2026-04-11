@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException, Patch, Delete } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { AssignSubscriptionDto } from './dto/assign-subscription.dto';
+import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Subscriptions')
@@ -25,5 +26,17 @@ export class SubscriptionController {
   @ApiOperation({ summary: 'Get all subscriptions across all schools' })
   getAll() {
     return this.subscriptionService.getAllSchoolSubscriptions();
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update a subscription' })
+  update(@Param('id') id: string, @Body() updateDto: UpdateSubscriptionDto) {
+    return this.subscriptionService.update(id, updateDto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a subscription' })
+  remove(@Param('id') id: string) {
+    return this.subscriptionService.remove(id);
   }
 }
