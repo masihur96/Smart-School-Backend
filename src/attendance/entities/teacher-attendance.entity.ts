@@ -5,15 +5,22 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class TeacherAttendance {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   teacherId: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'teacherId' })
+  teacher: User;
 
   @Column({ type: 'date' })
   date: Date;

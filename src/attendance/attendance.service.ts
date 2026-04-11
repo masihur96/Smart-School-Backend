@@ -256,9 +256,11 @@ export class AttendanceService {
         overallAttendancePercentage,
       };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : '';
       this.logger.error(
-        `Error getting attendance overview: ${error.message}`,
-        error.stack,
+        `Error getting attendance overview: ${errorMessage}`,
+        errorStack,
       );
       throw error;
     }
@@ -359,7 +361,9 @@ export class AttendanceService {
     teacherId?: string,
     date?: string,
   ) {
-    const query = this.teacherAttendanceRepository.createQueryBuilder('ta');
+    const query = this.teacherAttendanceRepository
+      .createQueryBuilder('ta')
+      .leftJoinAndSelect('ta.teacher', 'teacher');
 
     if (schoolId) {
       query.andWhere('ta.schoolId = :schoolId', { schoolId });
