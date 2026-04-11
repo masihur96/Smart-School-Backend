@@ -16,7 +16,7 @@ export class SubscriptionService {
   ) {}
 
   async assignPlan(dto: AssignSubscriptionDto) {
-    const { schoolId, pricingPlanId, startDate, endDate } = dto;
+    const { schoolId, pricingPlanId, startDate, endDate, isActive } = dto;
 
     // 1. Verify Plan exists
     const plan = await this.pricingService.findOne(pricingPlanId);
@@ -33,10 +33,13 @@ export class SubscriptionService {
     }
 
     // 4. Deactivate existing active subscriptions for this school
-    await this.subscriptionRepository.update(
-      { schoolId, isActive: true },
-      { isActive: false },
-    );
+    // Only if the new plan is intended to be active
+    if (isActive !== false) {
+      await this.subscriptionRepository.update(
+        { schoolId, isActive: true },
+        { isActive: false },
+      );
+    }
 
     // 5. Create new subscription
     const subscription = this.subscriptionRepository.create({
@@ -44,7 +47,7 @@ export class SubscriptionService {
       pricingPlan: plan,
       startDate: startDate || new Date(),
       endDate,
-      isActive: true,
+      isActive: isActive ?? true,
       lastStudentCount: currentStudents,
     });
 
