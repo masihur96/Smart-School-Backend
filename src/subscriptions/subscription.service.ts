@@ -105,4 +105,26 @@ export class SubscriptionService {
     }
     return await this.subscriptionRepository.softRemove(subscription);
   }
+
+  async findAllDeleted() {
+    return await this.subscriptionRepository
+      .createQueryBuilder('sub')
+      .withDeleted()
+      .where('sub.deletedAt IS NOT NULL')
+      .leftJoinAndSelect('sub.pricingPlan', 'pricingPlan')
+      .leftJoinAndSelect('sub.school', 'school')
+      .orderBy('sub.deletedAt', 'DESC')
+      .getMany();
+  }
+
+  async restore(id: string) {
+    const result = await this.subscriptionRepository.restore(id);
+    if (!result.affected) {
+      throw new NotFoundException(`Subscription ${id} not found or not deleted`);
+    }
+    return await this.subscriptionRepository.findOne({
+      where: { id },
+      relations: ['pricingPlan', 'school'],
+    });
+  }
 }

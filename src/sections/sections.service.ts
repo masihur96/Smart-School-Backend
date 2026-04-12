@@ -45,4 +45,22 @@ export class SectionsService {
       throw new NotFoundException(`Section with ID ${id} not found`);
     }
   }
+
+  async findAllDeleted(): Promise<Section[]> {
+    return await this.sectionRepository
+      .createQueryBuilder('section')
+      .withDeleted()
+      .where('section.deletedAt IS NOT NULL')
+      .leftJoinAndSelect('section.classEntity', 'class')
+      .orderBy('section.deletedAt', 'DESC')
+      .getMany();
+  }
+
+  async restore(id: string): Promise<Section> {
+    const result = await this.sectionRepository.restore(id);
+    if (!result.affected) {
+      throw new NotFoundException(`Section ${id} not found or not deleted`);
+    }
+    return this.findOne(id);
+  }
 }

@@ -7,6 +7,8 @@ import {
   Put,
   Delete,
   Query,
+  Patch,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -58,8 +60,27 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete user' })
+  @ApiOperation({ summary: 'Soft-delete user' })
   async remove(@Param('id') id: string) {
     return await this.usersService.delete(id);
+  }
+
+  @Get('trash')
+  @ApiOperation({ summary: 'Get all soft-deleted users' })
+  async findDeleted(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 20,
+  ) {
+    return await this.usersService.findAllDeleted(page, limit);
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore a soft-deleted user' })
+  async restore(@Param('id') id: string) {
+    try {
+      return await this.usersService.restore(id);
+    } catch {
+      throw new NotFoundException(`User ${id} not found or not deleted`);
+    }
   }
 }

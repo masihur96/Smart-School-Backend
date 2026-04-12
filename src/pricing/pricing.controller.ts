@@ -68,8 +68,26 @@ export class PricingController {
   @Roles(UserRole.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a pricing plan (Superadmin only)' })
+  @ApiOperation({ summary: 'Soft-delete a pricing plan (Superadmin only)' })
   deletePlan(@Param('id') id: string) {
     return this.pricingService.delete(id);
+  }
+
+  @ApiBearerAuth('bearer')
+  @Roles(UserRole.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('trash')
+  @ApiOperation({ summary: 'Get all soft-deleted pricing plans (Superadmin only)' })
+  getTrashedPlans() {
+    return this.pricingService.findAllDeleted();
+  }
+
+  @ApiBearerAuth('bearer')
+  @Roles(UserRole.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore a soft-deleted pricing plan (Superadmin only)' })
+  restorePlan(@Param('id') id: string) {
+    return this.pricingService.restore(id);
   }
 }

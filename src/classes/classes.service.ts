@@ -32,4 +32,21 @@ export class ClassesService {
   async delete(id: string) {
     return await this.classRepository.softDelete(id);
   }
+
+  async findAllDeleted() {
+    return await this.classRepository
+      .createQueryBuilder('class')
+      .withDeleted()
+      .where('class.deletedAt IS NOT NULL')
+      .orderBy('class.deletedAt', 'DESC')
+      .getMany();
+  }
+
+  async restore(id: string) {
+    const result = await this.classRepository.restore(id);
+    if (!result.affected) {
+      throw new Error(`Class ${id} not found or not deleted`);
+    }
+    return await this.classRepository.findOne({ where: { id } });
+  }
 }

@@ -32,4 +32,21 @@ export class SubjectsService {
   async delete(id: string) {
     return await this.subjectRepository.softDelete(id);
   }
+
+  async findAllDeleted() {
+    return await this.subjectRepository
+      .createQueryBuilder('subject')
+      .withDeleted()
+      .where('subject.deletedAt IS NOT NULL')
+      .orderBy('subject.deletedAt', 'DESC')
+      .getMany();
+  }
+
+  async restore(id: string) {
+    const result = await this.subjectRepository.restore(id);
+    if (!result.affected) {
+      throw new Error(`Subject ${id} not found or not deleted`);
+    }
+    return await this.subjectRepository.findOne({ where: { id } });
+  }
 }

@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -54,8 +55,20 @@ export class SectionsController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete section' })
+  @ApiOperation({ summary: 'Soft-delete section' })
   async remove(@Param('id') id: string) {
     return await this.sectionsService.remove(id);
+  }
+
+  @Get('trash')
+  @ApiOperation({ summary: 'Get all soft-deleted sections' })
+  async findDeleted() {
+    return await this.sectionsService.findAllDeleted();
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore a soft-deleted section' })
+  async restore(@Param('id') id: string) {
+    return await this.sectionsService.restore(id);
   }
 }

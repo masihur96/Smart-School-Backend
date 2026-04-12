@@ -6,6 +6,8 @@ import {
   Param,
   Put,
   Delete,
+  Patch,
+  NotFoundException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ClassesService } from './classes.service';
@@ -42,8 +44,24 @@ export class ClassesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete class' })
+  @ApiOperation({ summary: 'Soft-delete class' })
   async delete(@Param('id') id: string) {
     return await this.classesService.delete(id);
+  }
+
+  @Get('trash')
+  @ApiOperation({ summary: 'Get all soft-deleted classes' })
+  async findDeleted() {
+    return await this.classesService.findAllDeleted();
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore a soft-deleted class' })
+  async restore(@Param('id') id: string) {
+    try {
+      return await this.classesService.restore(id);
+    } catch {
+      throw new NotFoundException(`Class ${id} not found or not deleted`);
+    }
   }
 }

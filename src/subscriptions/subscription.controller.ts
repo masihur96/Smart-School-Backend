@@ -35,8 +35,20 @@ export class SubscriptionController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a subscription' })
+  @ApiOperation({ summary: 'Soft-delete a subscription' })
   remove(@Param('id') id: string) {
     return this.subscriptionService.remove(id);
+  }
+
+  @Get('trash')
+  @ApiOperation({ summary: 'Get all soft-deleted subscriptions' })
+  findDeleted() {
+    return this.subscriptionService.findAllDeleted();
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore a soft-deleted subscription' })
+  restore(@Param('id') id: string) {
+    return this.subscriptionService.restore(id);
   }
 }

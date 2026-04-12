@@ -6,6 +6,8 @@ import {
   Param,
   Put,
   Delete,
+  Patch,
+  NotFoundException,
 } from '@nestjs/common';
 import { SubjectsService } from './subjects.service';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -42,8 +44,24 @@ export class SubjectsController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete subject' })
+  @ApiOperation({ summary: 'Soft-delete subject' })
   async delete(@Param('id') id: string) {
     return await this.subjectsService.delete(id);
+  }
+
+  @Get('trash')
+  @ApiOperation({ summary: 'Get all soft-deleted subjects' })
+  async findDeleted() {
+    return await this.subjectsService.findAllDeleted();
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore a soft-deleted subject' })
+  async restore(@Param('id') id: string) {
+    try {
+      return await this.subjectsService.restore(id);
+    } catch {
+      throw new NotFoundException(`Subject ${id} not found or not deleted`);
+    }
   }
 }

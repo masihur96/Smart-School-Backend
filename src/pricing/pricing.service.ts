@@ -42,6 +42,23 @@ export class PricingService {
     return await this.pricingRepository.softDelete(id);
   }
 
+  async findAllDeleted() {
+    return await this.pricingRepository
+      .createQueryBuilder('plan')
+      .withDeleted()
+      .where('plan.deletedAt IS NOT NULL')
+      .orderBy('plan.deletedAt', 'DESC')
+      .getMany();
+  }
+
+  async restore(id: string) {
+    const result = await this.pricingRepository.restore(id);
+    if (!result.affected) {
+      throw new NotFoundException(`Pricing plan ${id} not found or not deleted`);
+    }
+    return this.findOne(id);
+  }
+
   getDetails() {
     return {
       setupFee: this.setupFee,

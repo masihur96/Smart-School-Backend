@@ -70,6 +70,27 @@ export class UsersService {
     return await this.userRepository.softDelete(id);
   }
 
+  async findAllDeleted(page: number = 1, limit: number = 20) {
+    const query = this.userRepository
+      .createQueryBuilder('user')
+      .withDeleted()
+      .where('user.deletedAt IS NOT NULL')
+      .orderBy('user.deletedAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    const [data, total] = await query.getManyAndCount();
+    return { total, page, limit, data };
+  }
+
+  async restore(id: string) {
+    const result = await this.userRepository.restore(id);
+    if (!result.affected) {
+      throw new Error(`User ${id} not found or not deleted`);
+    }
+    return await this.userRepository.findOne({ where: { id } });
+  }
+
   async validatePassword(password: string, hash: string): Promise<boolean> {
     return await bcrypt.compare(password, hash);
   }
