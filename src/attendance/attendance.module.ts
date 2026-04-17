@@ -9,6 +9,7 @@ import { TeacherAttendance } from './entities/teacher-attendance.entity';
 import { UsersModule } from '../users/users.module';
 import { ClassesModule } from '../classes/classes.module';
 import { SectionsModule } from '../sections/sections.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SectionsModule } from '../sections/sections.module';
     UsersModule,
     ClassesModule,
     SectionsModule,
+    NotificationsModule,
   ],
   providers: [AttendanceService],
   controllers: [
@@ -25,4 +27,4 @@ import { SectionsModule } from '../sections/sections.module';
   ],
   exports: [AttendanceService],
 })
-export class AttendanceModule {}
+export class AttendanceModule { }

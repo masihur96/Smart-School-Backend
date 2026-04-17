@@ -16,6 +16,7 @@ import { SectionsService } from '../sections/sections.service';
 import { User, UserRole } from '../users/entities/user.entity';
 import { TeacherAttendance } from './entities/teacher-attendance.entity';
 import { SubmitTeacherAttendanceDto } from './dto/submit-teacher-attendance.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class AttendanceService {
@@ -29,7 +30,8 @@ export class AttendanceService {
     private usersService: UsersService,
     private classesService: ClassesService,
     private sectionsService: SectionsService,
-  ) {}
+    private notificationsService: NotificationsService,
+  ) { }
 
   private getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
     const R = 6371e3; // metres
@@ -101,7 +103,18 @@ export class AttendanceService {
         });
       }
 
-      results.push(await this.attendanceRepository.save(attendance));
+      const savedAttendance = await this.attendanceRepository.save(attendance);
+      results.push(savedAttendance);
+
+      // Notification logic for absence
+      if (record.status === AttendanceStatus.ABSENT) {
+        this.notificationsService.sendToUser(
+          record.studentId,
+          '⚠️ Absence Alert',
+          `You have been marked ABSENT for ${data.date}.`,
+          { type: 'ATTENDANCE_ABSENT', date: data.date.toISOString().split('T')[0] },
+        );
+      }
     }
 
     return results;
@@ -242,8 +255,8 @@ export class AttendanceService {
       const overallAttendancePercentage =
         grandTotalRecords > 0
           ? parseFloat(
-              ((grandTotalPresent / grandTotalRecords) * 100).toFixed(2),
-            )
+            ((grandTotalPresent / grandTotalRecords) * 100).toFixed(2),
+          )
           : 0;
 
       return {

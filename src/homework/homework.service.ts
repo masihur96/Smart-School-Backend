@@ -11,6 +11,7 @@ import {
   StudentHomeworkStatus,
 } from './entities/student-homework.entity';
 import { UsersService } from '../users/users.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class HomeworkService {
@@ -20,7 +21,8 @@ export class HomeworkService {
     @InjectRepository(StudentHomework)
     private studentHomeworkRepository: Repository<StudentHomework>,
     private usersService: UsersService,
-  ) {}
+    private notificationsService: NotificationsService,
+  ) { }
 
   async create(data: CreateHomeworkDto) {
     const homework = this.homeworkRepository.create(data);
@@ -41,6 +43,16 @@ export class HomeworkService {
     );
 
     await this.studentHomeworkRepository.save(studentHomeworks);
+
+    // Send notifications
+    for (const student of students) {
+      this.notificationsService.sendToUser(
+        student.id,
+        '📖 New Homework Assigned',
+        `New homework for ${data.subjectId} has been assigned.`,
+        { homeworkId: savedHomework.id, type: 'HOMEWORK' },
+      );
+    }
 
     return savedHomework;
   }

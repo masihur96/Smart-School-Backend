@@ -12,6 +12,12 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# Firebase credentials
+*.json
+src/config/*.json
+src/config/firebase-admin.json
+src/config/smart-school-*.json
+
 # OS
 .DS_Store
 

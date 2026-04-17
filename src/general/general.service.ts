@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notice } from './entities/notice.entity';
 import { Routine, Day } from './entities/routine.entity';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class GeneralService {
@@ -11,12 +12,23 @@ export class GeneralService {
     private noticeRepository: Repository<Notice>,
     @InjectRepository(Routine)
     private routineRepository: Repository<Routine>,
-  ) {}
+    private notificationsService: NotificationsService,
+  ) { }
 
   // Notices
   async createNotice(data: Partial<Notice>) {
     const notice = this.noticeRepository.create(data);
-    return await this.noticeRepository.save(notice);
+    const savedNotice = await this.noticeRepository.save(notice);
+
+    // Send school-wide notification
+    this.notificationsService.sendToTopic(
+      `school_${data.schoolId}_notices`,
+      '📢 New School Notice',
+      savedNotice.title,
+      { noticeId: savedNotice.id, type: 'NOTICE' },
+    );
+
+    return savedNotice;
   }
 
   async getAllNotices() {

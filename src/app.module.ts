@@ -38,6 +38,7 @@ import { PricingPlan } from './pricing/entities/pricing-plan.entity';
 import { Subscription } from './subscriptions/entities/subscription.entity';
 import { School } from './schools/entities/school.entity';
 import { SuperadminModule } from './superadmin/superadmin.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -88,6 +89,7 @@ import { SuperadminModule } from './superadmin/superadmin.module';
     PricingModule,
     SubscriptionModule,
     SuperadminModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [
