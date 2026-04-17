@@ -4,6 +4,7 @@ import { GeneralService } from '../general/general.service';
 import { HomeworkService } from '../homework/homework.service';
 import { MarksService } from '../marks/marks.service';
 import { UsersService } from '../users/users.service';
+import { ExamsService } from '../exams/exams.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UserRole } from '../users/entities/user.entity';
 
@@ -15,6 +16,7 @@ export class StudentService {
     private homeworkService: HomeworkService,
     private marksService: MarksService,
     private usersService: UsersService,
+    private examsService: ExamsService,
   ) {}
 
   async create(dto: CreateStudentDto) {
@@ -83,5 +85,28 @@ export class StudentService {
         ((attendancePercentage + homeworkPercentage) / 2).toFixed(2),
       ),
     };
+  }
+
+  async getExams(studentId: string) {
+    const student = await this.usersService.findById(studentId);
+    if (!student || !student.classId) return [];
+    return await this.examsService.findExamsByClass(student.classId);
+  }
+
+  async getExamRoutine(studentId: string, examId: string) {
+    const student = await this.usersService.findById(studentId);
+    if (!student || !student.classId) return [];
+    return await this.examsService.getExamAssignments(examId, student.classId);
+  }
+
+  async getExamSyllabus(studentId: string, examId: string) {
+    const student = await this.usersService.findById(studentId);
+    if (!student || !student.classId) return [];
+    // Syllabus is part of the assignment data
+    return await this.examsService.getExamAssignments(examId, student.classId);
+  }
+
+  async getExamResults(studentId: string, examId: string) {
+    return await this.examsService.getStudentResults(examId, studentId);
   }
 }

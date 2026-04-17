@@ -1,4 +1,4 @@
-import { IsUUID, IsDateString, IsOptional } from 'class-validator';
+import { IsUUID, IsDateString, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateAcademicAssignmentDto {
@@ -22,4 +22,9 @@ export class CreateAcademicAssignmentDto {
   @ApiProperty({ example: '2025-06-15' })
   @IsDateString()
   date: string;
+
+  @ApiPropertyOptional({ example: 'Chapter 1 to 5' })
+  @IsOptional()
+  @IsString()
+  syllabus?: string;
 }

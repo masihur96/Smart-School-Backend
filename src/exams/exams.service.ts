@@ -87,6 +87,7 @@ export class ExamsService {
             id: assignDto.id,
             examId: id,
             date: assignDto.date,
+            syllabus: assignDto.syllabus,
             class: { uuid: classEntity.id, name: classEntity.name },
             subject: { uuid: subjectEntity.id, name: subjectEntity.name },
             examiner: { uuid: examinerEntity.id, name: examinerEntity.name },
@@ -167,6 +168,7 @@ export class ExamsService {
     const assignment = this.academicAssignmentRepository.create({
       examId,
       date: data.date,
+      syllabus: data.syllabus,
       class: { uuid: classEntity.id, name: classEntity.name },
       subject: { uuid: subjectEntity.id, name: subjectEntity.name },
       examiner: { uuid: examinerEntity.id, name: examinerEntity.name },
@@ -204,5 +206,37 @@ export class ExamsService {
     }
 
     return await query.getMany();
+  }
+
+  async findExamsByClass(classId: string) {
+    const assignments = await this.academicAssignmentRepository
+      .createQueryBuilder('assignment')
+      .where(`assignment.class->>'uuid' = :classId`, { classId })
+      .leftJoinAndSelect('assignment.exam', 'exam')
+      .getMany();
+
+    // Group by exam and return unique list of exams
+    const examsMap = new Map<string, Exam>();
+    assignments.forEach((a) => {
+      if (a.exam && !examsMap.has(a.exam.id)) {
+        examsMap.set(a.exam.id, a.exam);
+      }
+    });
+
+    return Array.from(examsMap.values());
+  }
+
+  async getExamAssignments(examId: string, classId: string) {
+    return await this.academicAssignmentRepository
+      .createQueryBuilder('assignment')
+      .where('assignment.examId = :examId', { examId })
+      .andWhere(`assignment.class->>'uuid' = :classId`, { classId })
+      .getMany();
+  }
+
+  async getStudentResults(examId: string, studentId: string) {
+    return await this.examResultRepository.find({
+      where: { examId, studentId },
+    });
   }
 }

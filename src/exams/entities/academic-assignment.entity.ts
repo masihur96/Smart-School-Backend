@@ -29,6 +29,9 @@ export class AcademicAssignment {
   @Column({ type: 'date' })
   date: string;
 
+  @Column({ type: 'text', nullable: true })
+  syllabus: string;
+
   @ManyToOne(() => Exam, (exam) => exam.assignments, { onDelete: 'CASCADE' })
   exam: Exam;
 
