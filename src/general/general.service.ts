@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notice } from './entities/notice.entity';
 import { Routine, Day } from './entities/routine.entity';
+import { Marquee, MarqueeType } from './entities/marquee.entity';
 import { NotificationsService } from '../notifications/notifications.service';
+import { SetMarqueeDto } from './dto/marquee.dto';
 
 @Injectable()
 export class GeneralService {
@@ -12,6 +14,8 @@ export class GeneralService {
     private noticeRepository: Repository<Notice>,
     @InjectRepository(Routine)
     private routineRepository: Repository<Routine>,
+    @InjectRepository(Marquee)
+    private marqueeRepository: Repository<Marquee>,
     private notificationsService: NotificationsService,
   ) { }
 
@@ -91,6 +95,34 @@ export class GeneralService {
     return await this.routineRepository.find({
       where: { teacherId, day },
       relations: ['classEntity', 'subjectEntity', 'teacherEntity', 'sectionEntity'],
+    });
+  }
+
+  // Marquee
+  async setMarquee(data: SetMarqueeDto) {
+    const { schoolId, type, text } = data;
+    let marquee = await this.marqueeRepository.findOne({
+      where: { schoolId, type },
+    });
+
+    if (marquee) {
+      marquee.text = text;
+    } else {
+      marquee = this.marqueeRepository.create(data);
+    }
+
+    return await this.marqueeRepository.save(marquee);
+  }
+
+  async getMarquee(schoolId: string, type: MarqueeType) {
+    return await this.marqueeRepository.findOne({
+      where: { schoolId, type },
+    });
+  }
+
+  async getAllMarquees(schoolId: string) {
+    return await this.marqueeRepository.find({
+      where: { schoolId },
     });
   }
 

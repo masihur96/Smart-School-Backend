@@ -18,6 +18,8 @@ import {
   CreateRoutineDto,
   UpdateRoutineDto,
 } from './dto/create-notice.dto';
+import { SetMarqueeDto } from './dto/marquee.dto';
+import { MarqueeType } from './entities/marquee.entity';
 
 @ApiTags('General')
 @ApiBearerAuth('bearer')
@@ -95,5 +97,26 @@ export class GeneralController {
     @Query('sectionId') sectionId?: string,
   ) {
     return await this.usersService.findStudentsByClass(classId, sectionId);
+  }
+
+  // Marquee endpoints
+  @Post('marquee')
+  async setMarquee(@Body() data: SetMarqueeDto) {
+    return await this.generalService.setMarquee(data);
+  }
+
+  @Public()
+  @Get('marquee/:schoolId')
+  async getAllMarquees(@Param('schoolId') schoolId: string) {
+    return await this.generalService.getAllMarquees(schoolId);
+  }
+
+  @Public()
+  @Get('marquee/:schoolId/:type')
+  async getMarquee(
+    @Param('schoolId') schoolId: string,
+    @Param('type') type: MarqueeType,
+  ) {
+    return await this.generalService.getMarquee(schoolId, type);
   }
 }
