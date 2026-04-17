@@ -7,7 +7,7 @@ import {
   DeleteDateColumn,
   OneToMany,
 } from 'typeorm';
-import { ExamResult } from './exam-result.entity';
+import { Marks } from '../../marks/entities/marks.entity';
 import { AcademicAssignment } from './academic-assignment.entity';
 
 @Entity()
@@ -30,8 +30,9 @@ export class Exam {
   @Column({ default: false })
   isPublished: boolean;
 
-  @OneToMany(() => ExamResult, (result) => result.exam, { cascade: true })
-  results: ExamResult[];
+  @OneToMany(() => Marks, (result) => result.exam, { cascade: true })
+  results: Marks[];
+
 
   @OneToMany(() => AcademicAssignment, (assignment) => assignment.exam, {
     cascade: true,

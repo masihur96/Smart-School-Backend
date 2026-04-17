@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Exam } from './entities/exam.entity';
-import { ExamResult } from './entities/exam-result.entity';
+import { MarksService } from '../marks/marks.service';
+
 import { AcademicAssignment } from './entities/academic-assignment.entity';
 import { Class } from '../classes/entities/class.entity';
 import { Subject } from '../subjects/entities/subject.entity';
@@ -18,8 +19,7 @@ export class ExamsService {
   constructor(
     @InjectRepository(Exam)
     private examRepository: Repository<Exam>,
-    @InjectRepository(ExamResult)
-    private examResultRepository: Repository<ExamResult>,
+    private marksService: MarksService,
     @InjectRepository(AcademicAssignment)
     private academicAssignmentRepository: Repository<AcademicAssignment>,
     @InjectRepository(Class)
@@ -28,6 +28,7 @@ export class ExamsService {
     private subjectRepository: Repository<Subject>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+
   ) {}
 
   async createExam(data: CreateExamDto) {
@@ -186,27 +187,15 @@ export class ExamsService {
     return await query.leftJoinAndSelect('assignment.exam', 'exam').getMany();
   }
 
-  async submitMarks(data: SubmitMarksDto) {
-    const results = this.examResultRepository.create(
-      data.marks.map((mark) => ({
-        ...mark,
-        examId: data.examId,
-      })),
-    );
-    return await this.examResultRepository.save(results);
+  async submitMarks(data: any) {
+    return await this.marksService.submitMarks(data);
   }
+
 
   async getResults(examId: string, studentId?: string) {
-    const query = this.examResultRepository
-      .createQueryBuilder('result')
-      .where('result.examId = :examId', { examId });
-
-    if (studentId) {
-      query.andWhere('result.studentId = :studentId', { studentId });
-    }
-
-    return await query.getMany();
+    return await this.marksService.getMarks(examId, studentId);
   }
+
 
   async findExamsByClass(classId: string) {
     const assignments = await this.academicAssignmentRepository
@@ -235,8 +224,7 @@ export class ExamsService {
   }
 
   async getStudentResults(examId: string, studentId: string) {
-    return await this.examResultRepository.find({
-      where: { examId, studentId },
-    });
+    return await this.marksService.getMarks(examId, studentId);
   }
+
 }

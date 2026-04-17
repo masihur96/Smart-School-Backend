@@ -27,7 +27,6 @@ import { User } from './users/entities/user.entity';
 import { Class } from './classes/entities/class.entity';
 import { Subject } from './subjects/entities/subject.entity';
 import { Exam } from './exams/entities/exam.entity';
-import { ExamResult } from './exams/entities/exam-result.entity';
 import { Attendance } from './attendance/entities/attendance.entity';
 import { Marks } from './marks/entities/marks.entity';
 import { Homework } from './homework/entities/homework.entity';
@@ -58,7 +57,6 @@ import { NotificationsModule } from './notifications/notifications.module';
         Section,
         Subject,
         Exam,
-        ExamResult,
         Attendance,
         Marks,
         Homework,

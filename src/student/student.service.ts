@@ -107,6 +107,6 @@ export class StudentService {
   }
 
   async getExamResults(studentId: string, examId: string) {
-    return await this.examsService.getStudentResults(examId, studentId);
+    return await this.marksService.getMarks(examId, studentId);
   }
 }
