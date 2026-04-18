@@ -1,13 +1,18 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
+import { School } from '../schools/entities/school.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
+    @InjectRepository(School)
+    private schoolRepository: Repository<School>,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -33,17 +38,38 @@ export class AuthService {
     const payload = { sub: user.id, role: user.role };
     const accessToken = this.jwtService.sign(payload);
 
+    let school = null;
+    if (user.schoolId) {
+      school = await this.schoolRepository.findOne({ where: { schoolId: user.schoolId } });
+    }
+
     const { password, ...userWithoutPassword } = user;
     console.debug('Login successful for user:', user.email);
 
     return {
       accessToken,
       refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
-      user: userWithoutPassword,
+      user: {
+        ...userWithoutPassword,
+        school,
+      },
     };
   }
 
   async getCurrentUser(userId: string) {
-    return await this.usersService.findById(userId);
+    const user = await this.usersService.findById(userId);
+    if (!user) return null;
+
+    let school = null;
+    if (user.schoolId) {
+      school = await this.schoolRepository.findOne({ where: { schoolId: user.schoolId } });
+    }
+
+    const { password, ...userWithoutPassword } = user;
+
+    return {
+      ...userWithoutPassword,
+      school,
+    };
   }
 }
