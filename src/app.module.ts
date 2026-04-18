@@ -69,8 +69,9 @@ import { NotificationsModule } from './notifications/notifications.module';
        Subscription,
        School,
      ],
+     migrations: ['dist/migrations/*.js'],
      autoLoadEntities: true,
-     synchronize: true,
+     synchronize: false,
      ssl:
          process.env.NODE_ENV === 'production'
            ? { rejectUnauthorized: false }
