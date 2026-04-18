@@ -6,9 +6,18 @@ import { ClassesModule } from '../classes/classes.module';
 import { SubjectsModule } from '../subjects/subjects.module';
 import { ExamsModule } from '../exams/exams.module';
 import { MarksModule } from '../marks/marks.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { School } from '../schools/entities/school.entity';
 
 @Module({
-  imports: [UsersModule, ClassesModule, SubjectsModule, ExamsModule, MarksModule],
+  imports: [
+    TypeOrmModule.forFeature([School]),
+    UsersModule,
+    ClassesModule,
+    SubjectsModule,
+    ExamsModule,
+    MarksModule,
+  ],
   controllers: [AdminController],
   providers: [AdminService],
   exports: [AdminService],

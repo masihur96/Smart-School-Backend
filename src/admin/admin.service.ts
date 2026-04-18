@@ -1,4 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { School } from '../schools/entities/school.entity';
+import { CreateSchoolDto } from '../schools/dto/create-school.dto';
 import { UsersService } from '../users/users.service';
 import { ClassesService } from '../classes/classes.service';
 import { SubjectsService } from '../subjects/subjects.service';
@@ -21,12 +25,20 @@ import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 @Injectable()
 export class AdminService {
   constructor(
+    @InjectRepository(School)
+    private schoolRepository: Repository<School>,
     private usersService: UsersService,
     private classesService: ClassesService,
     private subjectsService: SubjectsService,
     private examsService: ExamsService,
     private marksService: MarksService,
   ) {}
+
+  // School management
+  async createSchool(data: CreateSchoolDto) {
+    const school = this.schoolRepository.create(data);
+    return await this.schoolRepository.save(school);
+  }
 
   // User management
   async createUser(data: CreateUserDto) {

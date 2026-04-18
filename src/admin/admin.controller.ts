@@ -29,6 +29,7 @@ import {
 import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
 import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assignment.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
+import { CreateSchoolDto } from '../schools/dto/create-school.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
@@ -37,6 +38,13 @@ import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 @Controller('admin')
 export class AdminController {
   constructor(private adminService: AdminService) {}
+
+  // ─── Schools ───────────────────────────────────────
+  @Post('schools')
+  @HttpCode(HttpStatus.CREATED)
+  async createSchool(@Body() dto: CreateSchoolDto) {
+    return await this.adminService.createSchool(dto);
+  }
 
   // ─── Users ───────────────────────────────────────
   @Get('users')
