@@ -34,6 +34,9 @@ export class UsersService {
     page: number = 1,
     limit: number = 20,
     isActive?: boolean,
+    search?: string,
+    classId?: string,
+    sectionId?: string,
   ) {
     const query = this.userRepository.createQueryBuilder('user');
 
@@ -43,6 +46,21 @@ export class UsersService {
 
     if (isActive !== undefined) {
       query.andWhere('user.isActive = :isActive', { isActive });
+    }
+
+    if (search) {
+      query.andWhere(
+        '(LOWER(user.name) LIKE :search OR LOWER(user.email) LIKE :search)',
+        { search: `%${search.toLowerCase()}%` },
+      );
+    }
+
+    if (classId) {
+      query.andWhere('user.classId = :classId', { classId });
+    }
+
+    if (sectionId) {
+      query.andWhere('user.sectionId = :sectionId', { sectionId });
     }
 
     const total = await query.getCount();

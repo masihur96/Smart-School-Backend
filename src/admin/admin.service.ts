@@ -50,8 +50,11 @@ export class AdminService {
     page?: number,
     limit?: number,
     isActive?: boolean,
+    search?: string,
+    classId?: string,
+    sectionId?: string,
   ) {
-    return await this.usersService.findAll(role, page, limit, isActive);
+    return await this.usersService.findAll(role, page, limit, isActive, search, classId, sectionId);
   }
 
   async updateUser(id: string, data: UpdateUserDto) {
