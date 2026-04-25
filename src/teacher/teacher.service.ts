@@ -26,7 +26,6 @@ export class TeacherService {
   ) {}
 
   async getTodaysClasses(teacherId: string, date?: string) {
-    const targetDate = date ? new Date(date) : new Date();
     const days = [
       Day.SUNDAY,
       Day.MONDAY,
@@ -36,7 +35,16 @@ export class TeacherService {
       Day.FRIDAY,
       Day.SATURDAY,
     ];
-    const day = days[targetDate.getDay()];
+    
+    let day: Day;
+    
+    if (date && Object.values(Day).some(d => d.toLowerCase() === date.toLowerCase())) {
+      day = Object.values(Day).find(d => d.toLowerCase() === date.toLowerCase()) as Day;
+    } else {
+      const targetDate = date ? new Date(date) : new Date();
+      day = days[targetDate.getDay()];
+    }
+
     return await this.generalService.getRoutineByTeacherAndDay(teacherId, day);
   }
 
