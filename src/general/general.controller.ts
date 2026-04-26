@@ -119,4 +119,10 @@ export class GeneralController {
   ) {
     return await this.generalService.getMarquee(schoolId, type);
   }
+
+  @Public()
+  @Get('school-data')
+  async getSchoolData() {
+    return await this.generalService.getSchoolData();
+  }
 }

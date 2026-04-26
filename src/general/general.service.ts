@@ -6,6 +6,9 @@ import { Routine, Day } from './entities/routine.entity';
 import { Marquee, MarqueeType } from './entities/marquee.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { SetMarqueeDto } from './dto/marquee.dto';
+import { Class } from '../classes/entities/class.entity';
+import { Section } from '../sections/entities/section.entity';
+import { Subject } from '../subjects/entities/subject.entity';
 
 @Injectable()
 export class GeneralService {
@@ -16,6 +19,12 @@ export class GeneralService {
     private routineRepository: Repository<Routine>,
     @InjectRepository(Marquee)
     private marqueeRepository: Repository<Marquee>,
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
+    @InjectRepository(Section)
+    private sectionRepository: Repository<Section>,
+    @InjectRepository(Subject)
+    private subjectRepository: Repository<Subject>,
     private notificationsService: NotificationsService,
   ) { }
 
@@ -77,7 +86,14 @@ export class GeneralService {
   }
 
   async getAllRoutines() {
-    return await this.routineRepository.find();
+    return await this.routineRepository.find({
+      relations: [
+        'classEntity',
+        'subjectEntity',
+        'teacherEntity',
+        'sectionEntity',
+      ],
+    });
   }
 
   async updateRoutine(id: string, data: Partial<Routine>) {
@@ -124,6 +140,18 @@ export class GeneralService {
     return await this.marqueeRepository.find({
       where: { schoolId },
     });
+  }
+
+  async getSchoolData() {
+    const classes = await this.classRepository.find();
+    const sections = await this.sectionRepository.find();
+    const subjects = await this.subjectRepository.find();
+
+    return {
+      classes,
+      sections,
+      subjects,
+    };
   }
 
   private formatTime(timeStr: string): string {
