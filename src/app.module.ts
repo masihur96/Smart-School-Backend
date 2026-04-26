@@ -71,7 +71,7 @@ import { NotificationsModule } from './notifications/notifications.module';
      ],
      migrations: ['dist/migrations/*.js'],
      autoLoadEntities: true,
-     synchronize: false,
+     synchronize: true,
      ssl:
          process.env.NODE_ENV === 'production'
            ? { rejectUnauthorized: false }
