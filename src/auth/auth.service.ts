@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { School } from '../schools/entities/school.entity';
 
 @Injectable()
@@ -16,7 +17,7 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
-    const user = await this.usersService.findByEmail(loginDto.email);
+    const user = await this.usersService.findByEmailOrPhone(loginDto.identifier);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -44,7 +45,7 @@ export class AuthService {
     }
 
     const { password, ...userWithoutPassword } = user;
-    console.debug('Login successful for user:', user.email);
+    console.debug('Login successful for user:', loginDto.identifier);
 
     return {
       accessToken,
@@ -71,5 +72,25 @@ export class AuthService {
       ...userWithoutPassword,
       school,
     };
+  }
+
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const isPasswordValid = await this.usersService.validatePassword(
+      changePasswordDto.oldPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid current password');
+    }
+
+    return await this.usersService.update(userId, {
+      password: changePasswordDto.newPassword,
+    });
   }
 }
