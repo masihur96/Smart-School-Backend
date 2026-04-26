@@ -344,27 +344,43 @@ export class AttendanceService {
     }
 
     const today = this.normalizeDate(new Date());
-    const existing = await this.teacherAttendanceRepository.findOne({
+    const currentTime = new Date().toLocaleTimeString('en-GB'); // 24h format
+
+    let attendance = await this.teacherAttendanceRepository.findOne({
       where: {
         teacherId,
         date: today as any,
       },
     });
 
-    if (existing) {
-      throw new BadRequestException('Attendance already submitted for today');
+    if (attendance) {
+      // Update existing record: toggle status and update times
+      if (attendance.status === 'clock-in') {
+        attendance.status = 'clock-out';
+        attendance.endTime = currentTime;
+      } else {
+        attendance.status = 'clock-in';
+        attendance.startTime = currentTime;
+        attendance.endTime = null;
+      }
+      attendance.time = currentTime;
+      attendance.lat = data.lat;
+      attendance.lon = data.lon;
+      attendance.distanceFromCenter = distance;
+    } else {
+      // Create new record for today
+      attendance = this.teacherAttendanceRepository.create({
+        teacherId,
+        schoolId: teacher.schoolId,
+        lat: data.lat,
+        lon: data.lon,
+        distanceFromCenter: distance,
+        date: today as any,
+        time: currentTime,
+        status: 'clock-in',
+        startTime: currentTime,
+      });
     }
-
-    const attendance = this.teacherAttendanceRepository.create({
-      teacherId,
-      schoolId: teacher.schoolId,
-      lat: data.lat,
-      lon: data.lon,
-      distanceFromCenter: distance,
-      date: today as any,
-      time: new Date().toLocaleTimeString('en-GB'), // 24h format
-      status: 'present',
-    });
 
     return await this.teacherAttendanceRepository.save(attendance);
   }

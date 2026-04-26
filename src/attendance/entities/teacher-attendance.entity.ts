@@ -37,8 +37,14 @@ export class TeacherAttendance {
   @Column({ type: 'float', nullable: true })
   distanceFromCenter: number;
 
+  @Column({ type: 'time', nullable: true })
+  startTime: string;
+
+  @Column({ type: 'time', nullable: true })
+  endTime: string;
+
   @Column()
-  status: string; // 'present'
+  status: string; // 'clock-in' | 'clock-out'
 
   @Column()
   schoolId: string;
