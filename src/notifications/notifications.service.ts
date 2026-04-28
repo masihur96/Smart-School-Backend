@@ -4,6 +4,7 @@ import { Repository, In } from 'typeorm';
 import * as admin from 'firebase-admin';
 import { Notification } from './entities/notification.entity';
 import { FcmToken } from './entities/fcm-token.entity';
+import { formatReadableDate } from '../common/utils/date.util';
 
 @Injectable()
 export class NotificationsService {
@@ -124,9 +125,34 @@ export class NotificationsService {
   }
 
   async getUserNotifications(userId: string) {
-    return await this.notificationRepository.find({
+    const notifications = await this.notificationRepository.find({
       where: { recipientId: userId },
       order: { createdAt: 'DESC' },
+    });
+
+    return notifications.map((notification) => ({
+      ...notification,
+      body: this.beautifyBody(notification.body),
+    }));
+  }
+
+  private beautifyBody(body: string): string {
+    if (!body) return body;
+
+    // Regexp for long JS date format: "Mon Apr 27 2026 00:00:00 GMT+0000 (Coordinated Universal Time)"
+    const longDateRegex =
+      /[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} GMT[-+]\d{4} \(.*\)/g;
+
+    return body.replace(longDateRegex, (match) => {
+      try {
+        const date = new Date(match);
+        if (!isNaN(date.getTime())) {
+          return formatReadableDate(date);
+        }
+      } catch (e) {
+        // ignore
+      }
+      return match;
     });
   }
 

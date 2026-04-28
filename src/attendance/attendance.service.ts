@@ -17,6 +17,7 @@ import { User, UserRole } from '../users/entities/user.entity';
 import { TeacherAttendance } from './entities/teacher-attendance.entity';
 import { SubmitTeacherAttendanceDto } from './dto/submit-teacher-attendance.dto';
 import { NotificationsService } from '../notifications/notifications.service';
+import { formatReadableDate } from '../common/utils/date.util';
 
 @Injectable()
 export class AttendanceService {
@@ -111,7 +112,7 @@ export class AttendanceService {
         this.notificationsService.sendToUser(
           record.studentId,
           '⚠️ Absence Alert',
-          `You have been marked ABSENT for ${data.date}.`,
+          `You have been marked ABSENT for ${formatReadableDate(data.date)}.`,
           { type: 'ATTENDANCE_ABSENT', date: data.date.toISOString().split('T')[0] },
         );
       }
