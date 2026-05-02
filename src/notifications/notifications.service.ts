@@ -23,29 +23,67 @@ export class NotificationsService {
     private readonly usersService: UsersService,
   ) { }
 
-  async registerToken(userId: string, token: string, deviceType?: string) {
-    let fcmToken = await this.fcmTokenRepository.findOne({ where: { token } });
+  async registerToken(
+    userId: string,
+    token?: string,
+    deviceType?: string,
+    schoolId?: string,
+    classId?: string,
+    sectionId?: string,
+    targetUserId?: string,
+  ) {
+    let tokens: string[] = [];
 
-    if (fcmToken) {
-      fcmToken.userId = userId;
-      if (deviceType) fcmToken.deviceType = deviceType;
+    if (token) {
+      let fcmToken = await this.fcmTokenRepository.findOne({ where: { token } });
+
+      if (fcmToken) {
+        fcmToken.userId = userId;
+        if (deviceType) fcmToken.deviceType = deviceType;
+      } else {
+        fcmToken = this.fcmTokenRepository.create({
+          userId,
+          token,
+          deviceType,
+        });
+      }
+
+      await this.fcmTokenRepository.save(fcmToken);
+      tokens.push(token);
     } else {
-      fcmToken = this.fcmTokenRepository.create({
-        userId,
-        token,
-        deviceType,
+      // If no token provided, get all existing tokens for the user
+      const userTokens = await this.fcmTokenRepository.find({ where: { userId } });
+      tokens = userTokens.map((t) => t.token);
+    }
+
+    if (tokens.length === 0) {
+      this.logger.warn(`No FCM tokens to subscribe for user ${userId}`);
+      return { success: false, message: 'No tokens found to subscribe' };
+    }
+
+    // Automatically subscribe to topics for each token
+    for (const t of tokens) {
+      await this.subscribeTokenToTopics(t, userId, {
+        schoolId,
+        classId,
+        sectionId,
+        userId: targetUserId,
       });
     }
 
-    const savedToken = await this.fcmTokenRepository.save(fcmToken);
-
-    // Automatically subscribe to topics
-    await this.subscribeTokenToTopics(token, userId);
-
-    return savedToken;
+    return { success: true, message: `Subscribed ${tokens.length} token(s) to topics` };
   }
 
-  async subscribeTokenToTopics(token: string, userId: string) {
+  async subscribeTokenToTopics(
+    token: string,
+    userId: string,
+    explicitIds?: {
+      schoolId?: string;
+      classId?: string;
+      sectionId?: string;
+      userId?: string;
+    },
+  ) {
     try {
       const user = await this.usersService.findById(userId);
       if (!user) {
@@ -55,30 +93,42 @@ export class NotificationsService {
 
       const topics: string[] = [];
 
+      // Use explicit IDs if provided, otherwise fallback to user's database records
+      const sId = explicitIds?.schoolId || user.schoolId;
+      const cId = explicitIds?.classId || user.classId;
+      const secId = explicitIds?.sectionId || user.sectionId;
+      const uId = explicitIds?.userId || user.id;
+
       // 1. School topic
-      if (user.schoolId) {
-        topics.push(`school_${user.schoolId}`);
+      if (sId) {
+        topics.push(`school_${sId}`);
       }
 
       // 2. Class topic
-      if (user.classId) {
-        topics.push(`class_${user.classId}`);
+      if (cId) {
+        topics.push(`class_${cId}`);
       }
 
-      // 3. Role-specific topics (optional but useful)
+      // 3. Section topic
+      if (secId) {
+        topics.push(`section_${secId}`);
+      }
+
+      // 4. Role-specific topics (optional but useful)
       if (user.role === UserRole.STUDENT) {
         topics.push(`student_${user.id}`);
       }
-      
-      // 4. Personal user topic
-      topics.push(`user_${user.id}`);
+
+      // 5. Personal user topic
+      if (uId) {
+        topics.push(`user_${uId}`);
+      }
 
       if (topics.length > 0) {
-        this.logger.log(`Subscribing token to topics for user ${userId}: ${topics.join(', ')}`);
-        
-        // Firebase Admin SDK allows subscribing a single token to multiple topics
-        // but we have to do it one by one or in batches of tokens for one topic.
-        // For one token and multiple topics, we loop.
+        this.logger.log(
+          `Subscribing token to topics for user ${userId}: ${topics.join(', ')}`,
+        );
+
         for (const topic of topics) {
           await this.firebaseApp.messaging().subscribeToTopic(token, topic);
         }
@@ -158,6 +208,57 @@ export class NotificationsService {
     }
 
     return notification;
+  }
+
+  async sendNotification(
+    receiverUuid: string,
+    title: string,
+    messageBody: string,
+    additionalData?: Record<string, any>,
+    image?: string,
+  ) {
+    // 1. Prepare FCM data payload (must be string-string)
+    const data: Record<string, string> = {};
+    if (additionalData) {
+      Object.entries(additionalData).forEach(([key, value]) => {
+        data[key] = typeof value === 'object' ? JSON.stringify(value) : String(value);
+      });
+    }
+
+    // 2. Send to topic (treating receiverUuid as the topic name)
+    const message: admin.messaging.Message = {
+      topic: receiverUuid,
+      notification: {
+        title,
+        body: messageBody,
+        ...(image && { imageUrl: image }),
+      },
+      data,
+    };
+
+    try {
+      const response = await this.firebaseApp.messaging().send(message);
+      this.logger.log(`Notification sent to topic ${receiverUuid}: ${response}`);
+
+      // 3. (Optional) Save to DB if receiverUuid matches a user
+      const user = await this.usersService.findById(receiverUuid).catch(() => null);
+      if (user) {
+        const notification = this.notificationRepository.create({
+          recipientId: receiverUuid,
+          title,
+          body: messageBody,
+          data: data,
+        });
+        await this.notificationRepository.save(notification);
+      }
+
+      return { success: true, messageId: response };
+    } catch (error: any) {
+      this.logger.error(
+        `Error sending notification to topic ${receiverUuid}: ${error.message}`,
+      );
+      throw error;
+    }
   }
 
   async sendToTopic(

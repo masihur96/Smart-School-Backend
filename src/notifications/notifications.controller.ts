@@ -26,20 +26,43 @@ export class NotificationsController {
   constructor(private readonly service: NotificationsService) { }
 
   @Public()
-  @Post('send-test')
-  @ApiOperation({ summary: 'Send a test notification (Public)' })
+  @Post('send')
+  @ApiOperation({ summary: 'Send a notification via topic' })
   @ApiBody({
     schema: {
       type: 'object',
+      required: ['receiver_uuid', 'title', 'message'],
       properties: {
-        title: { type: 'string', example: 'Test Title' },
-        body: { type: 'string', example: 'This is a test message' },
-        topic: { type: 'string', example: 'all_users', description: 'FCM topic name' },
-        userId: { type: 'string', example: 'uuid-123', description: 'Target user UUID' },
-        data: { type: 'object', example: { key: 'value' } },
+        receiver_uuid: { type: 'string', example: 'user-uuid-or-topic-name' },
+        title: { type: 'string', example: 'Notification Title' },
+        message: { type: 'string', example: 'Notification Body Message' },
+        additional_data: { type: 'object', example: { path: '/home', uuid: '123' } },
+        image: { type: 'string', example: 'https://example.com/image.png' },
       },
     },
   })
+  async sendNotification(
+    @Body()
+    body: {
+      receiver_uuid: string;
+      title: string;
+      message: string;
+      additional_data?: Record<string, any>;
+      image?: string;
+    },
+  ) {
+    return await this.service.sendNotification(
+      body.receiver_uuid,
+      body.title,
+      body.message,
+      body.additional_data,
+      body.image,
+    );
+  }
+
+  @Public()
+  @Post('send-test')
+  @ApiOperation({ summary: 'Send a test notification (Public)' })
   async sendTestNotification(
     @Body()
     body: {
@@ -71,25 +94,43 @@ export class NotificationsController {
 
   @Post('fcm-token')
   @ApiBearerAuth('bearer')
-  @ApiOperation({ summary: 'Register/Update FCM token for the logged-in user' })
+  @ApiOperation({
+    summary: 'Register FCM token and subscribe to topics (Class, Section, School, etc.)',
+    description: 'Registers the device token and subscribes the user to relevant topics. If no token is provided, it updates subscriptions for all existing tokens of the user.',
+  })
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['token'],
       properties: {
-        token: { type: 'string', example: 'fcm_registration_token_here' },
+        token: { type: 'string', example: 'fcm_registration_token_here', description: 'Optional if token already registered' },
         deviceType: { type: 'string', example: 'android', enum: ['android', 'ios', 'web'] },
+        userId: { type: 'string', example: 'user-uuid', description: 'Explicit user ID to subscribe (defaults to logged-in user)' },
+        classId: { type: 'string', example: 'class-uuid', description: 'Explicit class ID to subscribe' },
+        sectionId: { type: 'string', example: 'section-uuid', description: 'Explicit section ID to subscribe' },
+        schoolId: { type: 'string', example: 'school-uuid', description: 'Explicit school ID to subscribe' },
       },
     },
   })
   async registerToken(
     @Req() req: any,
-    @Body() body: { token: string; deviceType?: string },
+    @Body()
+    body: {
+      token?: string;
+      deviceType?: string;
+      userId?: string;
+      classId?: string;
+      sectionId?: string;
+      schoolId?: string;
+    },
   ) {
     return await this.service.registerToken(
       req.user.id,
       body.token,
       body.deviceType,
+      body.schoolId,
+      body.classId,
+      body.sectionId,
+      body.userId,
     );
   }
 
