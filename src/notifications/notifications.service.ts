@@ -7,6 +7,9 @@ import { FcmToken } from './entities/fcm-token.entity';
 import { formatReadableDate } from '../common/utils/date.util';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../users/entities/user.entity';
+import { Class } from '../classes/entities/class.entity';
+import { Section } from '../sections/entities/section.entity';
+import { School } from '../schools/entities/school.entity';
 
 @Injectable()
 export class NotificationsService {
@@ -21,6 +24,12 @@ export class NotificationsService {
     private fcmTokenRepository: Repository<FcmToken>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
+    @InjectRepository(Section)
+    private sectionRepository: Repository<Section>,
+    @InjectRepository(School)
+    private schoolRepository: Repository<School>,
   ) { }
 
   async registerToken(
@@ -225,9 +234,47 @@ export class NotificationsService {
       });
     }
 
-    // 2. Send to topic (treating receiverUuid as the topic name)
+    // 2. Resolve target topic and recipientId
+    let targetTopic = receiverUuid;
+    let recipientId = receiverUuid;
+    let targetSchoolId = null;
+
+    // Check if it's a User
+    const user = await this.usersService.findById(receiverUuid).catch(() => null);
+    if (user) {
+      targetTopic = `user_${user.id}`;
+      recipientId = user.id;
+      targetSchoolId = user.schoolId;
+    } else {
+      // Check if it's a Class
+      const classEntity = await this.classRepository.findOne({ where: { id: receiverUuid } }).catch(() => null);
+      if (classEntity) {
+        targetTopic = `class_${receiverUuid}`;
+        recipientId = `class_${receiverUuid}`;
+        targetSchoolId = classEntity.schoolId;
+      } else {
+        // Check if it's a Section
+        const sectionEntity = await this.sectionRepository.findOne({ where: { id: receiverUuid } }).catch(() => null);
+        if (sectionEntity) {
+          targetTopic = `section_${receiverUuid}`;
+          recipientId = `section_${receiverUuid}`;
+        } else {
+          // Check if it's a School
+          const schoolEntity = await this.schoolRepository.findOne({
+            where: [{ id: receiverUuid }, { schoolId: receiverUuid }],
+          }).catch(() => null);
+          if (schoolEntity) {
+            targetTopic = `school_${schoolEntity.schoolId || schoolEntity.id}`;
+            recipientId = `school_${schoolEntity.schoolId || schoolEntity.id}`;
+            targetSchoolId = schoolEntity.schoolId || schoolEntity.id;
+          }
+        }
+      }
+    }
+
+    // 3. Send to topic
     const message: admin.messaging.Message = {
-      topic: receiverUuid,
+      topic: targetTopic,
       notification: {
         title,
         body: messageBody,
@@ -238,24 +285,22 @@ export class NotificationsService {
 
     try {
       const response = await this.firebaseApp.messaging().send(message);
-      this.logger.log(`Notification sent to topic ${receiverUuid}: ${response}`);
+      this.logger.log(`Notification sent to topic ${targetTopic}: ${response}`);
 
-      // 3. (Optional) Save to DB if receiverUuid matches a user
-      const user = await this.usersService.findById(receiverUuid).catch(() => null);
-      if (user) {
-        const notification = this.notificationRepository.create({
-          recipientId: receiverUuid,
-          title,
-          body: messageBody,
-          data: data,
-        });
-        await this.notificationRepository.save(notification);
-      }
+      // 4. Save to DB
+      const notification = this.notificationRepository.create({
+        recipientId: recipientId,
+        title,
+        body: messageBody,
+        data: data,
+        schoolId: targetSchoolId,
+      });
+      await this.notificationRepository.save(notification);
 
       return { success: true, messageId: response };
     } catch (error: any) {
       this.logger.error(
-        `Error sending notification to topic ${receiverUuid}: ${error.message}`,
+        `Error sending notification to topic ${targetTopic}: ${error.message}`,
       );
       throw error;
     }
@@ -280,8 +325,22 @@ export class NotificationsService {
   }
 
   async getUserNotifications(userId: string) {
+    const user = await this.usersService.findById(userId);
+    if (!user) return [];
+
+    // Define all possible topics/recipient IDs for this user
+    const possibleRecipientIds = [
+      userId,
+      `user_${userId}`,
+      `student_${userId}`, // For student role
+    ];
+
+    if (user.classId) possibleRecipientIds.push(`class_${user.classId}`);
+    if (user.sectionId) possibleRecipientIds.push(`section_${user.sectionId}`);
+    if (user.schoolId) possibleRecipientIds.push(`school_${user.schoolId}`);
+
     const notifications = await this.notificationRepository.find({
-      where: { recipientId: userId },
+      where: { recipientId: In(possibleRecipientIds) },
       order: { createdAt: 'DESC' },
     });
 
