@@ -1,10 +1,12 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import * as admin from 'firebase-admin';
 import { Notification } from './entities/notification.entity';
 import { FcmToken } from './entities/fcm-token.entity';
 import { formatReadableDate } from '../common/utils/date.util';
+import { UsersService } from '../users/users.service';
+import { UserRole } from '../users/entities/user.entity';
 
 @Injectable()
 export class NotificationsService {
@@ -17,6 +19,8 @@ export class NotificationsService {
     private notificationRepository: Repository<Notification>,
     @InjectRepository(FcmToken)
     private fcmTokenRepository: Repository<FcmToken>,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
   ) { }
 
   async registerToken(userId: string, token: string, deviceType?: string) {
@@ -33,7 +37,57 @@ export class NotificationsService {
       });
     }
 
-    return await this.fcmTokenRepository.save(fcmToken);
+    const savedToken = await this.fcmTokenRepository.save(fcmToken);
+
+    // Automatically subscribe to topics
+    await this.subscribeTokenToTopics(token, userId);
+
+    return savedToken;
+  }
+
+  async subscribeTokenToTopics(token: string, userId: string) {
+    try {
+      const user = await this.usersService.findById(userId);
+      if (!user) {
+        this.logger.warn(`Cannot subscribe to topics: User ${userId} not found`);
+        return;
+      }
+
+      const topics: string[] = [];
+
+      // 1. School topic
+      if (user.schoolId) {
+        topics.push(`school_${user.schoolId}`);
+      }
+
+      // 2. Class topic
+      if (user.classId) {
+        topics.push(`class_${user.classId}`);
+      }
+
+      // 3. Role-specific topics (optional but useful)
+      if (user.role === UserRole.STUDENT) {
+        topics.push(`student_${user.id}`);
+      }
+      
+      // 4. Personal user topic
+      topics.push(`user_${user.id}`);
+
+      if (topics.length > 0) {
+        this.logger.log(`Subscribing token to topics for user ${userId}: ${topics.join(', ')}`);
+        
+        // Firebase Admin SDK allows subscribing a single token to multiple topics
+        // but we have to do it one by one or in batches of tokens for one topic.
+        // For one token and multiple topics, we loop.
+        for (const topic of topics) {
+          await this.firebaseApp.messaging().subscribeToTopic(token, topic);
+        }
+      }
+    } catch (error: any) {
+      this.logger.error(
+        `Error subscribing token to topics for user ${userId}: ${error.message}`,
+      );
+    }
   }
 
   async sendToUser(
