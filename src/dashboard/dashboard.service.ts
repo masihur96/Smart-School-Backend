@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import * as os from 'os';
+import { getLocalDateString } from '../common/utils/date.util';
 
 // Entities
 import { User, UserRole } from '../users/entities/user.entity';
@@ -185,7 +186,7 @@ export class DashboardService {
   // ─────────────────────────────────────────────────────────────
 
   async getAdminDashboard(schoolId: string) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
 
     const [attendTeacher, attendStudent, recentHomework, recentNotice, currentExam] =
       await Promise.all([
@@ -283,7 +284,7 @@ export class DashboardService {
       take: 5,
     });
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     const current = exams.filter(
       (e) => (!e.end_date || e.end_date >= today) && (!e.start_date || e.start_date <= today),
     );
@@ -300,7 +301,7 @@ export class DashboardService {
   // ─────────────────────────────────────────────────────────────
 
   async getTeacherDashboard(teacherId: string, schoolId: string) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
 
     const [
       attendanceStatus,
@@ -316,7 +317,7 @@ export class DashboardService {
       this.getTeacherClassStudentAttendance(teacherId, today),
       this.getTeacherSubmittedHomework(teacherId),
       this.getMarqueeForRole(schoolId, MarqueeType.TEACHER),
-      this.getSchoolRecentNotices(schoolId),
+      this.getTeacherRecentNotices(schoolId),
       this.getTeacherExamList(teacherId),
     ]);
 
@@ -399,6 +400,41 @@ export class DashboardService {
     return this.marqueeRepo.findOne({ where: { schoolId, type } });
   }
 
+  /**
+   * Notices for TEACHER dashboard: targetAudience is 'teacher' or 'all' (null/undefined = all)
+   */
+  private async getTeacherRecentNotices(schoolId: string) {
+    return this.noticeRepo
+      .createQueryBuilder('notice')
+      .where('notice.schoolId = :schoolId', { schoolId })
+      .andWhere(
+        '(notice.targetAudience = :teacher OR notice.targetAudience = :all OR notice.targetAudience IS NULL)',
+        { teacher: 'teacher', all: 'all' },
+      )
+      .orderBy('notice.createdAt', 'DESC')
+      .take(5)
+      .getMany();
+  }
+
+  /**
+   * Notices for STUDENT dashboard: targetAudience is 'student' or 'all' (null/undefined = all)
+   */
+  private async getStudentRecentNotices(schoolId: string) {
+    return this.noticeRepo
+      .createQueryBuilder('notice')
+      .where('notice.schoolId = :schoolId', { schoolId })
+      .andWhere(
+        '(notice.targetAudience = :student OR notice.targetAudience = :all OR notice.targetAudience IS NULL)',
+        { student: 'student', all: 'all' },
+      )
+      .orderBy('notice.createdAt', 'DESC')
+      .take(5)
+      .getMany();
+  }
+
+  /**
+   * Unfiltered notices — used by admin dashboard (admin sees all)
+   */
   private async getSchoolRecentNotices(schoolId: string) {
     return this.noticeRepo.find({
       where: { schoolId },
@@ -447,7 +483,7 @@ export class DashboardService {
     const student = await this.userRepo.findOne({ where: { id: studentId } });
     if (!student) return null;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
 
     const [
       todayAttendanceStatus,
@@ -461,7 +497,7 @@ export class DashboardService {
       this.getStudentAttendanceList(studentId),
       this.getStudentRecentHomework(studentId),
       this.getMarqueeForRole(schoolId, MarqueeType.STUDENT),
-      this.getSchoolRecentNotices(schoolId),
+      this.getStudentRecentNotices(schoolId),
       this.getStudentExamListWithResults(studentId, student.classId),
     ]);
 
