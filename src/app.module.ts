@@ -38,6 +38,7 @@ import { Subscription } from './subscriptions/entities/subscription.entity';
 import { School } from './schools/entities/school.entity';
 import { SuperadminModule } from './superadmin/superadmin.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -97,6 +98,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     SubscriptionModule,
     SuperadminModule,
     NotificationsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [
