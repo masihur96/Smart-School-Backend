@@ -26,11 +26,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   handleRequest(err: any, user: any, info: any) {
     if (err || !user) {
-      throw new UnauthorizedException(
-        err?.message ||
-          info?.message ||
-          'Unauthorized - Invalid or missing token',
-      );
+      throw err instanceof UnauthorizedException
+        ? err
+        : new UnauthorizedException(
+            info?.message || 'Unauthorized - Invalid or missing token',
+          );
     }
     return user;
   }

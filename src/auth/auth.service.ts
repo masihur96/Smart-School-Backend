@@ -36,7 +36,13 @@ export class AuthService {
       throw new UnauthorizedException('Your account is deactivated');
     }
 
-    const payload = { sub: user.id, role: user.role };
+    const payload = {
+      sub: user.id,
+      role: user.role,
+      schoolId: user.schoolId || null,
+      classId: user.classId || null,
+      sectionId: user.sectionId || null,
+    };
     const accessToken = this.jwtService.sign(payload);
 
     let school = null;
