@@ -275,25 +275,38 @@ export class DashboardService {
   }
 
   private async getAdminCurrentExam(schoolId: string) {
-    // Get exams where school's students/teachers are assigned — cross-reference via AcademicAssignment
-    // For now return latest published exams
     const exams = await this.examRepo.find({
       where: { isPublished: true },
       relations: ['assignments'],
-      order: { createdAt: 'DESC' },
-      take: 5,
+      order: { start_date: 'DESC' },
     });
 
     const today = getLocalDateString();
-    const current = exams.filter(
-      (e) => (!e.end_date || e.end_date >= today) && (!e.start_date || e.start_date <= today),
-    );
-    const upcoming = exams.filter((e) => e.start_date && e.start_date > today);
 
-    return {
-      currentExams: current.slice(0, 3),
-      upcomingExams: upcoming.slice(0, 3),
-    };
+    // Tag each exam with a status and return as a single sorted list
+    const examList = exams.map((e) => {
+      let status: 'current' | 'recent' | 'upcoming';
+
+      if (e.start_date && e.end_date) {
+        if (e.start_date <= today && e.end_date >= today) {
+          status = 'current';
+        } else if (e.end_date < today) {
+          status = 'recent';
+        } else {
+          status = 'upcoming';
+        }
+      } else {
+        status = 'upcoming'; // fallback for exams missing dates
+      }
+
+      return { ...e, status };
+    });
+
+    // Sort: current first, then upcoming, then recent
+    const order = { current: 0, upcoming: 1, recent: 2 };
+    examList.sort((a, b) => order[a.status] - order[b.status]);
+
+    return examList;
   }
 
   // ─────────────────────────────────────────────────────────────
