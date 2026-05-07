@@ -15,6 +15,9 @@ import { Exam } from '../exams/entities/exam.entity';
 import { AcademicAssignment } from '../exams/entities/academic-assignment.entity';
 import { Marks } from '../marks/entities/marks.entity';
 import { Marquee } from '../general/entities/marquee.entity';
+import { Class } from '../classes/entities/class.entity';
+import { Subject } from '../subjects/entities/subject.entity';
+import { Section } from '../sections/entities/section.entity';
 
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
@@ -35,6 +38,9 @@ import { DashboardService } from './dashboard.service';
       AcademicAssignment,
       Marks,
       Marquee,
+      Class,
+      Subject,
+      Section,
     ]),
   ],
   controllers: [DashboardController],

@@ -18,6 +18,9 @@ import { Exam } from '../exams/entities/exam.entity';
 import { AcademicAssignment } from '../exams/entities/academic-assignment.entity';
 import { Marks } from '../marks/entities/marks.entity';
 import { Marquee, MarqueeType } from '../general/entities/marquee.entity';
+import { Class } from '../classes/entities/class.entity';
+import { Subject } from '../subjects/entities/subject.entity';
+import { Section } from '../sections/entities/section.entity';
 
 @Injectable()
 export class DashboardService {
@@ -48,6 +51,12 @@ export class DashboardService {
     private readonly marksRepo: Repository<Marks>,
     @InjectRepository(Marquee)
     private readonly marqueeRepo: Repository<Marquee>,
+    @InjectRepository(Class)
+    private readonly classRepo: Repository<Class>,
+    @InjectRepository(Subject)
+    private readonly subjectRepo: Repository<Subject>,
+    @InjectRepository(Section)
+    private readonly sectionRepo: Repository<Section>,
   ) {}
 
   // ─────────────────────────────────────────────────────────────
@@ -259,11 +268,20 @@ export class DashboardService {
   }
 
   private async getAdminRecentHomework(schoolId: string) {
-    return this.homeworkRepo.find({
+    const homeworks = await this.homeworkRepo.find({
       where: { schoolId },
       order: { createdAt: 'DESC' },
       take: 5,
     });
+
+    return Promise.all(
+      homeworks.map(async (hw) => {
+        const classInfo = await this.classRepo.findOne({ where: { id: hw.classId } });
+        const subjectInfo = await this.subjectRepo.findOne({ where: { id: hw.subjectId } });
+        const sectionInfo = hw.sectionId ? await this.sectionRepo.findOne({ where: { id: hw.sectionId } }) : null;
+        return { ...hw, classInfo, subjectInfo, sectionInfo };
+      }),
+    );
   }
 
   private async getAdminRecentNotice(schoolId: string) {
@@ -393,19 +411,37 @@ export class DashboardService {
       else if (record.status === AttendanceStatus.LEAVE) entry.leave++;
     }
 
-    return Array.from(classMap.values()).map((entry) => ({
-      ...entry,
-      attendanceRate:
-        entry.total > 0 ? parseFloat(((entry.present / entry.total) * 100).toFixed(2)) : 0,
-    }));
+    const classList = Array.from(classMap.values());
+    const enrichedClassList = await Promise.all(
+      classList.map(async (entry) => {
+        const classInfo = await this.classRepo.findOne({ where: { id: entry.classId } });
+        return {
+          ...entry,
+          classInfo,
+          attendanceRate:
+            entry.total > 0 ? parseFloat(((entry.present / entry.total) * 100).toFixed(2)) : 0,
+        };
+      })
+    );
+
+    return enrichedClassList;
   }
 
   private async getTeacherSubmittedHomework(teacherId: string) {
-    return this.homeworkRepo.find({
+    const homeworks = await this.homeworkRepo.find({
       where: { teacherId },
       order: { createdAt: 'DESC' },
       take: 10,
     });
+
+    return Promise.all(
+      homeworks.map(async (hw) => {
+        const classInfo = await this.classRepo.findOne({ where: { id: hw.classId } });
+        const subjectInfo = await this.subjectRepo.findOne({ where: { id: hw.subjectId } });
+        const sectionInfo = hw.sectionId ? await this.sectionRepo.findOne({ where: { id: hw.sectionId } }) : null;
+        return { ...hw, classInfo, subjectInfo, sectionInfo };
+      }),
+    );
   }
 
   private async getMarqueeForRole(schoolId: string, type: MarqueeType) {
@@ -420,8 +456,8 @@ export class DashboardService {
       .createQueryBuilder('notice')
       .where('notice.schoolId = :schoolId', { schoolId })
       .andWhere(
-        '(notice.targetAudience = :teacher OR notice.targetAudience = :all OR notice.targetAudience IS NULL)',
-        { teacher: 'teacher', all: 'all' },
+        '(notice.targetAudience ILIKE :teacher OR notice.targetAudience ILIKE :all OR notice.targetAudience IS NULL OR notice.targetAudience = :empty)',
+        { teacher: '%teacher%', all: '%all%', empty: '' },
       )
       .orderBy('notice.createdAt', 'DESC')
       .take(5)
@@ -436,8 +472,8 @@ export class DashboardService {
       .createQueryBuilder('notice')
       .where('notice.schoolId = :schoolId', { schoolId })
       .andWhere(
-        '(notice.targetAudience = :student OR notice.targetAudience = :all OR notice.targetAudience IS NULL)',
-        { student: 'student', all: 'all' },
+        '(notice.targetAudience ILIKE :student OR notice.targetAudience ILIKE :all OR notice.targetAudience IS NULL OR notice.targetAudience = :empty)',
+        { student: '%student%', all: '%all%', empty: '' },
       )
       .orderBy('notice.createdAt', 'DESC')
       .take(5)
@@ -567,12 +603,27 @@ export class DashboardService {
       take: 10,
     });
 
-    return studentHomeworks.map((sh) => ({
-      id: sh.id,
-      status: sh.status,
-      comment: sh.comment,
-      homework: sh.homework,
-    }));
+    return Promise.all(
+      studentHomeworks.map(async (sh) => {
+        let classInfo = null, subjectInfo = null, sectionInfo = null;
+        if (sh.homework) {
+          classInfo = await this.classRepo.findOne({ where: { id: sh.homework.classId } });
+          subjectInfo = await this.subjectRepo.findOne({ where: { id: sh.homework.subjectId } });
+          sectionInfo = sh.homework.sectionId ? await this.sectionRepo.findOne({ where: { id: sh.homework.sectionId } }) : null;
+        }
+        return {
+          id: sh.id,
+          status: sh.status,
+          comment: sh.comment,
+          homework: sh.homework ? {
+            ...sh.homework,
+            classInfo,
+            subjectInfo,
+            sectionInfo,
+          } : null,
+        };
+      })
+    );
   }
 
   private async getStudentExamListWithResults(studentId: string, classId: string) {
