@@ -276,7 +276,6 @@ export class DashboardService {
 
   private async getAdminCurrentExam(schoolId: string) {
     const exams = await this.examRepo.find({
-      where: { isPublished: true },
       relations: ['assignments'],
       order: { start_date: 'DESC' },
     });
