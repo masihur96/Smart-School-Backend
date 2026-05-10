@@ -33,9 +33,8 @@ export class MarksService {
           marksEntry.schoolId = data.schoolId; // Ensure schoolId is also updated
         } else {
           // Create new marks entry
-          const { remarks, ...markItemWithoutRemarks } = markItem;
           marksEntry = this.marksRepository.create({
-            ...markItemWithoutRemarks,
+            ...markItem,
             examId: data.examId,
             teacherId: data.teacherId,
             schoolId: data.schoolId,
