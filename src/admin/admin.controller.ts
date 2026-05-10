@@ -10,7 +10,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
@@ -166,6 +166,29 @@ export class AdminController {
   // ─── Marks ───────────────────────────────────────
   @Post('marks')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Submit or update marks for multiple students' })
+  @ApiBody({
+    type: SubmitMarksDto,
+    examples: {
+      sample: {
+        summary: 'Sample marks payload',
+        value: {
+          examId: '79b88307-59d4-42f0-9b6f-7f7e9a8d2e8b',
+          teacherId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+          schoolId: 'd1a8e234-789a-4cde-b567-f8e9d0c1b2a3',
+          marks: [
+            {
+              studentId: 'a1b2c3d4-e5f6-4g7h-8i9j-0k1l2m3n4o5p',
+              subjectId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+              marksObtained: 85.5,
+              totalMarks: 100,
+              remarks: 'Excellent performance',
+            },
+          ],
+        },
+      },
+    },
+  })
   async submitMarks(@Body() dto: SubmitMarksDto) {
     return await this.adminService.submitMarks(dto);
   }

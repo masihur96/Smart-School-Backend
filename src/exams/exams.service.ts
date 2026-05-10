@@ -11,8 +11,8 @@ import { User } from '../users/entities/user.entity';
 import {
   CreateExamDto,
   UpdateExamDto,
-  SubmitMarksDto,
 } from './dto/create-exam.dto';
+import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 import { CreateAcademicAssignmentDto } from './dto/create-academic-assignment.dto';
 @Injectable()
 export class ExamsService {

@@ -85,23 +85,3 @@ export class UpdateExamDto {
   assignments?: CreateAcademicAssignmentDto[];
 }
 
-export class SubmitMarksDto {
-  @IsUUID()
-  examId: string;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => MarksItemDto)
-  marks: MarksItemDto[];
-}
-
-export class MarksItemDto {
-  @IsUUID()
-  studentId: string;
-
-  @IsNumber()
-  marksObtained: number;
-
-  @IsNumber()
-  totalMarks: number;
-}
