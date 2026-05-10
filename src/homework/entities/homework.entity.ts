@@ -25,21 +25,21 @@ export class Homework {
 
   @ManyToOne(() => Class)
   @JoinColumn({ name: 'classId' })
-  class: Class;
+  classEntity: Class;
 
   @Column()
   subjectId: string;
 
   @ManyToOne(() => Subject)
   @JoinColumn({ name: 'subjectId' })
-  subject: Subject;
+  subjectEntity: Subject;
 
   @Column()
   teacherId: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'teacherId' })
-  teacher: User;
+  teacherEntity: User;
 
   @Column()
   title: string;
@@ -55,7 +55,7 @@ export class Homework {
 
   @ManyToOne(() => Section)
   @JoinColumn({ name: 'sectionId' })
-  section: Section;
+  sectionEntity: Section;
 
   @Column()
   schoolId: string;

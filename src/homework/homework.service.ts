@@ -70,12 +70,13 @@ export class HomeworkService {
     schoolId?: string,
   ) {
     const query = this.homeworkRepository.createQueryBuilder('homework')
-      .leftJoinAndSelect('homework.class', 'class')
-      .leftJoinAndSelect('homework.subject', 'subject')
-      .leftJoinAndSelect('homework.teacher', 'teacher')
-      .leftJoinAndSelect('homework.section', 'section');
+      .leftJoinAndSelect('homework.classEntity', 'h_class')
+      .leftJoinAndSelect('homework.subjectEntity', 'h_subject')
+      .leftJoinAndSelect('homework.teacherEntity', 'h_teacher')
+      .leftJoinAndSelect('homework.sectionEntity', 'h_section');
 
     if (classId && classId !== 'null') {
+
       query.andWhere('homework.classId = :classId', { classId });
     }
     if (subjectId && subjectId !== 'null') {
@@ -105,10 +106,10 @@ export class HomeworkService {
       relations: [
         'studentHomeworks',
         'studentHomeworks.student',
-        'class',
-        'subject',
-        'teacher',
-        'section',
+        'classEntity',
+        'subjectEntity',
+        'teacherEntity',
+        'sectionEntity',
       ],
     });
   }
@@ -117,7 +118,7 @@ export class HomeworkService {
     await this.homeworkRepository.update(id, data);
     return await this.homeworkRepository.findOne({
       where: { id },
-      relations: ['class', 'subject', 'teacher', 'section'],
+      relations: ['classEntity', 'subjectEntity', 'teacherEntity', 'sectionEntity'],
     });
   }
 
@@ -147,10 +148,10 @@ export class HomeworkService {
       where: { studentId },
       relations: [
         'homework',
-        'homework.class',
-        'homework.subject',
-        'homework.teacher',
-        'homework.section',
+        'homework.classEntity',
+        'homework.subjectEntity',
+        'homework.teacherEntity',
+        'homework.sectionEntity',
       ],
       order: { createdAt: 'DESC' },
     });
