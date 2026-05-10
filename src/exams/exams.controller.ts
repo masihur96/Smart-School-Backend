@@ -85,7 +85,6 @@ export class ExamsController {
               subjectId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
               marksObtained: 85.5,
               totalMarks: 100,
-              remarks: 'Excellent performance',
             },
           ],
         },

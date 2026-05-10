@@ -38,9 +38,6 @@ export class Marks {
   @Column()
   schoolId: string;
 
-  @Column({ nullable: true })
-  remarks: string;
-
   @CreateDateColumn()
   createdAt: Date;
 

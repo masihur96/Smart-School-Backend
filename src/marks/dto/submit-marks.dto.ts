@@ -26,10 +26,6 @@ export class MarkItemDto {
   @IsNumber()
   totalMarks: number;
 
-  @ApiPropertyOptional({ example: 'Excellent performance' })
-  @IsOptional()
-  @IsString()
-  remarks?: string;
 }
 
 export class SubmitMarksDto {

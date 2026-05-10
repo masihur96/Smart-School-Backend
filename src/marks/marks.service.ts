@@ -29,13 +29,13 @@ export class MarksService {
           // Update existing marks
           marksEntry.marksObtained = markItem.marksObtained;
           marksEntry.totalMarks = markItem.totalMarks;
-          marksEntry.remarks = markItem.remarks;
           marksEntry.teacherId = data.teacherId;
           marksEntry.schoolId = data.schoolId; // Ensure schoolId is also updated
         } else {
           // Create new marks entry
+          const { remarks, ...markItemWithoutRemarks } = markItem;
           marksEntry = this.marksRepository.create({
-            ...markItem,
+            ...markItemWithoutRemarks,
             examId: data.examId,
             teacherId: data.teacherId,
             schoolId: data.schoolId,
