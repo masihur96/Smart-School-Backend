@@ -70,10 +70,11 @@ export class HomeworkService {
     schoolId?: string,
   ) {
     const query = this.homeworkRepository.createQueryBuilder('homework')
-      .leftJoinAndSelect('homework.classEntity', 'h_class')
-      .leftJoinAndSelect('homework.subjectEntity', 'h_subject')
-      .leftJoinAndSelect('homework.teacherEntity', 'h_teacher')
-      .leftJoinAndSelect('homework.sectionEntity', 'h_section');
+      .leftJoinAndSelect('homework.classEntity', 'h_class', 'h_class.id = CAST(homework.classId AS UUID)')
+      .leftJoinAndSelect('homework.subjectEntity', 'h_subject', 'h_subject.id = CAST(homework.subjectId AS UUID)')
+      .leftJoinAndSelect('homework.teacherEntity', 'h_teacher', 'h_teacher.id = CAST(homework.teacherId AS UUID)')
+      .leftJoinAndSelect('homework.sectionEntity', 'h_section', 'h_section.id = CAST(homework.sectionId AS UUID)');
+
 
     if (classId && classId !== 'null') {
 
@@ -101,25 +102,20 @@ export class HomeworkService {
   }
 
   async findById(id: string) {
-    return await this.homeworkRepository.findOne({
-      where: { id },
-      relations: [
-        'studentHomeworks',
-        'studentHomeworks.student',
-        'classEntity',
-        'subjectEntity',
-        'teacherEntity',
-        'sectionEntity',
-      ],
-    });
+    return await this.homeworkRepository.createQueryBuilder('homework')
+      .leftJoinAndSelect('homework.studentHomeworks', 'sh')
+      .leftJoinAndSelect('sh.student', 'student')
+      .leftJoinAndSelect('homework.classEntity', 'h_class', 'h_class.id = CAST(homework.classId AS UUID)')
+      .leftJoinAndSelect('homework.subjectEntity', 'h_subject', 'h_subject.id = CAST(homework.subjectId AS UUID)')
+      .leftJoinAndSelect('homework.teacherEntity', 'h_teacher', 'h_teacher.id = CAST(homework.teacherId AS UUID)')
+      .leftJoinAndSelect('homework.sectionEntity', 'h_section', 'h_section.id = CAST(homework.sectionId AS UUID)')
+      .where('homework.id = :id', { id })
+      .getOne();
   }
 
   async update(id: string, data: UpdateHomeworkDto) {
     await this.homeworkRepository.update(id, data);
-    return await this.homeworkRepository.findOne({
-      where: { id },
-      relations: ['classEntity', 'subjectEntity', 'teacherEntity', 'sectionEntity'],
-    });
+    return await this.findById(id);
   }
 
   async delete(id: string) {
@@ -144,17 +140,15 @@ export class HomeworkService {
   }
 
   async getHomeworkForStudent(studentId: string) {
-    return await this.studentHomeworkRepository.find({
-      where: { studentId },
-      relations: [
-        'homework',
-        'homework.classEntity',
-        'homework.subjectEntity',
-        'homework.teacherEntity',
-        'homework.sectionEntity',
-      ],
-      order: { createdAt: 'DESC' },
-    });
+    return await this.studentHomeworkRepository.createQueryBuilder('sh')
+      .leftJoinAndSelect('sh.homework', 'homework', 'homework.id = CAST(sh.homeworkId AS UUID)')
+      .leftJoinAndSelect('homework.classEntity', 'h_class', 'h_class.id = CAST(homework.classId AS UUID)')
+      .leftJoinAndSelect('homework.subjectEntity', 'h_subject', 'h_subject.id = CAST(homework.subjectId AS UUID)')
+      .leftJoinAndSelect('homework.teacherEntity', 'h_teacher', 'h_teacher.id = CAST(homework.teacherId AS UUID)')
+      .leftJoinAndSelect('homework.sectionEntity', 'h_section', 'h_section.id = CAST(homework.sectionId AS UUID)')
+      .where('sh.studentId = :studentId', { studentId })
+      .orderBy('sh.createdAt', 'DESC')
+      .getMany();
   }
 
   async getHomeworkStatusByHomeworkId(homeworkId: string) {
