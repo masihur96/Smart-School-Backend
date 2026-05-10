@@ -27,4 +27,4 @@ import { NotificationsModule } from '../notifications/notifications.module';
   ],
   exports: [AttendanceService],
 })
-export class AttendanceModule { }
+export class AttendanceModule {}

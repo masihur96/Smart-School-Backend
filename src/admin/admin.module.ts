@@ -6,6 +6,7 @@ import { ClassesModule } from '../classes/classes.module';
 import { SubjectsModule } from '../subjects/subjects.module';
 import { ExamsModule } from '../exams/exams.module';
 import { MarksModule } from '../marks/marks.module';
+import { HomeworkModule } from '../homework/homework.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { School } from '../schools/entities/school.entity';
 
@@ -17,6 +18,7 @@ import { School } from '../schools/entities/school.entity';
     SubjectsModule,
     ExamsModule,
     MarksModule,
+    HomeworkModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

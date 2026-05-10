@@ -1,13 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsOptional, IsDate, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsDate,
+  IsBoolean,
+} from 'class-validator';
 
 export class AssignSubscriptionDto {
-  @ApiProperty({ example: 'SCHOOL_123', description: 'The unique ID of the school' })
+  @ApiProperty({
+    example: 'SCHOOL_123',
+    description: 'The unique ID of the school',
+  })
   @IsString()
   @IsNotEmpty()
   schoolId: string;
 
-  @ApiProperty({ example: 'uuid-of-pricing-plan', description: 'The ID of the Pricing Plan' })
+  @ApiProperty({
+    example: 'uuid-of-pricing-plan',
+    description: 'The ID of the Pricing Plan',
+  })
   @IsString()
   @IsNotEmpty()
   pricingPlanId: string;

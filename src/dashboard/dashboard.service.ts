@@ -9,7 +9,10 @@ import { User, UserRole } from '../users/entities/user.entity';
 import { School } from '../schools/entities/school.entity';
 import { Subscription } from '../subscriptions/entities/subscription.entity';
 import { PricingPlan } from '../pricing/entities/pricing-plan.entity';
-import { Attendance, AttendanceStatus } from '../attendance/entities/attendance.entity';
+import {
+  Attendance,
+  AttendanceStatus,
+} from '../attendance/entities/attendance.entity';
 import { TeacherAttendance } from '../attendance/entities/teacher-attendance.entity';
 import { Homework } from '../homework/entities/homework.entity';
 import { StudentHomework } from '../homework/entities/student-homework.entity';
@@ -64,14 +67,19 @@ export class DashboardService {
   // ─────────────────────────────────────────────────────────────
 
   async getSuperAdminDashboard() {
-    const [systemStatus, recentSubscriptions, pricingPlans, engagedSchools, backupDataList] =
-      await Promise.all([
-        this.getSystemStatus(),
-        this.getRecentSubscriptions(),
-        this.getPricingPlans(),
-        this.getEngagedSchools(),
-        this.getBackupDataList(),
-      ]);
+    const [
+      systemStatus,
+      recentSubscriptions,
+      pricingPlans,
+      engagedSchools,
+      backupDataList,
+    ] = await Promise.all([
+      this.getSystemStatus(),
+      this.getRecentSubscriptions(),
+      this.getPricingPlans(),
+      this.getEngagedSchools(),
+      this.getBackupDataList(),
+    ]);
 
     return {
       systemStatus,
@@ -84,10 +92,18 @@ export class DashboardService {
 
   private async getSystemStatus() {
     const totalSchools = await this.schoolRepo.count();
-    const totalStudents = await this.userRepo.count({ where: { role: UserRole.STUDENT } });
-    const totalTeachers = await this.userRepo.count({ where: { role: UserRole.TEACHER } });
-    const totalAdmins = await this.userRepo.count({ where: { role: UserRole.ADMIN } });
-    const activeSubscriptions = await this.subscriptionRepo.count({ where: { isActive: true } });
+    const totalStudents = await this.userRepo.count({
+      where: { role: UserRole.STUDENT },
+    });
+    const totalTeachers = await this.userRepo.count({
+      where: { role: UserRole.TEACHER },
+    });
+    const totalAdmins = await this.userRepo.count({
+      where: { role: UserRole.ADMIN },
+    });
+    const activeSubscriptions = await this.subscriptionRepo.count({
+      where: { isActive: true },
+    });
 
     return {
       status: 'operational',
@@ -124,20 +140,27 @@ export class DashboardService {
   }
 
   private async getEngagedSchools() {
-    const schools = await this.schoolRepo.find({ order: { createdAt: 'DESC' } });
+    const schools = await this.schoolRepo.find({
+      order: { createdAt: 'DESC' },
+    });
 
     // Enrich with student/teacher counts and subscription info
     const enriched = await Promise.all(
       schools.map(async (school) => {
-        const [studentCount, teacherCount, activeSubscription] = await Promise.all([
-          this.userRepo.count({ where: { schoolId: school.schoolId, role: UserRole.STUDENT } }),
-          this.userRepo.count({ where: { schoolId: school.schoolId, role: UserRole.TEACHER } }),
-          this.subscriptionRepo.findOne({
-            where: { schoolId: school.schoolId, isActive: true },
-            relations: ['pricingPlan'],
-            order: { createdAt: 'DESC' },
-          }),
-        ]);
+        const [studentCount, teacherCount, activeSubscription] =
+          await Promise.all([
+            this.userRepo.count({
+              where: { schoolId: school.schoolId, role: UserRole.STUDENT },
+            }),
+            this.userRepo.count({
+              where: { schoolId: school.schoolId, role: UserRole.TEACHER },
+            }),
+            this.subscriptionRepo.findOne({
+              where: { schoolId: school.schoolId, isActive: true },
+              relations: ['pricingPlan'],
+              order: { createdAt: 'DESC' },
+            }),
+          ]);
 
         return {
           ...school,
@@ -153,13 +176,14 @@ export class DashboardService {
 
   private async getBackupDataList() {
     // Collect entity counts as a "backup snapshot" reference
-    const [users, schools, subscriptions, homework, attendance] = await Promise.all([
-      this.userRepo.count(),
-      this.schoolRepo.count(),
-      this.subscriptionRepo.count(),
-      this.homeworkRepo.count(),
-      this.attendanceRepo.count(),
-    ]);
+    const [users, schools, subscriptions, homework, attendance] =
+      await Promise.all([
+        this.userRepo.count(),
+        this.schoolRepo.count(),
+        this.subscriptionRepo.count(),
+        this.homeworkRepo.count(),
+        this.attendanceRepo.count(),
+      ]);
 
     return {
       lastBackupAt: new Date().toISOString(),
@@ -197,14 +221,19 @@ export class DashboardService {
   async getAdminDashboard(schoolId: string) {
     const today = getLocalDateString();
 
-    const [attendTeacher, attendStudent, recentHomework, recentNotice, currentExam] =
-      await Promise.all([
-        this.getAdminTeacherAttendance(schoolId, today),
-        this.getAdminStudentAttendance(schoolId, today),
-        this.getAdminRecentHomework(schoolId),
-        this.getAdminRecentNotice(schoolId),
-        this.getAdminCurrentExam(schoolId),
-      ]);
+    const [
+      attendTeacher,
+      attendStudent,
+      recentHomework,
+      recentNotice,
+      currentExam,
+    ] = await Promise.all([
+      this.getAdminTeacherAttendance(schoolId, today),
+      this.getAdminStudentAttendance(schoolId, today),
+      this.getAdminRecentHomework(schoolId),
+      this.getAdminRecentNotice(schoolId),
+      this.getAdminCurrentExam(schoolId),
+    ]);
 
     return {
       attendTeacher,
@@ -227,7 +256,9 @@ export class DashboardService {
       .leftJoinAndSelect('ta.teacher', 'teacher')
       .getMany();
 
-    const presentCount = presentRecords.filter((r) => r.status === 'clock-in').length;
+    const presentCount = presentRecords.filter(
+      (r) => r.status === 'clock-in',
+    ).length;
 
     return {
       date,
@@ -235,7 +266,9 @@ export class DashboardService {
       present: presentCount,
       absent: allTeachers - presentCount,
       attendanceRate:
-        allTeachers > 0 ? parseFloat(((presentCount / allTeachers) * 100).toFixed(2)) : 0,
+        allTeachers > 0
+          ? parseFloat(((presentCount / allTeachers) * 100).toFixed(2))
+          : 0,
       recentRecords: presentRecords.slice(0, 5),
     };
   }
@@ -251,9 +284,15 @@ export class DashboardService {
       .andWhere('a.date = :date', { date })
       .getMany();
 
-    const presentCount = records.filter((r) => r.status === AttendanceStatus.PRESENT).length;
-    const absentCount = records.filter((r) => r.status === AttendanceStatus.ABSENT).length;
-    const leaveCount = records.filter((r) => r.status === AttendanceStatus.LEAVE).length;
+    const presentCount = records.filter(
+      (r) => r.status === AttendanceStatus.PRESENT,
+    ).length;
+    const absentCount = records.filter(
+      (r) => r.status === AttendanceStatus.ABSENT,
+    ).length;
+    const leaveCount = records.filter(
+      (r) => r.status === AttendanceStatus.LEAVE,
+    ).length;
 
     return {
       date,
@@ -263,7 +302,9 @@ export class DashboardService {
       absent: absentCount,
       leave: leaveCount,
       attendanceRate:
-        records.length > 0 ? parseFloat(((presentCount / records.length) * 100).toFixed(2)) : 0,
+        records.length > 0
+          ? parseFloat(((presentCount / records.length) * 100).toFixed(2))
+          : 0,
     };
   }
 
@@ -276,9 +317,15 @@ export class DashboardService {
 
     return Promise.all(
       homeworks.map(async (hw) => {
-        const classInfo = await this.classRepo.findOne({ where: { id: hw.classId } });
-        const subjectInfo = await this.subjectRepo.findOne({ where: { id: hw.subjectId } });
-        const sectionInfo = hw.sectionId ? await this.sectionRepo.findOne({ where: { id: hw.sectionId } }) : null;
+        const classInfo = await this.classRepo.findOne({
+          where: { id: hw.classId },
+        });
+        const subjectInfo = await this.subjectRepo.findOne({
+          where: { id: hw.subjectId },
+        });
+        const sectionInfo = hw.sectionId
+          ? await this.sectionRepo.findOne({ where: { id: hw.sectionId } })
+          : null;
         return { ...hw, classInfo, subjectInfo, sectionInfo };
       }),
     );
@@ -362,7 +409,10 @@ export class DashboardService {
     };
   }
 
-  private async getTeacherTodayAttendanceStatus(teacherId: string, date: string) {
+  private async getTeacherTodayAttendanceStatus(
+    teacherId: string,
+    date: string,
+  ) {
     const record = await this.teacherAttendanceRepo.findOne({
       where: { teacherId, date: date as any },
     });
@@ -384,7 +434,10 @@ export class DashboardService {
     });
   }
 
-  private async getTeacherClassStudentAttendance(teacherId: string, date: string) {
+  private async getTeacherClassStudentAttendance(
+    teacherId: string,
+    date: string,
+  ) {
     // Find classes where this teacher has taken attendance
     const attendanceRecords = await this.attendanceRepo
       .createQueryBuilder('a')
@@ -393,7 +446,16 @@ export class DashboardService {
       .getMany();
 
     // Group by classId
-    const classMap = new Map<string, { classId: string; present: number; absent: number; leave: number; total: number }>();
+    const classMap = new Map<
+      string,
+      {
+        classId: string;
+        present: number;
+        absent: number;
+        leave: number;
+        total: number;
+      }
+    >();
     for (const record of attendanceRecords) {
       if (!classMap.has(record.classId)) {
         classMap.set(record.classId, {
@@ -414,14 +476,18 @@ export class DashboardService {
     const classList = Array.from(classMap.values());
     const enrichedClassList = await Promise.all(
       classList.map(async (entry) => {
-        const classInfo = await this.classRepo.findOne({ where: { id: entry.classId } });
+        const classInfo = await this.classRepo.findOne({
+          where: { id: entry.classId },
+        });
         return {
           ...entry,
           classInfo,
           attendanceRate:
-            entry.total > 0 ? parseFloat(((entry.present / entry.total) * 100).toFixed(2)) : 0,
+            entry.total > 0
+              ? parseFloat(((entry.present / entry.total) * 100).toFixed(2))
+              : 0,
         };
-      })
+      }),
     );
 
     return enrichedClassList;
@@ -436,9 +502,15 @@ export class DashboardService {
 
     return Promise.all(
       homeworks.map(async (hw) => {
-        const classInfo = await this.classRepo.findOne({ where: { id: hw.classId } });
-        const subjectInfo = await this.subjectRepo.findOne({ where: { id: hw.subjectId } });
-        const sectionInfo = hw.sectionId ? await this.sectionRepo.findOne({ where: { id: hw.sectionId } }) : null;
+        const classInfo = await this.classRepo.findOne({
+          where: { id: hw.classId },
+        });
+        const subjectInfo = await this.subjectRepo.findOne({
+          where: { id: hw.subjectId },
+        });
+        const sectionInfo = hw.sectionId
+          ? await this.sectionRepo.findOne({ where: { id: hw.sectionId } })
+          : null;
         return { ...hw, classInfo, subjectInfo, sectionInfo };
       }),
     );
@@ -579,9 +651,15 @@ export class DashboardService {
     });
 
     const total = records.length;
-    const present = records.filter((r) => r.status === AttendanceStatus.PRESENT).length;
-    const absent = records.filter((r) => r.status === AttendanceStatus.ABSENT).length;
-    const leave = records.filter((r) => r.status === AttendanceStatus.LEAVE).length;
+    const present = records.filter(
+      (r) => r.status === AttendanceStatus.PRESENT,
+    ).length;
+    const absent = records.filter(
+      (r) => r.status === AttendanceStatus.ABSENT,
+    ).length;
+    const leave = records.filter(
+      (r) => r.status === AttendanceStatus.LEAVE,
+    ).length;
 
     return {
       summary: {
@@ -589,7 +667,8 @@ export class DashboardService {
         present,
         absent,
         leave,
-        attendanceRate: total > 0 ? parseFloat(((present / total) * 100).toFixed(2)) : 0,
+        attendanceRate:
+          total > 0 ? parseFloat(((present / total) * 100).toFixed(2)) : 0,
       },
       records,
     };
@@ -605,28 +684,43 @@ export class DashboardService {
 
     return Promise.all(
       studentHomeworks.map(async (sh) => {
-        let classInfo = null, subjectInfo = null, sectionInfo = null;
+        let classInfo = null,
+          subjectInfo = null,
+          sectionInfo = null;
         if (sh.homework) {
-          classInfo = await this.classRepo.findOne({ where: { id: sh.homework.classId } });
-          subjectInfo = await this.subjectRepo.findOne({ where: { id: sh.homework.subjectId } });
-          sectionInfo = sh.homework.sectionId ? await this.sectionRepo.findOne({ where: { id: sh.homework.sectionId } }) : null;
+          classInfo = await this.classRepo.findOne({
+            where: { id: sh.homework.classId },
+          });
+          subjectInfo = await this.subjectRepo.findOne({
+            where: { id: sh.homework.subjectId },
+          });
+          sectionInfo = sh.homework.sectionId
+            ? await this.sectionRepo.findOne({
+                where: { id: sh.homework.sectionId },
+              })
+            : null;
         }
         return {
           id: sh.id,
           status: sh.status,
           comment: sh.comment,
-          homework: sh.homework ? {
-            ...sh.homework,
-            classInfo,
-            subjectInfo,
-            sectionInfo,
-          } : null,
+          homework: sh.homework
+            ? {
+                ...sh.homework,
+                classInfo,
+                subjectInfo,
+                sectionInfo,
+              }
+            : null,
         };
-      })
+      }),
     );
   }
 
-  private async getStudentExamListWithResults(studentId: string, classId: string) {
+  private async getStudentExamListWithResults(
+    studentId: string,
+    classId: string,
+  ) {
     if (!classId) return [];
 
     // Get exams for this student's class
@@ -638,7 +732,9 @@ export class DashboardService {
       .take(10)
       .getMany();
 
-    const uniqueExamIds = [...new Set(assignments.map((a) => a.examId).filter(Boolean))];
+    const uniqueExamIds = [
+      ...new Set(assignments.map((a) => a.examId).filter(Boolean)),
+    ];
 
     const examsWithResults = await Promise.all(
       uniqueExamIds.map(async (examId) => {
@@ -653,8 +749,14 @@ export class DashboardService {
           (sum, m) => sum + parseFloat(m.marksObtained as any),
           0,
         );
-        const totalMax = myMarks.reduce((sum, m) => sum + parseFloat(m.totalMarks as any), 0);
-        const percentage = totalMax > 0 ? parseFloat(((totalObtained / totalMax) * 100).toFixed(2)) : null;
+        const totalMax = myMarks.reduce(
+          (sum, m) => sum + parseFloat(m.totalMarks as any),
+          0,
+        );
+        const percentage =
+          totalMax > 0
+            ? parseFloat(((totalObtained / totalMax) * 100).toFixed(2))
+            : null;
 
         let grade = null;
         if (percentage !== null) {

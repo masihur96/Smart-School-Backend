@@ -9,18 +9,10 @@ import { Subject } from '../subjects/entities/subject.entity';
 import { User } from '../users/entities/user.entity';
 import { MarksModule } from '../marks/marks.module';
 
-
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Exam,
-      AcademicAssignment,
-      Class,
-      Subject,
-      User,
-    ]),
+    TypeOrmModule.forFeature([Exam, AcademicAssignment, Class, Subject, User]),
     MarksModule,
-
   ],
   providers: [ExamsService],
   controllers: [ExamsController],

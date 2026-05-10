@@ -17,7 +17,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SuperadminService } from './superadmin.service';
-import { CreateSchoolDto, UpdateSchoolDto } from '../schools/dto/create-school.dto';
+import {
+  CreateSchoolDto,
+  UpdateSchoolDto,
+} from '../schools/dto/create-school.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { RolesGuard } from '../auth/guards/roles.guard';

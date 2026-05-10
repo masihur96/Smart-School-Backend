@@ -48,12 +48,10 @@ export class StudentService {
 
   // Get student performance report
   async getPerformanceReport(studentId: string) {
-    const attendance = await this.attendanceService.getStudentAttendance(
-      studentId,
-    );
-    const homework = await this.homeworkService.getHomeworkForStudent(
-      studentId,
-    );
+    const attendance =
+      await this.attendanceService.getStudentAttendance(studentId);
+    const homework =
+      await this.homeworkService.getHomeworkForStudent(studentId);
 
     const totalAttendance = attendance.length;
     const presentCount = attendance.filter(

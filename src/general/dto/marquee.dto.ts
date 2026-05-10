@@ -3,7 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { MarqueeType } from '../entities/marquee.entity';
 
 export class SetMarqueeDto {
-  @ApiProperty({ example: 'Welcome to our school!', description: 'The marquee text content' })
+  @ApiProperty({
+    example: 'Welcome to our school!',
+    description: 'The marquee text content',
+  })
   @IsString()
   text: string;
 

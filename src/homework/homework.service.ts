@@ -24,7 +24,7 @@ export class HomeworkService {
     private usersService: UsersService,
     private notificationsService: NotificationsService,
     private subjectsService: SubjectsService,
-  ) { }
+  ) {}
 
   async create(data: CreateHomeworkDto) {
     const homework = this.homeworkRepository.create(data);
@@ -62,10 +62,15 @@ export class HomeworkService {
     return savedHomework;
   }
 
-  async findAll(classId?: string, subjectId?: string, sectionId?: string) {
+  async findAll(
+    classId?: string,
+    subjectId?: string,
+    sectionId?: string,
+    date?: string,
+  ) {
     const query = this.homeworkRepository.createQueryBuilder('homework');
     const conditions: string[] = [];
-    const params: Record<string, string> = {};
+    const params: Record<string, any> = {};
 
     if (classId) {
       conditions.push('homework.classId = :classId');
@@ -78,6 +83,10 @@ export class HomeworkService {
     if (sectionId) {
       conditions.push('homework.sectionId = :sectionId');
       params.sectionId = sectionId;
+    }
+    if (date) {
+      conditions.push('homework.dueDate = :date');
+      params.date = date;
     }
 
     if (conditions.length > 0) {

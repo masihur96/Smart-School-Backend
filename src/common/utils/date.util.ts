@@ -5,7 +5,7 @@
  */
 export function formatReadableDate(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  
+
   if (isNaN(d.getTime())) {
     return String(date);
   }

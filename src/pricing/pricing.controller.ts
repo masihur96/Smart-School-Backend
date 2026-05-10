@@ -1,8 +1,27 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { PricingService } from './pricing.service';
-import { CreatePricingPlanDto, UpdatePricingPlanDto } from './dto/pricing-plan.dto';
+import {
+  CreatePricingPlanDto,
+  UpdatePricingPlanDto,
+} from './dto/pricing-plan.dto';
 import { Public } from '../auth/decorators/public.decorator';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -12,7 +31,7 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 @ApiTags('Pricing')
 @Controller('pricing')
 export class PricingController {
-  constructor(private readonly pricingService: PricingService) { }
+  constructor(private readonly pricingService: PricingService) {}
 
   @Public()
   @Get('plans')
@@ -24,18 +43,24 @@ export class PricingController {
 
   @Public()
   @Get('details')
-  @ApiOperation({ summary: 'Get global pricing details (setup fee, trial info)' })
+  @ApiOperation({
+    summary: 'Get global pricing details (setup fee, trial info)',
+  })
   getDetails() {
     return this.pricingService.getDetails();
   }
 
   @Public()
   @Get('calculate')
-  @ApiOperation({ summary: 'Calculate best plan and estimate cost based on student count' })
+  @ApiOperation({
+    summary: 'Calculate best plan and estimate cost based on student count',
+  })
   @ApiQuery({ name: 'students', type: Number, required: true, example: 250 })
   calculatePrice(@Query('students') students?: string) {
     if (!students) {
-      throw new BadRequestException('Please provide a valid student count. Example: ?students=250');
+      throw new BadRequestException(
+        'Please provide a valid student count. Example: ?students=250',
+      );
     }
 
     const count = parseInt(students, 10);
@@ -59,8 +84,13 @@ export class PricingController {
   @Roles(UserRole.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')
-  @ApiOperation({ summary: 'Update an existing pricing plan (Superadmin only)' })
-  updatePlan(@Param('id') id: string, @Body() updatePricingPlanDto: UpdatePricingPlanDto) {
+  @ApiOperation({
+    summary: 'Update an existing pricing plan (Superadmin only)',
+  })
+  updatePlan(
+    @Param('id') id: string,
+    @Body() updatePricingPlanDto: UpdatePricingPlanDto,
+  ) {
     return this.pricingService.update(id, updatePricingPlanDto);
   }
 
@@ -77,7 +107,9 @@ export class PricingController {
   @Roles(UserRole.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('trash')
-  @ApiOperation({ summary: 'Get all soft-deleted pricing plans (Superadmin only)' })
+  @ApiOperation({
+    summary: 'Get all soft-deleted pricing plans (Superadmin only)',
+  })
   getTrashedPlans() {
     return this.pricingService.findAllDeleted();
   }
@@ -86,7 +118,9 @@ export class PricingController {
   @Roles(UserRole.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id/restore')
-  @ApiOperation({ summary: 'Restore a soft-deleted pricing plan (Superadmin only)' })
+  @ApiOperation({
+    summary: 'Restore a soft-deleted pricing plan (Superadmin only)',
+  })
   restorePlan(@Param('id') id: string) {
     return this.pricingService.restore(id);
   }

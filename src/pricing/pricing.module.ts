@@ -11,4 +11,4 @@ import { PricingPlan } from './entities/pricing-plan.entity';
   providers: [PricingService],
   exports: [PricingService],
 })
-export class PricingModule { }
+export class PricingModule {}

@@ -30,7 +30,7 @@ export class NotificationsService {
     private sectionRepository: Repository<Section>,
     @InjectRepository(School)
     private schoolRepository: Repository<School>,
-  ) { }
+  ) {}
 
   async registerToken(
     userId: string,
@@ -44,7 +44,9 @@ export class NotificationsService {
     let tokens: string[] = [];
 
     if (token) {
-      let fcmToken = await this.fcmTokenRepository.findOne({ where: { token } });
+      let fcmToken = await this.fcmTokenRepository.findOne({
+        where: { token },
+      });
 
       if (fcmToken) {
         fcmToken.userId = userId;
@@ -61,7 +63,9 @@ export class NotificationsService {
       tokens.push(token);
     } else {
       // If no token provided, get all existing tokens for the user
-      const userTokens = await this.fcmTokenRepository.find({ where: { userId } });
+      const userTokens = await this.fcmTokenRepository.find({
+        where: { userId },
+      });
       tokens = userTokens.map((t) => t.token);
     }
 
@@ -80,7 +84,10 @@ export class NotificationsService {
       });
     }
 
-    return { success: true, message: `Subscribed ${tokens.length} token(s) to topics` };
+    return {
+      success: true,
+      message: `Subscribed ${tokens.length} token(s) to topics`,
+    };
   }
 
   async subscribeTokenToTopics(
@@ -96,7 +103,9 @@ export class NotificationsService {
     try {
       const user = await this.usersService.findById(userId);
       if (!user) {
-        this.logger.warn(`Cannot subscribe to topics: User ${userId} not found`);
+        this.logger.warn(
+          `Cannot subscribe to topics: User ${userId} not found`,
+        );
         return;
       }
 
@@ -185,7 +194,9 @@ export class NotificationsService {
     };
 
     try {
-      const response = await this.firebaseApp.messaging().sendEachForMulticast(message);
+      const response = await this.firebaseApp
+        .messaging()
+        .sendEachForMulticast(message);
       this.logger.log(
         `Sent notifications to user ${userId}. Success: ${response.successCount}, Failure: ${response.failureCount}`,
       );
@@ -207,7 +218,9 @@ export class NotificationsService {
 
         if (failedTokens.length > 0) {
           await this.fcmTokenRepository.delete({ token: In(failedTokens) });
-          this.logger.log(`Cleaned up ${failedTokens.length} invalid FCM tokens`);
+          this.logger.log(
+            `Cleaned up ${failedTokens.length} invalid FCM tokens`,
+          );
         }
       }
     } catch (error: any) {
@@ -230,7 +243,8 @@ export class NotificationsService {
     const data: Record<string, string> = {};
     if (additionalData) {
       Object.entries(additionalData).forEach(([key, value]) => {
-        data[key] = typeof value === 'object' ? JSON.stringify(value) : String(value);
+        data[key] =
+          typeof value === 'object' ? JSON.stringify(value) : String(value);
       });
     }
 
@@ -240,29 +254,37 @@ export class NotificationsService {
     let targetSchoolId = null;
 
     // Check if it's a User
-    const user = await this.usersService.findById(receiverUuid).catch(() => null);
+    const user = await this.usersService
+      .findById(receiverUuid)
+      .catch(() => null);
     if (user) {
       targetTopic = `user_${user.id}`;
       recipientId = user.id;
       targetSchoolId = user.schoolId;
     } else {
       // Check if it's a Class
-      const classEntity = await this.classRepository.findOne({ where: { id: receiverUuid } }).catch(() => null);
+      const classEntity = await this.classRepository
+        .findOne({ where: { id: receiverUuid } })
+        .catch(() => null);
       if (classEntity) {
         targetTopic = `class_${receiverUuid}`;
         recipientId = `class_${receiverUuid}`;
         targetSchoolId = classEntity.schoolId;
       } else {
         // Check if it's a Section
-        const sectionEntity = await this.sectionRepository.findOne({ where: { id: receiverUuid } }).catch(() => null);
+        const sectionEntity = await this.sectionRepository
+          .findOne({ where: { id: receiverUuid } })
+          .catch(() => null);
         if (sectionEntity) {
           targetTopic = `section_${receiverUuid}`;
           recipientId = `section_${receiverUuid}`;
         } else {
           // Check if it's a School
-          const schoolEntity = await this.schoolRepository.findOne({
-            where: [{ id: receiverUuid }, { schoolId: receiverUuid }],
-          }).catch(() => null);
+          const schoolEntity = await this.schoolRepository
+            .findOne({
+              where: [{ id: receiverUuid }, { schoolId: receiverUuid }],
+            })
+            .catch(() => null);
           if (schoolEntity) {
             targetTopic = `school_${schoolEntity.schoolId || schoolEntity.id}`;
             recipientId = `school_${schoolEntity.schoolId || schoolEntity.id}`;
@@ -379,6 +401,9 @@ export class NotificationsService {
   }
 
   async deleteNotification(id: string, userId: string) {
-    return await this.notificationRepository.delete({ id, recipientId: userId });
+    return await this.notificationRepository.delete({
+      id,
+      recipientId: userId,
+    });
   }
 }

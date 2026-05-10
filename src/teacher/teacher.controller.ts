@@ -98,10 +98,7 @@ export class TeacherController {
     @Request() req,
   ) {
     const teacherId = req.user.userId;
-    return await this.teacherService.submitTeacherAttendance(
-      teacherId,
-      dto,
-    );
+    return await this.teacherService.submitTeacherAttendance(teacherId, dto);
   }
 
   @Get('self-attendance')
@@ -177,7 +174,10 @@ export class TeacherController {
 
   @Get('assignments/exams/:examId/classes')
   async getAssignedClasses(@Param('examId') examId: string, @Request() req) {
-    return await this.teacherService.getAssignedClasses(req.user.userId, examId);
+    return await this.teacherService.getAssignedClasses(
+      req.user.userId,
+      examId,
+    );
   }
 
   @Get('assignments/exams/:examId/classes/:classId/students')
@@ -193,7 +193,9 @@ export class TeacherController {
     );
   }
 
-  @Get('assignments/exams/:examId/classes/:classId/students/:studentId/subjects')
+  @Get(
+    'assignments/exams/:examId/classes/:classId/students/:studentId/subjects',
+  )
   async getAssignedSubjectsWithMarks(
     @Param('examId') examId: string,
     @Param('classId') classId: string,
@@ -211,7 +213,10 @@ export class TeacherController {
   // ─── Homework ─────────────────────────────────────
   @Post('homework')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create homework for a specific class & section (auto-assigns to all students)' })
+  @ApiOperation({
+    summary:
+      'Create homework for a specific class & section (auto-assigns to all students)',
+  })
   @ApiBody({
     type: CreateHomeworkDto,
     examples: {
@@ -247,19 +252,25 @@ export class TeacherController {
   }
 
   @Get('homework/:id')
-  @ApiOperation({ summary: 'Get homework details (including per-student status)' })
+  @ApiOperation({
+    summary: 'Get homework details (including per-student status)',
+  })
   async getHomeworkById(@Param('id') id: string) {
     return await this.teacherService.getHomeworkById(id);
   }
 
   @Get('homework/:id/students')
-  @ApiOperation({ summary: 'Get all student statuses for a homework assignment' })
+  @ApiOperation({
+    summary: 'Get all student statuses for a homework assignment',
+  })
   async getHomeworkStudentStatuses(@Param('id') id: string) {
     return await this.teacherService.getHomeworkStudentStatuses(id);
   }
 
   @Patch('homework/:id/students/bulk')
-  @ApiOperation({ summary: 'Update ALL students status for a homework (pending | done)' })
+  @ApiOperation({
+    summary: 'Update ALL students status for a homework (pending | done)',
+  })
   @ApiBody({
     type: BulkUpdateHomeworkStatusDto,
     examples: {
@@ -287,7 +298,9 @@ export class TeacherController {
   }
 
   @Patch('homework/:id/students/:studentHomeworkId')
-  @ApiOperation({ summary: 'Update a single student homework status (pending | done)' })
+  @ApiOperation({
+    summary: 'Update a single student homework status (pending | done)',
+  })
   @ApiBody({
     type: UpdateStudentHomeworkStatusDto,
     examples: {

@@ -21,6 +21,8 @@ import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
 import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assignment.dto';
 import { MarksService } from '../marks/marks.service';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
+import { HomeworkService } from '../homework/homework.service';
+import { CreateHomeworkDto } from '../homework/dto/create-homework.dto';
 
 @Injectable()
 export class AdminService {
@@ -32,6 +34,7 @@ export class AdminService {
     private subjectsService: SubjectsService,
     private examsService: ExamsService,
     private marksService: MarksService,
+    private homeworkService: HomeworkService,
   ) {}
 
   // School management
@@ -54,7 +57,15 @@ export class AdminService {
     classId?: string,
     sectionId?: string,
   ) {
-    return await this.usersService.findAll(role, page, limit, isActive, search, classId, sectionId);
+    return await this.usersService.findAll(
+      role,
+      page,
+      limit,
+      isActive,
+      search,
+      classId,
+      sectionId,
+    );
   }
 
   async updateUser(id: string, data: UpdateUserDto) {
@@ -134,5 +145,24 @@ export class AdminService {
 
   async deleteMark(id: string) {
     return await this.marksService.deleteMark(id);
+  }
+
+  // Homework management
+  async getHomeworks(
+    classId?: string,
+    subjectId?: string,
+    sectionId?: string,
+    date?: string,
+  ) {
+    return await this.homeworkService.findAll(
+      classId,
+      subjectId,
+      sectionId,
+      date,
+    );
+  }
+
+  async createHomework(data: CreateHomeworkDto) {
+    return await this.homeworkService.create(data);
   }
 }

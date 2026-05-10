@@ -23,7 +23,7 @@ import { Public } from '../auth/decorators/public.decorator';
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
 export class NotificationsController {
-  constructor(private readonly service: NotificationsService) { }
+  constructor(private readonly service: NotificationsService) {}
 
   @Public()
   @Post('send')
@@ -36,7 +36,10 @@ export class NotificationsController {
         receiver_uuid: { type: 'string', example: 'user-uuid-or-topic-name' },
         title: { type: 'string', example: 'Notification Title' },
         message: { type: 'string', example: 'Notification Body Message' },
-        additional_data: { type: 'object', example: { path: '/home', uuid: '123' } },
+        additional_data: {
+          type: 'object',
+          example: { path: '/home', uuid: '123' },
+        },
         image: { type: 'string', example: 'https://example.com/image.png' },
       },
     },
@@ -95,19 +98,46 @@ export class NotificationsController {
   @Post('fcm-token')
   @ApiBearerAuth('bearer')
   @ApiOperation({
-    summary: 'Register FCM token and subscribe to topics (Class, Section, School, etc.)',
-    description: 'Registers the device token and subscribes the user to relevant topics. If no token is provided, it updates subscriptions for all existing tokens of the user.',
+    summary:
+      'Register FCM token and subscribe to topics (Class, Section, School, etc.)',
+    description:
+      'Registers the device token and subscribes the user to relevant topics. If no token is provided, it updates subscriptions for all existing tokens of the user.',
   })
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        token: { type: 'string', example: 'fcm_registration_token_here', description: 'Optional if token already registered' },
-        deviceType: { type: 'string', example: 'android', enum: ['android', 'ios', 'web'] },
-        userId: { type: 'string', example: 'user-uuid', description: 'Explicit user ID to subscribe (defaults to logged-in user)' },
-        classId: { type: 'string', example: 'class-uuid', description: 'Explicit class ID to subscribe' },
-        sectionId: { type: 'string', example: 'section-uuid', description: 'Explicit section ID to subscribe' },
-        schoolId: { type: 'string', example: 'school-uuid', description: 'Explicit school ID to subscribe' },
+        token: {
+          type: 'string',
+          example: 'fcm_registration_token_here',
+          description: 'Optional if token already registered',
+        },
+        deviceType: {
+          type: 'string',
+          example: 'android',
+          enum: ['android', 'ios', 'web'],
+        },
+        userId: {
+          type: 'string',
+          example: 'user-uuid',
+          description:
+            'Explicit user ID to subscribe (defaults to logged-in user)',
+        },
+        classId: {
+          type: 'string',
+          example: 'class-uuid',
+          description: 'Explicit class ID to subscribe',
+        },
+        sectionId: {
+          type: 'string',
+          example: 'section-uuid',
+          description: 'Explicit section ID to subscribe',
+        },
+        schoolId: {
+          type: 'string',
+          example: 'school-uuid',
+          description: 'Explicit school ID to subscribe',
+        },
       },
     },
   })

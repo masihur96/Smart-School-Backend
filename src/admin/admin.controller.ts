@@ -30,6 +30,7 @@ import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
 import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assignment.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 import { CreateSchoolDto } from '../schools/dto/create-school.dto';
+import { CreateHomeworkDto } from '../homework/dto/create-homework.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
@@ -204,5 +205,33 @@ export class AdminController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteMark(@Param('id') id: string) {
     return await this.adminService.deleteMark(id);
+  }
+
+  // ─── Homework ────────────────────────────────────
+  @Get('homework')
+  @ApiOperation({
+    summary: 'Get homework filtered by date, class, section, subject',
+  })
+  async getHomework(
+    @Query('classId') classId?: string,
+    @Query('sectionId') sectionId?: string,
+    @Query('subjectId') subjectId?: string,
+    @Query('date') date?: string,
+  ) {
+    return await this.adminService.getHomeworks(
+      classId,
+      subjectId,
+      sectionId,
+      date,
+    );
+  }
+
+  @Post('homework')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Submit homework for any class, section and subject',
+  })
+  async createHomework(@Body() dto: CreateHomeworkDto) {
+    return await this.adminService.createHomework(dto);
   }
 }

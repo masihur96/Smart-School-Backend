@@ -1,4 +1,9 @@
-import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Attendance, AttendanceStatus } from './entities/attendance.entity';
@@ -32,7 +37,7 @@ export class AttendanceService {
     private classesService: ClassesService,
     private sectionsService: SectionsService,
     private notificationsService: NotificationsService,
-  ) { }
+  ) {}
 
   private getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
     const R = 6371e3; // metres
@@ -118,7 +123,10 @@ export class AttendanceService {
           record.studentId,
           '⚠️ Absence Alert',
           `You have been marked ABSENT for ${formatReadableDate(data.date)}.`,
-          { type: 'ATTENDANCE_ABSENT', date: data.date.toISOString().split('T')[0] },
+          {
+            type: 'ATTENDANCE_ABSENT',
+            date: data.date.toISOString().split('T')[0],
+          },
         );
       }
     }
@@ -261,8 +269,8 @@ export class AttendanceService {
       const overallAttendancePercentage =
         grandTotalRecords > 0
           ? parseFloat(
-            ((grandTotalPresent / grandTotalRecords) * 100).toFixed(2),
-          )
+              ((grandTotalPresent / grandTotalRecords) * 100).toFixed(2),
+            )
           : 0;
 
       return {
@@ -275,7 +283,8 @@ export class AttendanceService {
         overallAttendancePercentage,
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       const errorStack = error instanceof Error ? error.stack : '';
       this.logger.error(
         `Error getting attendance overview: ${errorMessage}`,

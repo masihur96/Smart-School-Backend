@@ -19,4 +19,4 @@ import { SubjectsModule } from '../subjects/subjects.module';
   controllers: [HomeworkController],
   exports: [HomeworkService],
 })
-export class HomeworkModule { }
+export class HomeworkModule {}

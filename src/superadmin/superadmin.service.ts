@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
@@ -10,7 +14,10 @@ import { Subject } from '../subjects/entities/subject.entity';
 import { Section } from '../sections/entities/section.entity';
 import { Homework } from '../homework/entities/homework.entity';
 import { Attendance } from '../attendance/entities/attendance.entity';
-import { CreateSchoolDto, UpdateSchoolDto } from '../schools/dto/create-school.dto';
+import {
+  CreateSchoolDto,
+  UpdateSchoolDto,
+} from '../schools/dto/create-school.dto';
 
 @Injectable()
 export class SuperadminService {
@@ -38,9 +45,15 @@ export class SuperadminService {
   // ─── Dashboard Stats ───────────────────────────────────────────
   async getDashboardStats() {
     const totalSchools = await this.schoolRepository.count();
-    const totalStudents = await this.userRepository.count({ where: { role: 'student' as any } });
-    const totalTeachers = await this.userRepository.count({ where: { role: 'teacher' as any } });
-    const activeSubscriptions = await this.subscriptionRepository.count({ where: { isActive: true } });
+    const totalStudents = await this.userRepository.count({
+      where: { role: 'student' as any },
+    });
+    const totalTeachers = await this.userRepository.count({
+      where: { role: 'teacher' as any },
+    });
+    const activeSubscriptions = await this.subscriptionRepository.count({
+      where: { isActive: true },
+    });
 
     return {
       totalSchools,
@@ -96,8 +109,11 @@ export class SuperadminService {
   }
 
   async updateSubscriptionStatus(id: string, isActive: boolean) {
-    const subscription = await this.subscriptionRepository.findOne({ where: { id } });
-    if (!subscription) throw new NotFoundException(`Subscription with ID ${id} not found`);
+    const subscription = await this.subscriptionRepository.findOne({
+      where: { id },
+    });
+    if (!subscription)
+      throw new NotFoundException(`Subscription with ID ${id} not found`);
     subscription.isActive = isActive;
     return await this.subscriptionRepository.save(subscription);
   }

@@ -2,7 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PricingPlan } from './entities/pricing-plan.entity';
-import { CreatePricingPlanDto, UpdatePricingPlanDto } from './dto/pricing-plan.dto';
+import {
+  CreatePricingPlanDto,
+  UpdatePricingPlanDto,
+} from './dto/pricing-plan.dto';
 
 @Injectable()
 export class PricingService {
@@ -12,7 +15,7 @@ export class PricingService {
   constructor(
     @InjectRepository(PricingPlan)
     private readonly pricingRepository: Repository<PricingPlan>,
-  ) { }
+  ) {}
 
   async create(createConfigDto: CreatePricingPlanDto) {
     const plan = this.pricingRepository.create(createConfigDto);
@@ -54,7 +57,9 @@ export class PricingService {
   async restore(id: string) {
     const result = await this.pricingRepository.restore(id);
     if (!result.affected) {
-      throw new NotFoundException(`Pricing plan ${id} not found or not deleted`);
+      throw new NotFoundException(
+        `Pricing plan ${id} not found or not deleted`,
+      );
     }
     return this.findOne(id);
   }
@@ -64,10 +69,7 @@ export class PricingService {
       setupFee: this.setupFee,
       setupFeeFrequency: 'per year',
       trialDays: this.trialDays,
-      marketingLines: [
-        'Free 7-day trial',
-        'Setup Fee: ৳1,000 /per year',
-      ],
+      marketingLines: ['Free 7-day trial', 'Setup Fee: ৳1,000 /per year'],
     };
   }
 
@@ -75,7 +77,9 @@ export class PricingService {
     if (studentCount <= 0) return null;
 
     if (studentCount > 1000) {
-      const enterprise = await this.pricingRepository.findOne({ where: { name: 'Enterprise' } });
+      const enterprise = await this.pricingRepository.findOne({
+        where: { name: 'Enterprise' },
+      });
       return {
         plan: enterprise,
         estimatedMonthlyCost: 'Contact Sales',
@@ -84,11 +88,14 @@ export class PricingService {
 
     const plans = await this.getPlans();
 
-    // Sort logic to properly match tiers based on maxStudents 
-    const sortedPlans = plans.filter(p => !p.isCustom && p.maxStudents !== null)
+    // Sort logic to properly match tiers based on maxStudents
+    const sortedPlans = plans
+      .filter((p) => !p.isCustom && p.maxStudents !== null)
       .sort((a, b) => a.maxStudents - b.maxStudents);
 
-    const matchedPlan = sortedPlans.find(plan => studentCount <= plan.maxStudents);
+    const matchedPlan = sortedPlans.find(
+      (plan) => studentCount <= plan.maxStudents,
+    );
 
     if (!matchedPlan) return null;
 

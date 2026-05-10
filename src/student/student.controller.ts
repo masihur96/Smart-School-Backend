@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Request, Query, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Request,
+  Query,
+  Param,
+} from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { Public } from '../auth/decorators/public.decorator';

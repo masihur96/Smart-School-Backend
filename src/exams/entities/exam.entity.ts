@@ -33,7 +33,6 @@ export class Exam {
   @OneToMany(() => Marks, (result) => result.exam, { cascade: true })
   results: Marks[];
 
-
   @OneToMany(() => AcademicAssignment, (assignment) => assignment.exam, {
     cascade: true,
   })

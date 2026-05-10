@@ -13,7 +13,14 @@ import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Notice, Routine, Subject, Marquee, Class, Section]),
+    TypeOrmModule.forFeature([
+      Notice,
+      Routine,
+      Subject,
+      Marquee,
+      Class,
+      Section,
+    ]),
     UsersModule,
     NotificationsModule,
   ],
@@ -21,4 +28,4 @@ import { NotificationsModule } from '../notifications/notifications.module';
   controllers: [GeneralController],
   exports: [GeneralService],
 })
-export class GeneralModule { }
+export class GeneralModule {}

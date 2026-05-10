@@ -26,7 +26,7 @@ export class GeneralService {
     @InjectRepository(Subject)
     private subjectRepository: Repository<Subject>,
     private notificationsService: NotificationsService,
-  ) { }
+  ) {}
 
   // Notices
   async createNotice(data: Partial<Notice>) {
@@ -110,7 +110,12 @@ export class GeneralService {
   async getRoutineByTeacherAndDay(teacherId: string, day: Day) {
     return await this.routineRepository.find({
       where: { teacherId, day },
-      relations: ['classEntity', 'subjectEntity', 'teacherEntity', 'sectionEntity'],
+      relations: [
+        'classEntity',
+        'subjectEntity',
+        'teacherEntity',
+        'sectionEntity',
+      ],
     });
   }
 

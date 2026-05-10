@@ -17,7 +17,9 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
-    const user = await this.usersService.findByEmailOrPhone(loginDto.identifier);
+    const user = await this.usersService.findByEmailOrPhone(
+      loginDto.identifier,
+    );
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -47,7 +49,9 @@ export class AuthService {
 
     let school = null;
     if (user.schoolId) {
-      school = await this.schoolRepository.findOne({ where: { schoolId: user.schoolId } });
+      school = await this.schoolRepository.findOne({
+        where: { schoolId: user.schoolId },
+      });
     }
 
     const { password, ...userWithoutPassword } = user;
@@ -69,7 +73,9 @@ export class AuthService {
 
     let school = null;
     if (user.schoolId) {
-      school = await this.schoolRepository.findOne({ where: { schoolId: user.schoolId } });
+      school = await this.schoolRepository.findOne({
+        where: { schoolId: user.schoolId },
+      });
     }
 
     const { password, ...userWithoutPassword } = user;

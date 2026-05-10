@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription } from './entities/subscription.entity';
@@ -24,7 +28,8 @@ export class SubscriptionService {
     if (!plan) throw new NotFoundException('Pricing Plan not found');
 
     // 2. Count current students for this school
-    const currentStudents = await this.usersService.countStudentsBySchool(schoolId);
+    const currentStudents =
+      await this.usersService.countStudentsBySchool(schoolId);
 
     // 3. Optional: Validate if current students fit in the new plan
     if (plan.maxStudents !== null && currentStudents > plan.maxStudents) {
@@ -62,7 +67,9 @@ export class SubscriptionService {
     });
 
     if (!subscription) {
-      throw new NotFoundException(`No active subscription found for school ${schoolId}`);
+      throw new NotFoundException(
+        `No active subscription found for school ${schoolId}`,
+      );
     }
 
     return subscription;
@@ -76,30 +83,37 @@ export class SubscriptionService {
   }
 
   async update(id: string, updateDto: UpdateSubscriptionDto) {
-    const subscription = await this.subscriptionRepository.findOne({ where: { id } });
+    const subscription = await this.subscriptionRepository.findOne({
+      where: { id },
+    });
     if (!subscription) {
       throw new NotFoundException(`Subscription with ID ${id} not found`);
     }
 
     if (updateDto.pricingPlanId) {
-       const plan = await this.pricingService.findOne(updateDto.pricingPlanId);
-       if (!plan) throw new NotFoundException('Pricing Plan not found');
-       subscription.pricingPlan = plan;
+      const plan = await this.pricingService.findOne(updateDto.pricingPlanId);
+      if (!plan) throw new NotFoundException('Pricing Plan not found');
+      subscription.pricingPlan = plan;
     }
 
     if (updateDto.schoolId) {
-       subscription.schoolId = updateDto.schoolId;
+      subscription.schoolId = updateDto.schoolId;
     }
 
-    if (updateDto.startDate !== undefined) subscription.startDate = updateDto.startDate;
-    if (updateDto.endDate !== undefined) subscription.endDate = updateDto.endDate;
-    if (updateDto.isActive !== undefined) subscription.isActive = updateDto.isActive;
+    if (updateDto.startDate !== undefined)
+      subscription.startDate = updateDto.startDate;
+    if (updateDto.endDate !== undefined)
+      subscription.endDate = updateDto.endDate;
+    if (updateDto.isActive !== undefined)
+      subscription.isActive = updateDto.isActive;
 
     return await this.subscriptionRepository.save(subscription);
   }
 
   async remove(id: string) {
-    const subscription = await this.subscriptionRepository.findOne({ where: { id } });
+    const subscription = await this.subscriptionRepository.findOne({
+      where: { id },
+    });
     if (!subscription) {
       throw new NotFoundException(`Subscription with ID ${id} not found`);
     }
@@ -120,7 +134,9 @@ export class SubscriptionService {
   async restore(id: string) {
     const result = await this.subscriptionRepository.restore(id);
     if (!result.affected) {
-      throw new NotFoundException(`Subscription ${id} not found or not deleted`);
+      throw new NotFoundException(
+        `Subscription ${id} not found or not deleted`,
+      );
     }
     return await this.subscriptionRepository.findOne({
       where: { id },

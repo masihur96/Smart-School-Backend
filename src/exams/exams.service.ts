@@ -8,10 +8,7 @@ import { AcademicAssignment } from './entities/academic-assignment.entity';
 import { Class } from '../classes/entities/class.entity';
 import { Subject } from '../subjects/entities/subject.entity';
 import { User } from '../users/entities/user.entity';
-import {
-  CreateExamDto,
-  UpdateExamDto,
-} from './dto/create-exam.dto';
+import { CreateExamDto, UpdateExamDto } from './dto/create-exam.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 import { CreateAcademicAssignmentDto } from './dto/create-academic-assignment.dto';
 @Injectable()
@@ -28,7 +25,6 @@ export class ExamsService {
     private subjectRepository: Repository<Subject>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-
   ) {}
 
   async createExam(data: CreateExamDto) {
@@ -109,7 +105,7 @@ export class ExamsService {
       }
 
       exam.assignments = updatedAssignments;
-      
+
       delete data.assignments;
     }
 
@@ -182,7 +178,7 @@ export class ExamsService {
     const query = this.academicAssignmentRepository
       .createQueryBuilder('assignment')
       .where(`assignment.examiner->>'uuid' = :examinerId`, { examinerId });
-      
+
     // Return all assignments with related exam info
     return await query.leftJoinAndSelect('assignment.exam', 'exam').getMany();
   }
@@ -191,11 +187,9 @@ export class ExamsService {
     return await this.marksService.submitMarks(data);
   }
 
-
   async getResults(examId: string, studentId?: string) {
     return await this.marksService.getMarks(examId, studentId);
   }
-
 
   async findExamsByClass(classId: string) {
     const assignments = await this.academicAssignmentRepository
@@ -226,5 +220,4 @@ export class ExamsService {
   async getStudentResults(examId: string, studentId: string) {
     return await this.marksService.getMarks(examId, studentId);
   }
-
 }

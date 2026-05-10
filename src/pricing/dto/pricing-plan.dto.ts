@@ -2,36 +2,63 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreatePricingPlanDto {
-  @ApiProperty({ example: 'Starter', description: 'The name of the pricing plan' })
+  @ApiProperty({
+    example: 'Starter',
+    description: 'The name of the pricing plan',
+  })
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 100, description: 'Maximum number of students', required: false })
+  @ApiProperty({
+    example: 100,
+    description: 'Maximum number of students',
+    required: false,
+  })
   @IsNumber()
   @IsOptional()
   maxStudents?: number;
 
-  @ApiProperty({ example: 0, description: 'Minimum number of students', required: false })
+  @ApiProperty({
+    example: 0,
+    description: 'Minimum number of students',
+    required: false,
+  })
   @IsNumber()
   @IsOptional()
   minStudents?: number;
 
-  @ApiProperty({ example: '1000', description: 'Monthly price in BDT', required: false })
+  @ApiProperty({
+    example: '1000',
+    description: 'Monthly price in BDT',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   pricePerMonth?: string;
 
-  @ApiProperty({ example: '10', description: 'Price per student in BDT', required: false })
+  @ApiProperty({
+    example: '10',
+    description: 'Price per student in BDT',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   pricePerStudent?: string;
 
-  @ApiProperty({ example: 'Perfect for small schools', description: 'Plan description', required: false })
+  @ApiProperty({
+    example: 'Perfect for small schools',
+    description: 'Plan description',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   description?: string;
 
-  @ApiProperty({ example: false, description: 'Whether this is a custom enterprise plan', default: false })
+  @ApiProperty({
+    example: false,
+    description: 'Whether this is a custom enterprise plan',
+    default: false,
+  })
   @IsBoolean()
   @IsOptional()
   isCustom?: boolean;

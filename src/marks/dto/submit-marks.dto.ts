@@ -25,7 +25,6 @@ export class MarkItemDto {
   @ApiProperty({ example: 100 })
   @IsNumber()
   totalMarks: number;
-
 }
 
 export class SubmitMarksDto {

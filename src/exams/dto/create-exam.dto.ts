@@ -84,4 +84,3 @@ export class UpdateExamDto {
   @Type(() => CreateAcademicAssignmentDto)
   assignments?: CreateAcademicAssignmentDto[];
 }
-

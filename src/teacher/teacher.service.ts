@@ -1,4 +1,8 @@
-import { Injectable, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { AttendanceService } from '../attendance/attendance.service';
 import { MarksService } from '../marks/marks.service';
 import { HomeworkService } from '../homework/homework.service';
@@ -11,7 +15,10 @@ import { UserRole } from '../users/entities/user.entity';
 import { SubmitAttendanceDto } from '../attendance/dto/submit-attendance.dto';
 import { SubmitTeacherAttendanceDto } from '../attendance/dto/submit-teacher-attendance.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
-import { CreateHomeworkDto, UpdateHomeworkDto } from '../homework/dto/create-homework.dto';
+import {
+  CreateHomeworkDto,
+  UpdateHomeworkDto,
+} from '../homework/dto/create-homework.dto';
 import { StudentHomeworkStatus } from '../homework/entities/student-homework.entity';
 
 @Injectable()
@@ -35,11 +42,16 @@ export class TeacherService {
       Day.FRIDAY,
       Day.SATURDAY,
     ];
-    
+
     let day: Day;
-    
-    if (date && Object.values(Day).some(d => d.toLowerCase() === date.toLowerCase())) {
-      day = Object.values(Day).find(d => d.toLowerCase() === date.toLowerCase()) as Day;
+
+    if (
+      date &&
+      Object.values(Day).some((d) => d.toLowerCase() === date.toLowerCase())
+    ) {
+      day = Object.values(Day).find(
+        (d) => d.toLowerCase() === date.toLowerCase(),
+      ) as Day;
     } else {
       const targetDate = date ? new Date(date) : new Date();
       day = days[targetDate.getDay()];
@@ -92,9 +104,8 @@ export class TeacherService {
       throw new ForbiddenException('You can only submit marks as yourself');
     }
 
-    const assignments = await this.examsService.findAssignmentsByExaminer(
-      teacherId,
-    );
+    const assignments =
+      await this.examsService.findAssignmentsByExaminer(teacherId);
 
     // Check if the teacher is assigned to the subjects they are submitting marks for in this exam
     // and validate the bounds locally
@@ -119,9 +130,8 @@ export class TeacherService {
   }
 
   async getMarks(teacherId: string, examId?: string, studentId?: string) {
-    const assignments = await this.examsService.findAssignmentsByExaminer(
-      teacherId,
-    );
+    const assignments =
+      await this.examsService.findAssignmentsByExaminer(teacherId);
 
     const allowedSubjects = new Map<string, Set<string>>();
     for (const a of assignments) {
@@ -141,9 +151,8 @@ export class TeacherService {
   }
 
   async getAssignedSubjectsAndStudents(teacherId: string) {
-    const assignments = await this.examsService.findAssignmentsByExaminer(
-      teacherId,
-    );
+    const assignments =
+      await this.examsService.findAssignmentsByExaminer(teacherId);
 
     const subjectsMap = new Map();
     const studentsRes = await this.usersService.findAll(
@@ -177,9 +186,8 @@ export class TeacherService {
   }
 
   async getAssignedExams(teacherId: string) {
-    const assignments = await this.examsService.findAssignmentsByExaminer(
-      teacherId,
-    );
+    const assignments =
+      await this.examsService.findAssignmentsByExaminer(teacherId);
     const examsMap = new Map();
     for (const a of assignments) {
       if (a.exam && !examsMap.has(a.examId)) {
@@ -192,9 +200,8 @@ export class TeacherService {
   }
 
   async getAssignedClasses(teacherId: string, examId: string) {
-    const assignments = await this.examsService.findAssignmentsByExaminer(
-      teacherId,
-    );
+    const assignments =
+      await this.examsService.findAssignmentsByExaminer(teacherId);
     const classesMap = new Map();
     for (const a of assignments) {
       if (a.examId === examId && a.class && !classesMap.has(a.class.uuid)) {
@@ -209,9 +216,8 @@ export class TeacherService {
     examId: string,
     classId: string,
   ) {
-    const assignments = await this.examsService.findAssignmentsByExaminer(
-      teacherId,
-    );
+    const assignments =
+      await this.examsService.findAssignmentsByExaminer(teacherId);
     const isAssigned = assignments.some(
       (a) => a.examId === examId && a.class.uuid === classId,
     );
@@ -242,9 +248,8 @@ export class TeacherService {
     classId: string,
     studentId: string,
   ) {
-    const assignments = await this.examsService.findAssignmentsByExaminer(
-      teacherId,
-    );
+    const assignments =
+      await this.examsService.findAssignmentsByExaminer(teacherId);
     const assignedSubjectsMap = new Map();
     for (const a of assignments) {
       if (a.examId === examId && a.class.uuid === classId) {

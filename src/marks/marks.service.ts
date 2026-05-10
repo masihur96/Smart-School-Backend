@@ -9,7 +9,7 @@ export class MarksService {
   constructor(
     @InjectRepository(Marks)
     private marksRepository: Repository<Marks>,
-  ) { }
+  ) {}
 
   async submitMarks(data: SubmitMarksDto) {
     const results: Marks[] = [];

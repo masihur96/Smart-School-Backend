@@ -9,7 +9,10 @@ export const FirebaseProvider: Provider = {
     }
 
     const firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG!);
-    firebaseConfig.private_key = firebaseConfig.private_key.replace(/\\n/g, '\n');
+    firebaseConfig.private_key = firebaseConfig.private_key.replace(
+      /\\n/g,
+      '\n',
+    );
 
     return admin.initializeApp({
       credential: admin.credential.cert(firebaseConfig),
