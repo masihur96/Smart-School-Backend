@@ -69,7 +69,11 @@ export class HomeworkService {
     date?: string,
     schoolId?: string,
   ) {
-    const query = this.homeworkRepository.createQueryBuilder('homework');
+    const query = this.homeworkRepository.createQueryBuilder('homework')
+      .leftJoinAndSelect('homework.class', 'class')
+      .leftJoinAndSelect('homework.subject', 'subject')
+      .leftJoinAndSelect('homework.teacher', 'teacher')
+      .leftJoinAndSelect('homework.section', 'section');
 
     if (classId && classId !== 'null') {
       query.andWhere('homework.classId = :classId', { classId });
@@ -92,18 +96,29 @@ export class HomeworkService {
     }
 
     return await query.orderBy('homework.createdAt', 'DESC').getMany();
+
   }
 
   async findById(id: string) {
     return await this.homeworkRepository.findOne({
       where: { id },
-      relations: ['studentHomeworks', 'studentHomeworks.student'],
+      relations: [
+        'studentHomeworks',
+        'studentHomeworks.student',
+        'class',
+        'subject',
+        'teacher',
+        'section',
+      ],
     });
   }
 
   async update(id: string, data: UpdateHomeworkDto) {
     await this.homeworkRepository.update(id, data);
-    return await this.homeworkRepository.findOne({ where: { id } });
+    return await this.homeworkRepository.findOne({
+      where: { id },
+      relations: ['class', 'subject', 'teacher', 'section'],
+    });
   }
 
   async delete(id: string) {
@@ -130,7 +145,13 @@ export class HomeworkService {
   async getHomeworkForStudent(studentId: string) {
     return await this.studentHomeworkRepository.find({
       where: { studentId },
-      relations: ['homework'],
+      relations: [
+        'homework',
+        'homework.class',
+        'homework.subject',
+        'homework.teacher',
+        'homework.section',
+      ],
       order: { createdAt: 'DESC' },
     });
   }
