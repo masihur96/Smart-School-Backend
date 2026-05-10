@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Marks } from './entities/marks.entity';
@@ -14,36 +14,43 @@ export class MarksService {
   async submitMarks(data: SubmitMarksDto) {
     const results: Marks[] = [];
 
-    for (const markItem of data.marks) {
-      // Check if marks already exist for this student, exam, and subject
-      let marksEntry = await this.marksRepository.findOne({
-        where: {
-          studentId: markItem.studentId,
-          examId: data.examId,
-          subjectId: markItem.subjectId,
-        },
-      });
-
-      if (marksEntry) {
-        // Update existing marks
-        marksEntry.marksObtained = markItem.marksObtained;
-        marksEntry.totalMarks = markItem.totalMarks;
-        marksEntry.remarks = markItem.remarks;
-        marksEntry.teacherId = data.teacherId;
-      } else {
-        // Create new marks entry
-        marksEntry = this.marksRepository.create({
-          ...markItem,
-          examId: data.examId,
-          teacherId: data.teacherId,
-          schoolId: data.schoolId,
+    try {
+      for (const markItem of data.marks) {
+        // Check if marks already exist for this student, exam, and subject
+        let marksEntry = await this.marksRepository.findOne({
+          where: {
+            studentId: markItem.studentId,
+            examId: data.examId,
+            subjectId: markItem.subjectId,
+          },
         });
+
+        if (marksEntry) {
+          // Update existing marks
+          marksEntry.marksObtained = markItem.marksObtained;
+          marksEntry.totalMarks = markItem.totalMarks;
+          marksEntry.remarks = markItem.remarks;
+          marksEntry.teacherId = data.teacherId;
+          marksEntry.schoolId = data.schoolId; // Ensure schoolId is also updated
+        } else {
+          // Create new marks entry
+          marksEntry = this.marksRepository.create({
+            ...markItem,
+            examId: data.examId,
+            teacherId: data.teacherId,
+            schoolId: data.schoolId,
+          });
+        }
+
+        results.push(await this.marksRepository.save(marksEntry));
       }
-
-      results.push(await this.marksRepository.save(marksEntry));
+      return results;
+    } catch (error) {
+      console.error('Error submitting marks:', error);
+      throw new BadRequestException(
+        `Failed to submit marks: ${error.message || 'Unknown database error'}. Ensure all IDs (student, subject, exam, teacher, school) are valid and exist.`,
+      );
     }
-
-    return results;
   }
 
   async getMarks(examId?: string, studentId?: string) {
