@@ -28,6 +28,7 @@ export class MarksService {
         // Update existing marks
         marksEntry.marksObtained = markItem.marksObtained;
         marksEntry.totalMarks = markItem.totalMarks;
+        marksEntry.remarks = markItem.remarks;
         marksEntry.teacherId = data.teacherId;
       } else {
         // Create new marks entry
