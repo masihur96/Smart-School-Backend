@@ -217,12 +217,14 @@ export class AdminController {
     @Query('sectionId') sectionId?: string,
     @Query('subjectId') subjectId?: string,
     @Query('date') date?: string,
+    @Query('schoolId') schoolId?: string,
   ) {
     return await this.adminService.getHomeworks(
       classId,
       subjectId,
       sectionId,
       date,
+      schoolId,
     );
   }
 

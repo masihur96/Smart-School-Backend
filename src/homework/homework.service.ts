@@ -67,30 +67,28 @@ export class HomeworkService {
     subjectId?: string,
     sectionId?: string,
     date?: string,
+    schoolId?: string,
   ) {
     const query = this.homeworkRepository.createQueryBuilder('homework');
-    const conditions: string[] = [];
-    const params: Record<string, any> = {};
 
-    if (classId) {
-      conditions.push('homework.classId = :classId');
-      params.classId = classId;
+    if (classId && classId !== 'null') {
+      query.andWhere('homework.classId = :classId', { classId });
     }
-    if (subjectId) {
-      conditions.push('homework.subjectId = :subjectId');
-      params.subjectId = subjectId;
+    if (subjectId && subjectId !== 'null') {
+      query.andWhere('homework.subjectId = :subjectId', { subjectId });
     }
     if (sectionId) {
-      conditions.push('homework.sectionId = :sectionId');
-      params.sectionId = sectionId;
+      if (sectionId === 'null') {
+        query.andWhere('homework.sectionId IS NULL');
+      } else {
+        query.andWhere('homework.sectionId = :sectionId', { sectionId });
+      }
     }
-    if (date) {
-      conditions.push('homework.dueDate = :date');
-      params.date = date;
+    if (date && date !== 'null') {
+      query.andWhere('homework.dueDate = :date', { date });
     }
-
-    if (conditions.length > 0) {
-      query.where(conditions.join(' AND '), params);
+    if (schoolId && schoolId !== 'null') {
+      query.andWhere('homework.schoolId = :schoolId', { schoolId });
     }
 
     return await query.orderBy('homework.createdAt', 'DESC').getMany();

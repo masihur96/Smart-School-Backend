@@ -153,12 +153,14 @@ export class AdminService {
     subjectId?: string,
     sectionId?: string,
     date?: string,
+    schoolId?: string,
   ) {
     return await this.homeworkService.findAll(
       classId,
       subjectId,
       sectionId,
       date,
+      schoolId,
     );
   }
 
