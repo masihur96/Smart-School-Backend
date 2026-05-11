@@ -13,6 +13,10 @@ import {
 import { UsersService } from '../users/users.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { SubjectsService } from '../subjects/subjects.service';
+import { Class } from '../classes/entities/class.entity';
+import { Subject } from '../subjects/entities/subject.entity';
+import { Section } from '../sections/entities/section.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class HomeworkService {
@@ -70,10 +74,10 @@ export class HomeworkService {
     schoolId?: string,
   ) {
     const query = this.homeworkRepository.createQueryBuilder('homework')
-      .leftJoinAndSelect('homework.classEntity', 'h_class', 'h_class.id = CAST(homework.classId AS UUID)')
-      .leftJoinAndSelect('homework.subjectEntity', 'h_subject', 'h_subject.id = CAST(homework.subjectId AS UUID)')
-      .leftJoinAndSelect('homework.teacherEntity', 'h_teacher', 'h_teacher.id = CAST(homework.teacherId AS UUID)')
-      .leftJoinAndSelect('homework.sectionEntity', 'h_section', 'h_section.id = CAST(homework.sectionId AS UUID)');
+      .leftJoinAndMapOne('homework.classEntity', Class, 'h_class', 'h_class.id = CAST(NULLIF(homework.classId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.subjectEntity', Subject, 'h_subject', 'h_subject.id = CAST(NULLIF(homework.subjectId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.teacherEntity', User, 'h_teacher', 'h_teacher.id = CAST(NULLIF(homework.teacherId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.sectionEntity', Section, 'h_section', 'h_section.id = CAST(NULLIF(homework.sectionId, \'\') AS UUID)');
 
 
     if (classId && classId !== 'null') {
@@ -103,12 +107,12 @@ export class HomeworkService {
 
   async findById(id: string) {
     return await this.homeworkRepository.createQueryBuilder('homework')
-      .leftJoinAndSelect('homework.studentHomeworks', 'sh')
-      .leftJoinAndSelect('sh.student', 'student')
-      .leftJoinAndSelect('homework.classEntity', 'h_class', 'h_class.id = CAST(homework.classId AS UUID)')
-      .leftJoinAndSelect('homework.subjectEntity', 'h_subject', 'h_subject.id = CAST(homework.subjectId AS UUID)')
-      .leftJoinAndSelect('homework.teacherEntity', 'h_teacher', 'h_teacher.id = CAST(homework.teacherId AS UUID)')
-      .leftJoinAndSelect('homework.sectionEntity', 'h_section', 'h_section.id = CAST(homework.sectionId AS UUID)')
+      .leftJoinAndMapMany('homework.studentHomeworks', StudentHomework, 'sh', 'CAST(NULLIF(sh.homeworkId, \'\') AS UUID) = homework.id')
+      .leftJoinAndMapOne('sh.student', User, 'student', 'student.id = CAST(NULLIF(sh.studentId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.classEntity', Class, 'h_class', 'h_class.id = CAST(NULLIF(homework.classId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.subjectEntity', Subject, 'h_subject', 'h_subject.id = CAST(NULLIF(homework.subjectId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.teacherEntity', User, 'h_teacher', 'h_teacher.id = CAST(NULLIF(homework.teacherId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.sectionEntity', Section, 'h_section', 'h_section.id = CAST(NULLIF(homework.sectionId, \'\') AS UUID)')
       .where('homework.id = :id', { id })
       .getOne();
   }
@@ -141,11 +145,11 @@ export class HomeworkService {
 
   async getHomeworkForStudent(studentId: string) {
     return await this.studentHomeworkRepository.createQueryBuilder('sh')
-      .leftJoinAndSelect('sh.homework', 'homework', 'homework.id = CAST(sh.homeworkId AS UUID)')
-      .leftJoinAndSelect('homework.classEntity', 'h_class', 'h_class.id = CAST(homework.classId AS UUID)')
-      .leftJoinAndSelect('homework.subjectEntity', 'h_subject', 'h_subject.id = CAST(homework.subjectId AS UUID)')
-      .leftJoinAndSelect('homework.teacherEntity', 'h_teacher', 'h_teacher.id = CAST(homework.teacherId AS UUID)')
-      .leftJoinAndSelect('homework.sectionEntity', 'h_section', 'h_section.id = CAST(homework.sectionId AS UUID)')
+      .leftJoinAndMapOne('sh.homework', Homework, 'homework', 'homework.id = CAST(NULLIF(sh.homeworkId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.classEntity', Class, 'h_class', 'h_class.id = CAST(NULLIF(homework.classId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.subjectEntity', Subject, 'h_subject', 'h_subject.id = CAST(NULLIF(homework.subjectId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.teacherEntity', User, 'h_teacher', 'h_teacher.id = CAST(NULLIF(homework.teacherId, \'\') AS UUID)')
+      .leftJoinAndMapOne('homework.sectionEntity', Section, 'h_section', 'h_section.id = CAST(NULLIF(homework.sectionId, \'\') AS UUID)')
       .where('sh.studentId = :studentId', { studentId })
       .orderBy('sh.createdAt', 'DESC')
       .getMany();
