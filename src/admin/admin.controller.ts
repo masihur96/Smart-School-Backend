@@ -29,8 +29,11 @@ import {
 import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
 import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assignment.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
-import { CreateSchoolDto } from '../schools/dto/create-school.dto';
-import { CreateHomeworkDto } from '../homework/dto/create-homework.dto';
+import { CreateSchoolDto, UpdateSchoolDto } from '../schools/dto/create-school.dto';
+import {
+  CreateHomeworkDto,
+  UpdateHomeworkDto,
+} from '../homework/dto/create-homework.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
@@ -41,10 +44,26 @@ export class AdminController {
   constructor(private adminService: AdminService) {}
 
   // ─── Schools ───────────────────────────────────────
+  @Get('schools')
+  async getSchools() {
+    return await this.adminService.getSchools();
+  }
+
   @Post('schools')
   @HttpCode(HttpStatus.CREATED)
   async createSchool(@Body() dto: CreateSchoolDto) {
     return await this.adminService.createSchool(dto);
+  }
+
+  @Put('schools/:id')
+  async updateSchool(@Param('id') id: string, @Body() dto: UpdateSchoolDto) {
+    return await this.adminService.updateSchool(id, dto);
+  }
+
+  @Delete('schools/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteSchool(@Param('id') id: string) {
+    return await this.adminService.deleteSchool(id);
   }
 
   // ─── Users ───────────────────────────────────────
@@ -235,5 +254,16 @@ export class AdminController {
   })
   async createHomework(@Body() dto: CreateHomeworkDto) {
     return await this.adminService.createHomework(dto);
+  }
+
+  @Put('homework/:id')
+  async updateHomework(@Param('id') id: string, @Body() dto: UpdateHomeworkDto) {
+    return await this.adminService.updateHomework(id, dto);
+  }
+
+  @Delete('homework/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteHomework(@Param('id') id: string) {
+    return await this.adminService.deleteHomework(id);
   }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { School } from '../schools/entities/school.entity';
-import { CreateSchoolDto } from '../schools/dto/create-school.dto';
+import { CreateSchoolDto, UpdateSchoolDto } from '../schools/dto/create-school.dto';
 import { UsersService } from '../users/users.service';
 import { ClassesService } from '../classes/classes.service';
 import { SubjectsService } from '../subjects/subjects.service';
@@ -22,7 +22,10 @@ import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assign
 import { MarksService } from '../marks/marks.service';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
 import { HomeworkService } from '../homework/homework.service';
-import { CreateHomeworkDto } from '../homework/dto/create-homework.dto';
+import {
+  CreateHomeworkDto,
+  UpdateHomeworkDto,
+} from '../homework/dto/create-homework.dto';
 
 @Injectable()
 export class AdminService {
@@ -41,6 +44,19 @@ export class AdminService {
   async createSchool(data: CreateSchoolDto) {
     const school = this.schoolRepository.create(data);
     return await this.schoolRepository.save(school);
+  }
+
+  async getSchools() {
+    return await this.schoolRepository.find();
+  }
+
+  async updateSchool(id: string, data: UpdateSchoolDto) {
+    await this.schoolRepository.update(id, data);
+    return await this.schoolRepository.findOne({ where: { id } });
+  }
+
+  async deleteSchool(id: string) {
+    return await this.schoolRepository.softDelete(id);
   }
 
   // User management
@@ -166,5 +182,13 @@ export class AdminService {
 
   async createHomework(data: CreateHomeworkDto) {
     return await this.homeworkService.create(data);
+  }
+
+  async updateHomework(id: string, data: UpdateHomeworkDto) {
+    return await this.homeworkService.update(id, data);
+  }
+
+  async deleteHomework(id: string) {
+    return await this.homeworkService.delete(id);
   }
 }
