@@ -20,21 +20,21 @@ export class Homework {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   classId: string;
 
   @ManyToOne(() => Class)
   @JoinColumn({ name: 'classId' })
   classEntity: Class;
 
-  @Column()
+  @Column({ type: 'uuid' })
   subjectId: string;
 
   @ManyToOne(() => Subject)
   @JoinColumn({ name: 'subjectId' })
   subjectEntity: Subject;
 
-  @Column()
+  @Column({ type: 'uuid' })
   teacherId: string;
 
   @ManyToOne(() => User)
@@ -50,7 +50,7 @@ export class Homework {
   @Column({ type: 'date' })
   dueDate: Date;
 
-  @Column({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   sectionId: string;
 
   @ManyToOne(() => Section)

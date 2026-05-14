@@ -28,10 +28,10 @@ export class Attendance {
   @Column()
   takenBy: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   classId: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   studentId: string;
 
   @ManyToOne(() => User)

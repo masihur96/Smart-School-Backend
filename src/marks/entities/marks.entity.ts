@@ -17,10 +17,10 @@ export class Marks {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   examId: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   studentId: string;
 
   @Column({ type: 'decimal', precision: 5, scale: 2 })
@@ -29,10 +29,10 @@ export class Marks {
   @Column({ type: 'decimal', precision: 5, scale: 2 })
   totalMarks: number;
 
-  @Column()
+  @Column({ type: 'uuid' })
   subjectId: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   teacherId: string;
 
   @Column()

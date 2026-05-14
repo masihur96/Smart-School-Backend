@@ -20,7 +20,7 @@ export class StudentHomework {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   homeworkId: string;
 
   @ManyToOne(() => Homework, (homework) => homework.studentHomeworks, {
@@ -28,7 +28,7 @@ export class StudentHomework {
   })
   homework: Homework;
 
-  @Column()
+  @Column({ type: 'uuid' })
   studentId: string;
 
   @ManyToOne(() => User)

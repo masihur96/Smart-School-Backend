@@ -15,7 +15,7 @@ export class TeacherAttendance {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   teacherId: string;
 
   @ManyToOne(() => User, { nullable: true })

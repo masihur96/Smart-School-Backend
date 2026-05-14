@@ -14,7 +14,7 @@ export class AcademicAssignment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'uuid' })
   examId: string;
 
   @Column({ type: 'jsonb', nullable: true })
