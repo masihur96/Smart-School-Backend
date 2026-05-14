@@ -65,10 +65,6 @@ export class HomeworkController {
     return await this.homeworkService.findById(id);
   }
   
-  @Get(':id')
-  async findOneOne(@Param('id') id: string) {
-    return await this.homeworkService.findById(id);
-  }
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() data: any) {

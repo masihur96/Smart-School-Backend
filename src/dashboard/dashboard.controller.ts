@@ -13,7 +13,7 @@ import { UserRole } from '../users/entities/user.entity';
 @Controller('dashboard')
 @UseGuards(RolesGuard)
 export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) {}
+  constructor(private readonly dashboardService: DashboardService) { }
 
   /**
    * Super Admin Dashboard
