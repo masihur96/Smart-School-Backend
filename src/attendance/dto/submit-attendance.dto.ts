@@ -4,6 +4,7 @@ import {
   IsArray,
   ValidateNested,
   IsEnum,
+  IsOptional,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -48,6 +49,15 @@ export class SubmitAttendanceDto {
   })
   @IsString()
   classId: string;
+
+  @ApiProperty({
+    example: 'uuid-school-001',
+    description: 'School ID (from teacher JWT)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  schoolId?: string;
 
   @ApiProperty({
     type: [AttendanceRecordDto],

@@ -288,10 +288,30 @@ export class DashboardService {
       where: { schoolId, role: UserRole.STUDENT, isActive: true },
     });
 
-    // Fetch attendance records WITHOUT join to avoid varchar vs uuid mismatch
+    // Get all classIds that belong to this school
+    const schoolClasses = await this.classRepo.find({
+      where: { schoolId },
+      select: ['id'],
+    });
+    const classIds = schoolClasses.map((c) => c.id);
+
+    if (classIds.length === 0) {
+      return {
+        date,
+        totalStudents: allStudents,
+        recorded: 0,
+        present: 0,
+        absent: 0,
+        leave: 0,
+        attendanceRate: 0,
+        data: [],
+      };
+    }
+
+    // Fetch attendance records by classId belonging to this school (avoids schoolId placeholder issue)
     const records = await this.attendanceRepo
       .createQueryBuilder('a')
-      .where('a.schoolId = :schoolId', { schoolId })
+      .where('a.classId IN (:...classIds)', { classIds })
       .andWhere('a.date = :date', { date })
       .getMany();
 

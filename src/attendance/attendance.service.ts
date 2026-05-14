@@ -89,6 +89,13 @@ export class AttendanceService {
   async submitAttendance(data: SubmitAttendanceDto) {
     const results: Attendance[] = [];
 
+    // Resolve the real schoolId — use DTO value or look it up from the class
+    let resolvedSchoolId = data.schoolId;
+    if (!resolvedSchoolId) {
+      const classEntity = await this.classesService.findById(data.classId);
+      resolvedSchoolId = classEntity?.schoolId || '';
+    }
+
     for (const record of data.records) {
       // Check if attendance already exists for this student on this date and class
       let attendance = await this.attendanceRepository.findOne({
@@ -103,6 +110,7 @@ export class AttendanceService {
         // Update existing record
         attendance.status = record.status;
         attendance.takenBy = data.takenBy;
+        if (resolvedSchoolId) attendance.schoolId = resolvedSchoolId;
       } else {
         // Create new record
         attendance = this.attendanceRepository.create({
@@ -110,7 +118,7 @@ export class AttendanceService {
           date: this.normalizeDate(data.date) as any,
           takenBy: data.takenBy,
           classId: data.classId,
-          schoolId: 'placeholder-school-id', // Should ideally come from JWT or DTO
+          schoolId: resolvedSchoolId,
         });
       }
 
