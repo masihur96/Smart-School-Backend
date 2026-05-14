@@ -282,6 +282,8 @@ export class DashboardService {
       .createQueryBuilder('a')
       .where('a.schoolId = :schoolId', { schoolId })
       .andWhere('a.date = :date', { date })
+      .leftJoinAndSelect('a.student', 'student')
+      .leftJoinAndSelect('a.class', 'class')
       .getMany();
 
     const presentCount = records.filter(
@@ -305,6 +307,7 @@ export class DashboardService {
         records.length > 0
           ? parseFloat(((presentCount / records.length) * 100).toFixed(2))
           : 0,
+      data: records,
     };
   }
 

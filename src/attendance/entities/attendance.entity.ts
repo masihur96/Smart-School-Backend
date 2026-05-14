@@ -5,7 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
+import { Class } from '../../classes/entities/class.entity';
 
 export enum AttendanceStatus {
   PRESENT = 'present',
@@ -29,6 +33,14 @@ export class Attendance {
 
   @Column()
   studentId: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'studentId' })
+  student: User;
+
+  @ManyToOne(() => Class)
+  @JoinColumn({ name: 'classId' })
+  class: Class;
 
   @Column({ type: 'enum', enum: AttendanceStatus })
   status: AttendanceStatus;
