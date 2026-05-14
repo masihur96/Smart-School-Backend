@@ -24,6 +24,8 @@ export class HomeworkController {
     return await this.homeworkService.create(data);
   }
 
+
+  // Get homework with optional filters for class, section, and subject
   @Get()
   async findAll(
     @Query('classId') classId?: string,
@@ -60,6 +62,11 @@ export class HomeworkController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
+    return await this.homeworkService.findById(id);
+  }
+  
+  @Get(':id')
+  async findOneOne(@Param('id') id: string) {
     return await this.homeworkService.findById(id);
   }
 
