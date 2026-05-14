@@ -249,14 +249,24 @@ export class DashboardService {
       where: { schoolId, role: UserRole.TEACHER, isActive: true },
     });
 
+    // Fetch attendance records WITHOUT join to avoid varchar vs uuid mismatch
     const presentRecords = await this.teacherAttendanceRepo
       .createQueryBuilder('ta')
       .where('ta.schoolId = :schoolId', { schoolId })
       .andWhere('ta.date = :date', { date })
-      .leftJoinAndSelect('ta.teacher', 'teacher')
       .getMany();
 
-    const presentCount = presentRecords.filter(
+    // Manually enrich with teacher info
+    const enrichedRecords = await Promise.all(
+      presentRecords.map(async (r) => {
+        const teacher = r.teacherId
+          ? await this.userRepo.findOne({ where: { id: r.teacherId } })
+          : null;
+        return { ...r, teacher };
+      }),
+    );
+
+    const presentCount = enrichedRecords.filter(
       (r) => r.status === 'clock-in',
     ).length;
 
@@ -269,7 +279,7 @@ export class DashboardService {
         allTeachers > 0
           ? parseFloat(((presentCount / allTeachers) * 100).toFixed(2))
           : 0,
-      recentRecords: presentRecords.slice(0, 5),
+      recentRecords: enrichedRecords.slice(0, 5),
     };
   }
 
@@ -278,36 +288,48 @@ export class DashboardService {
       where: { schoolId, role: UserRole.STUDENT, isActive: true },
     });
 
+    // Fetch attendance records WITHOUT join to avoid varchar vs uuid mismatch
     const records = await this.attendanceRepo
       .createQueryBuilder('a')
       .where('a.schoolId = :schoolId', { schoolId })
       .andWhere('a.date = :date', { date })
-      .leftJoinAndSelect('a.student', 'student')
-      .leftJoinAndSelect('a.class', 'class')
       .getMany();
 
-    const presentCount = records.filter(
+    // Manually enrich with student and class info
+    const enrichedRecords = await Promise.all(
+      records.map(async (r) => {
+        const student = r.studentId
+          ? await this.userRepo.findOne({ where: { id: r.studentId } })
+          : null;
+        const classInfo = r.classId
+          ? await this.classRepo.findOne({ where: { id: r.classId } })
+          : null;
+        return { ...r, student, class: classInfo };
+      }),
+    );
+
+    const presentCount = enrichedRecords.filter(
       (r) => r.status === AttendanceStatus.PRESENT,
     ).length;
-    const absentCount = records.filter(
+    const absentCount = enrichedRecords.filter(
       (r) => r.status === AttendanceStatus.ABSENT,
     ).length;
-    const leaveCount = records.filter(
+    const leaveCount = enrichedRecords.filter(
       (r) => r.status === AttendanceStatus.LEAVE,
     ).length;
 
     return {
       date,
       totalStudents: allStudents,
-      recorded: records.length,
+      recorded: enrichedRecords.length,
       present: presentCount,
       absent: absentCount,
       leave: leaveCount,
       attendanceRate:
-        records.length > 0
-          ? parseFloat(((presentCount / records.length) * 100).toFixed(2))
+        enrichedRecords.length > 0
+          ? parseFloat(((presentCount / enrichedRecords.length) * 100).toFixed(2))
           : 0,
-      data: records,
+      data: enrichedRecords,
     };
   }
 
@@ -343,31 +365,37 @@ export class DashboardService {
   }
 
   private async getAdminCurrentExam(schoolId: string) {
+    // Fetch exams WITHOUT relations join to avoid potential uuid/varchar mismatch
     const exams = await this.examRepo.find({
-      relations: ['assignments'],
       order: { start_date: 'DESC' },
     });
 
     const today = getLocalDateString();
 
-    // Tag each exam with a status and return as a single sorted list
-    const examList = exams.map((e) => {
-      let status: 'current' | 'recent' | 'upcoming';
+    // Fetch assignments separately for each exam
+    const examList = await Promise.all(
+      exams.map(async (e) => {
+        let status: 'current' | 'recent' | 'upcoming';
 
-      if (e.start_date && e.end_date) {
-        if (e.start_date <= today && e.end_date >= today) {
-          status = 'current';
-        } else if (e.end_date < today) {
-          status = 'recent';
+        if (e.start_date && e.end_date) {
+          if (e.start_date <= today && e.end_date >= today) {
+            status = 'current';
+          } else if (e.end_date < today) {
+            status = 'recent';
+          } else {
+            status = 'upcoming';
+          }
         } else {
           status = 'upcoming';
         }
-      } else {
-        status = 'upcoming'; // fallback for exams missing dates
-      }
 
-      return { ...e, status };
-    });
+        const assignments = await this.academicAssignmentRepo.find({
+          where: { examId: e.id },
+        });
+
+        return { ...e, assignments, status };
+      }),
+    );
 
     // Sort: current first, then upcoming, then recent
     const order = { current: 0, upcoming: 1, recent: 2 };
@@ -567,24 +595,27 @@ export class DashboardService {
   }
 
   private async getTeacherExamList(teacherId: string) {
+    // Fetch assignments without join to avoid uuid/varchar mismatch
     const assignments = await this.academicAssignmentRepo
       .createQueryBuilder('aa')
       .where(`aa.examiner->>'uuid' = :teacherId`, { teacherId })
-      .leftJoinAndSelect('aa.exam', 'exam')
-      .orderBy('exam.createdAt', 'DESC')
+      .orderBy('aa.createdAt', 'DESC')
       .take(10)
       .getMany();
 
-    // De-duplicate by examId and return unique exams with assignment details
+    // Fetch exams separately to avoid join type issues
     const examsMap = new Map<string, any>();
     for (const a of assignments) {
-      if (a.exam && !examsMap.has(a.examId)) {
-        examsMap.set(a.examId, {
-          ...a.exam,
-          myAssignments: [],
-        });
+      if (!examsMap.has(a.examId)) {
+        const exam = await this.examRepo.findOne({ where: { id: a.examId } });
+        if (exam) {
+          examsMap.set(a.examId, {
+            ...exam,
+            myAssignments: [],
+          });
+        }
       }
-      if (a.exam) {
+      if (examsMap.has(a.examId)) {
         examsMap.get(a.examId).myAssignments.push({
           id: a.id,
           class: a.class,
@@ -678,28 +709,36 @@ export class DashboardService {
   }
 
   private async getStudentRecentHomework(studentId: string) {
+    // Fetch WITHOUT relation join to avoid uuid/varchar mismatch on homeworkId
     const studentHomeworks = await this.studentHomeworkRepo.find({
       where: { studentId },
-      relations: ['homework'],
       order: { createdAt: 'DESC' },
       take: 10,
     });
 
     return Promise.all(
       studentHomeworks.map(async (sh) => {
-        let classInfo = null,
+        let homework = null,
+          classInfo = null,
           subjectInfo = null,
           sectionInfo = null;
-        if (sh.homework) {
+
+        if (sh.homeworkId) {
+          homework = await this.homeworkRepo.findOne({
+            where: { id: sh.homeworkId },
+          });
+        }
+
+        if (homework) {
           classInfo = await this.classRepo.findOne({
-            where: { id: sh.homework.classId },
+            where: { id: homework.classId },
           });
           subjectInfo = await this.subjectRepo.findOne({
-            where: { id: sh.homework.subjectId },
+            where: { id: homework.subjectId },
           });
-          sectionInfo = sh.homework.sectionId
+          sectionInfo = homework.sectionId
             ? await this.sectionRepo.findOne({
-                where: { id: sh.homework.sectionId },
+                where: { id: homework.sectionId },
               })
             : null;
         }
@@ -707,9 +746,9 @@ export class DashboardService {
           id: sh.id,
           status: sh.status,
           comment: sh.comment,
-          homework: sh.homework
+          homework: homework
             ? {
-                ...sh.homework,
+                ...homework,
                 classInfo,
                 subjectInfo,
                 sectionInfo,
@@ -726,12 +765,11 @@ export class DashboardService {
   ) {
     if (!classId) return [];
 
-    // Get exams for this student's class
+    // Fetch assignments without join to avoid uuid/varchar mismatch
     const assignments = await this.academicAssignmentRepo
       .createQueryBuilder('aa')
       .where(`aa.class->>'uuid' = :classId`, { classId })
-      .leftJoinAndSelect('aa.exam', 'exam')
-      .orderBy('exam.createdAt', 'DESC')
+      .orderBy('aa.createdAt', 'DESC')
       .take(10)
       .getMany();
 
@@ -741,7 +779,8 @@ export class DashboardService {
 
     const examsWithResults = await Promise.all(
       uniqueExamIds.map(async (examId) => {
-        const exam = assignments.find((a) => a.examId === examId)?.exam;
+        // Fetch exam separately instead of via join
+        const exam = await this.examRepo.findOne({ where: { id: examId } });
         if (!exam) return null;
 
         const myMarks = await this.marksRepo.find({
