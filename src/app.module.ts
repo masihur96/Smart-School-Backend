@@ -36,9 +36,11 @@ import { Section } from './sections/entities/section.entity';
 import { PricingPlan } from './pricing/entities/pricing-plan.entity';
 import { Subscription } from './subscriptions/entities/subscription.entity';
 import { School } from './schools/entities/school.entity';
-import { SuperadminModule } from './superadmin/superadmin.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { PeriodAttendance } from './attendance/entities/period-attendance.entity';
+import { TeacherAttendance } from './attendance/entities/teacher-attendance.entity';
+import { SuperadminModule } from './superadmin/superadmin.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { DashboardModule } from './dashboard/dashboard.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL, // ✅ use full connection string
+
+
 
       // host: process.env.DB_HOST,
       // port: parseInt(process.env.DB_PORT, 10),
@@ -68,12 +72,14 @@ import { DashboardModule } from './dashboard/dashboard.module';
         PricingPlan,
         Subscription,
         School,
+        PeriodAttendance,
+        TeacherAttendance,
       ],
       migrations: ['dist/migrations/*.js'],
       autoLoadEntities: true,
       synchronize: false,
-      migrationsRun: true,
-      
+      migrationsRun: false,
+
       ssl:
         process.env.NODE_ENV === 'production'
           ? { rejectUnauthorized: false }
@@ -113,4 +119,4 @@ import { DashboardModule } from './dashboard/dashboard.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
