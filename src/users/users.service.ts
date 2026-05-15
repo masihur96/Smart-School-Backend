@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User, UserRole } from './entities/user.entity';
 
@@ -37,9 +37,9 @@ export class UsersService {
 
   async findByIds(ids: string[]): Promise<User[]> {
     if (!ids || ids.length === 0) return [];
-    return await this.userRepository.createQueryBuilder('user')
-      .where('user.id IN (:...ids)', { ids })
-      .getMany();
+    return await this.userRepository.find({
+      where: { id: In(ids) },
+    });
   }
 
   async findAll(

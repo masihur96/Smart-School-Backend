@@ -577,7 +577,7 @@ export class AttendanceService {
           routineId: dto.routineId,
           studentId: record.studentId,
           studentName: studentInfo?.name ?? null,
-          classId: routine.classId,
+          classId: toUuid(routine.classId),
           // Convert empty strings to null for UUID columns to avoid 500 errors
           sectionId: toUuid(routine.sectionId),
           subjectId: toUuid(routine.subjectId),
@@ -588,8 +588,18 @@ export class AttendanceService {
         });
       }
 
-      const saved = await this.periodAttendanceRepository.save(pa);
-      results.push(saved);
+      let saved;
+      try {
+        saved = await this.periodAttendanceRepository.save(pa);
+        results.push(saved);
+      } catch (dbError) {
+        this.logger.error(
+          `Critical: Failed to save period attendance for student ${record.studentId}: ${dbError.message}`,
+          dbError.stack,
+        );
+        // Continue to next record instead of crashing the whole batch
+        continue;
+      }
 
       // 3. Push absence notification (await to prevent unhandled rejection/race conditions)
       if (record.status === PeriodAttendanceStatus.ABSENT) {

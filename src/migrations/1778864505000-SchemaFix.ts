@@ -51,11 +51,15 @@ export class SchemaFix1778864505000 implements MigrationInterface {
       ALTER COLUMN "studentId" TYPE UUID USING (CASE WHEN "studentId" ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN "studentId"::UUID ELSE NULL END);
     `);
 
-    // 4. Routine Table Fix (if needed)
-    // We don't want to break Routine if it's already working, but let's ensure sectionId is UUID compatible.
+    // 4. Routine Table Fix
+    // Convert all ID columns in routine to UUID to match other tables and avoid 500 errors.
     await queryRunner.query(`
       DO $$ BEGIN
-        ALTER TABLE "routine" ALTER COLUMN "sectionId" TYPE UUID USING (CASE WHEN "sectionId" = '' OR "sectionId" IS NULL THEN NULL ELSE "sectionId"::UUID END);
+        ALTER TABLE "routine" 
+        ALTER COLUMN "classId" TYPE UUID USING (CASE WHEN "classId" ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN "classId"::UUID ELSE NULL END),
+        ALTER COLUMN "subjectId" TYPE UUID USING (CASE WHEN "subjectId" ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN "subjectId"::UUID ELSE NULL END),
+        ALTER COLUMN "teacherId" TYPE UUID USING (CASE WHEN "teacherId" ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN "teacherId"::UUID ELSE NULL END),
+        ALTER COLUMN "sectionId" TYPE UUID USING (CASE WHEN "sectionId" ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN "sectionId"::UUID ELSE NULL END);
       EXCEPTION WHEN others THEN null; END $$;
     `);
   }
