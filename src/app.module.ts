@@ -38,7 +38,7 @@ import { Subscription } from './subscriptions/entities/subscription.entity';
 import { School } from './schools/entities/school.entity';
 import { NotificationsModule } from './notifications/notifications.module';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { PeriodAttendance } from './attendance/entities/period-attendance.entity';
+import { PeriodAttendance } from './attendance/entities/period-attendance-record.entity';
 import { TeacherAttendance } from './attendance/entities/teacher-attendance.entity';
 import { SuperadminModule } from './superadmin/superadmin.module';
 

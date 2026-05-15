@@ -14,6 +14,7 @@ import { Class } from '../../classes/entities/class.entity';
 export enum AttendanceStatus {
   PRESENT = 'present',
   ABSENT = 'absent',
+  LATE = 'late',
   LEAVE = 'leave',
 }
 
@@ -28,10 +29,10 @@ export class Attendance {
   @Column()
   takenBy: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', nullable: true })
   classId: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', nullable: true })
   studentId: string;
 
   @ManyToOne(() => User)

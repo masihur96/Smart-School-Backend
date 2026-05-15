@@ -1,0 +1,590 @@
+src/attendance/attendance.service.ts(47,5): error TS1206: Decorators are not valid here.
+src/attendance/attendance.service.ts(49,5): error TS1206: Decorators are not valid here.
+src/attendance/attendance.service.ts(51,5): error TS1206: Decorators are not valid here.
+src/attendance/attendance.service.ts(53,5): error TS1206: Decorators are not valid here.
+src/attendance/dto/attendance-overview.dto.ts(5,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "year"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(10,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "year"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(11,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "year"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(14,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "month"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(19,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "month"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(20,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "month"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(23,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(28,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(29,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(32,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(37,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(38,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewQueryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(43,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceSummaryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(49,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceSummaryDto, string> & { name: "className"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(55,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceSummaryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(61,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceSummaryDto, string> & { name: "sectionName"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(67,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceSummaryDto, number> & { name: "totalPresent"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(73,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceSummaryDto, number> & { name: "totalAbsent"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(79,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceSummaryDto, number> & { name: "totalLeave"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(85,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceSummaryDto, number> & { name: "totalRecords"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(91,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceSummaryDto, number> & { name: "attendancePercentage"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(99,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewResponseDto, number> & { name: "year"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(105,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewResponseDto, number> & { name: "month"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(111,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewResponseDto, AttendanceSummaryDto[]> & { ...; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(117,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewResponseDto, number> & { name: "grandTotalPresent"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(123,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewResponseDto, number> & { name: "grandTotalAbsent"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(129,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewResponseDto, number> & { name: "grandTotalLeave"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(135,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceOverviewResponseDto, number> & { name: "overallAttendancePercentage"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(143,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewQueryDto, string> & { name: "year"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(148,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewQueryDto, string> & { name: "year"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(149,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewQueryDto, string> & { name: "year"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(152,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewQueryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(157,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewQueryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(158,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewQueryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(161,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewQueryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(166,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewQueryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(167,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewQueryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(172,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceSummaryDto, number> & { name: "month"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(175,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceSummaryDto, number> & { name: "totalPresent"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(181,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceSummaryDto, number> & { name: "totalAbsent"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(184,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceSummaryDto, number> & { name: "totalLeave"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(187,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceSummaryDto, number> & { name: "attendancePercentage"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(195,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewResponseDto, number> & { name: "year"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/attendance-overview.dto.ts(198,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<MonthlyAttendanceOverviewResponseDto, MonthlyAttendanceSummaryDto[]> & { ...; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(12,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "studentName"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(17,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "studentName"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(18,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "studentName"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(21,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(26,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(27,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(30,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(35,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(36,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(39,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(44,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(45,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(48,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "subjectId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(53,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "subjectId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(54,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "subjectId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(57,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "teacherId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(62,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "teacherId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(63,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "teacherId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(66,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "routineId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(71,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "routineId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(72,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "routineId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(75,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(80,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(81,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(84,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "startDate"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(89,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "startDate"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(90,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "startDate"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(93,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "endDate"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(98,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "endDate"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(99,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, string> & { name: "endDate"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(102,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, PeriodAttendanceStatus> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(107,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, PeriodAttendanceStatus> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(108,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, PeriodAttendanceStatus> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(111,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, number> & { name: "page"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(112,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, number> & { name: "page"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(113,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, number> & { name: "page"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(116,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, number> & { name: "limit"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(117,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, number> & { name: "limit"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/period-attendance-query.dto.ts(118,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceQueryDto, number> & { name: "limit"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(14,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceRecordDto, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(18,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceRecordDto, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(21,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceRecordDto, AttendanceStatus> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(26,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<AttendanceRecordDto, AttendanceStatus> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(31,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, Date> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(35,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, Date> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(36,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, Date> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(39,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, string> & { name: "takenBy"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(43,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, string> & { name: "takenBy"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(46,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(50,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(53,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(58,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(59,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(62,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, AttendanceRecordDto[]> & { name: "records"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(71,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, AttendanceRecordDto[]> & { name: "records"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(72,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, AttendanceRecordDto[]> & { name: "records"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-attendance.dto.ts(73,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitAttendanceDto, AttendanceRecordDto[]> & { name: "records"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(13,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceRecordDto, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(17,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceRecordDto, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(18,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceRecordDto, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(21,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceRecordDto, PeriodAttendanceStatus> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(26,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendanceRecordDto, PeriodAttendanceStatus> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(31,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, string> & { name: "routineId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(36,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, string> & { name: "routineId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(37,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, string> & { name: "routineId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(40,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, string> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(44,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, string> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(45,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, string> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(48,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, PeriodAttendanceRecordDto[]> & { ...; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(58,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, PeriodAttendanceRecordDto[]> & { ...; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(59,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, PeriodAttendanceRecordDto[]> & { ...; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-period-attendance.dto.ts(60,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitPeriodAttendanceDto, PeriodAttendanceRecordDto[]> & { ...; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-teacher-attendance.dto.ts(5,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitTeacherAttendanceDto, number> & { name: "lat"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-teacher-attendance.dto.ts(6,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitTeacherAttendanceDto, number> & { name: "lat"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-teacher-attendance.dto.ts(7,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitTeacherAttendanceDto, number> & { name: "lat"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-teacher-attendance.dto.ts(10,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitTeacherAttendanceDto, number> & { name: "lon"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-teacher-attendance.dto.ts(11,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitTeacherAttendanceDto, number> & { name: "lon"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/dto/submit-teacher-attendance.dto.ts(12,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<SubmitTeacherAttendanceDto, number> & { name: "lon"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(23,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(26,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, Date> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(29,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, string> & { name: "takenBy"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(32,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(35,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(38,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, User> & { name: "student"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(39,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, User> & { name: "student"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(42,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, Class> & { name: "class"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(43,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, Class> & { name: "class"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(46,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, AttendanceStatus> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(49,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(52,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(55,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/attendance.entity.ts(58,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Attendance, Date> & { name: "deletedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(31,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(35,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "routineId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(38,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Routine> & { name: "routine"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(39,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Routine> & { name: "routine"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(43,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "studentId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(46,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, User> & { name: "student"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(47,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, User> & { name: "student"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(54,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "studentName"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(58,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(61,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Class> & { name: "class"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(62,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Class> & { name: "class"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(66,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(69,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Section> & { name: "section"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(70,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Section> & { name: "section"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(74,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "subjectId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(77,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Subject> & { name: "subject"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(78,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Subject> & { name: "subject"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(82,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "teacherId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(85,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, User> & { name: "teacher"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(86,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, User> & { name: "teacher"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(89,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(92,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, PeriodAttendanceStatus> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(99,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(102,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(105,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/period-attendance.entity.ts(108,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<PeriodAttendance, Date> & { name: "deletedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(15,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(18,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, string> & { name: "teacherId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(21,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, User> & { name: "teacher"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(22,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, User> & { name: "teacher"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(25,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, Date> & { name: "date"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(28,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, string> & { name: "time"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(31,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, number> & { name: "lat"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(34,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, number> & { name: "lon"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(37,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, number> & { name: "distanceFromCenter"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(40,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, string> & { name: "startTime"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(43,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, string> & { name: "endTime"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(46,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, string> & { name: "status"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(49,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(52,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(55,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/attendance/entities/teacher-attendance.entity.ts(58,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<TeacherAttendance, Date> & { name: "deletedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/classes.service.ts(10,5): error TS1206: Decorators are not valid here.
+src/classes/dto/create-class.dto.ts(4,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<CreateClassDto, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/dto/create-class.dto.ts(7,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<CreateClassDto, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/dto/create-class.dto.ts(8,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<CreateClassDto, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/dto/create-class.dto.ts(11,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<CreateClassDto, string> & { name: "description"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/dto/create-class.dto.ts(12,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<CreateClassDto, string> & { name: "description"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/dto/create-class.dto.ts(17,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<UpdateClassDto, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/dto/create-class.dto.ts(18,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<UpdateClassDto, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/dto/create-class.dto.ts(21,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<UpdateClassDto, string> & { name: "description"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/dto/create-class.dto.ts(22,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<UpdateClassDto, string> & { name: "description"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(16,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(19,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(22,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(25,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, Section[]> & { name: "sections"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(28,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, string> & { name: "description"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(31,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, Subject[]> & { name: "subjects"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(34,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, Routine[]> & { name: "routines"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(37,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(40,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/classes/entities/class.entity.ts(43,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Class, Date> & { name: "deletedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(28,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(31,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(34,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, string> & { name: "subjectId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(37,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, string> & { name: "teacherId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(40,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(43,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Day> & { name: "day"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(46,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, string> & { name: "startTime"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(49,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, string> & { name: "endTime"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(52,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, string> & { name: "roomNumber"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(55,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(58,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Class> & { name: "classEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(59,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Class> & { name: "classEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(62,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Subject> & { name: "subjectEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(63,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Subject> & { name: "subjectEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(66,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, User> & { name: "teacherEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(67,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, User> & { name: "teacherEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(70,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Section> & { name: "sectionEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(71,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Section> & { name: "sectionEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(74,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(77,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/general/entities/routine.entity.ts(80,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Routine, Date> & { name: "deletedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/fcm-token.entity.ts(11,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<FcmToken, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/fcm-token.entity.ts(14,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<FcmToken, string> & { name: "userId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/fcm-token.entity.ts(17,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<FcmToken, string> & { name: "token"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/fcm-token.entity.ts(20,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<FcmToken, string> & { name: "deviceType"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/fcm-token.entity.ts(23,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<FcmToken, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/fcm-token.entity.ts(26,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<FcmToken, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/notification.entity.ts(11,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Notification, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/notification.entity.ts(14,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Notification, string> & { name: "title"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/notification.entity.ts(17,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Notification, string> & { name: "body"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/notification.entity.ts(20,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Notification, any> & { name: "data"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/notification.entity.ts(23,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Notification, string> & { name: "recipientId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/notification.entity.ts(26,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Notification, boolean> & { name: "isRead"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/notification.entity.ts(29,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Notification, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/notification.entity.ts(32,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Notification, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/entities/notification.entity.ts(35,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Notification, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/notifications/notifications.service.ts(19,5): error TS1206: Decorators are not valid here.
+src/notifications/notifications.service.ts(21,5): error TS1206: Decorators are not valid here.
+src/notifications/notifications.service.ts(23,5): error TS1206: Decorators are not valid here.
+src/notifications/notifications.service.ts(25,5): error TS1206: Decorators are not valid here.
+src/notifications/notifications.service.ts(27,5): error TS1206: Decorators are not valid here.
+src/notifications/notifications.service.ts(29,5): error TS1206: Decorators are not valid here.
+src/notifications/notifications.service.ts(31,5): error TS1206: Decorators are not valid here.
+src/schools/entities/school.entity.ts(12,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/schools/entities/school.entity.ts(15,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/schools/entities/school.entity.ts(18,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/schools/entities/school.entity.ts(21,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, string> & { name: "address"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/schools/entities/school.entity.ts(24,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, string> & { name: "phone"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/schools/entities/school.entity.ts(27,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, string> & { name: "email"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/schools/entities/school.entity.ts(30,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, boolean> & { name: "isActive"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/schools/entities/school.entity.ts(33,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/schools/entities/school.entity.ts(36,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/schools/entities/school.entity.ts(39,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<School, Date> & { name: "deletedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/dto/create-section.dto.ts(5,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<CreateSectionDto, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/dto/create-section.dto.ts(6,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<CreateSectionDto, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/dto/create-section.dto.ts(9,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<CreateSectionDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/dto/create-section.dto.ts(13,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<CreateSectionDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/dto/create-section.dto.ts(18,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<UpdateSectionDto, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/dto/create-section.dto.ts(23,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<UpdateSectionDto, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/dto/create-section.dto.ts(26,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<UpdateSectionDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/dto/create-section.dto.ts(31,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<UpdateSectionDto, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(17,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(20,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(23,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(26,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, Class> & { name: "classEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(27,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, Class> & { name: "classEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(30,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, Routine[]> & { name: "routines"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(31,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, Routine[]> & { name: "routines"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(34,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(37,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/entities/section.entity.ts(40,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Section, Date> & { name: "deletedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/sections/sections.service.ts(10,5): error TS1206: Decorators are not valid here.
+src/subjects/entities/subject.entity.ts(14,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Subject, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/subjects/entities/subject.entity.ts(17,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Subject, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/subjects/entities/subject.entity.ts(20,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Subject, string> & { name: "code"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/subjects/entities/subject.entity.ts(23,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Subject, Class> & { name: "classEntity"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/subjects/entities/subject.entity.ts(26,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Subject, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/subjects/entities/subject.entity.ts(29,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Subject, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/subjects/entities/subject.entity.ts(32,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Subject, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/subjects/entities/subject.entity.ts(35,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Subject, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/subjects/entities/subject.entity.ts(38,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<Subject, Date> & { name: "deletedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(19,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "id"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(22,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "name"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(25,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "email"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(28,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "password"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(31,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, UserRole> & { name: "role"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(34,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "schoolId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(37,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "phone"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(40,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "classId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(43,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "sectionId"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(46,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "rollNumber"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(49,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, string> & { name: "designation"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(52,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, boolean> & { name: "isActive"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(55,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, number> & { name: "lat"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(58,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, number> & { name: "lon"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(61,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, number> & { name: "radius"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(64,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, Date> & { name: "createdAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(67,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, Date> & { name: "updatedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/entities/user.entity.ts(70,4): error TS1240: Unable to resolve signature of property decorator when called as an expression.
+  Argument of type 'ClassFieldDecoratorContext<User, Date> & { name: "deletedAt"; private: false; static: false; }' is not assignable to parameter of type 'string | symbol'.
+src/users/users.service.ts(10,5): error TS1206: Decorators are not valid here.

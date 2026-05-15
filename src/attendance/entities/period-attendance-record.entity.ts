@@ -1,3 +1,4 @@
+// Period Attendance Entity
 import {
   Entity,
   Column,

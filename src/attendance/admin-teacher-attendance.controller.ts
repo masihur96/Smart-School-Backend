@@ -19,7 +19,7 @@ import { AttendanceService } from './attendance.service';
 @ApiBearerAuth('bearer')
 @Controller('admin/teacher-attendance')
 export class AdminTeacherAttendanceController {
-  constructor(private readonly attendanceService: AttendanceService) {}
+  constructor(private readonly attendanceService: AttendanceService) { }
 
   @Get()
   @ApiOperation({

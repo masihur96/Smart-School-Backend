@@ -9,7 +9,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async create(data: Partial<User>) {
     const { password, ...rest } = data;
@@ -33,6 +33,13 @@ export class UsersService {
 
   async findById(id: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { id } });
+  }
+
+  async findByIds(ids: string[]): Promise<User[]> {
+    if (!ids || ids.length === 0) return [];
+    return await this.userRepository.createQueryBuilder('user')
+      .where('user.id IN (:...ids)', { ids })
+      .getMany();
   }
 
   async findAll(

@@ -83,6 +83,12 @@ export class AttendanceSummaryDto {
   totalLeave: number;
 
   @ApiProperty({
+    example: 3,
+    description: 'Total late count',
+  })
+  totalLate: number;
+
+  @ApiProperty({
     example: 32,
     description: 'Total records',
   })
@@ -131,6 +137,12 @@ export class AttendanceOverviewResponseDto {
     description: 'Grand total leave count',
   })
   grandTotalLeave: number;
+
+  @ApiProperty({
+    example: 3,
+    description: 'Grand total late count',
+  })
+  grandTotalLate: number;
 
   @ApiProperty({
     example: 78.125,
@@ -183,6 +195,9 @@ export class MonthlyAttendanceSummaryDto {
 
   @ApiProperty({ example: 5, description: 'Total leave count for the month' })
   totalLeave: number;
+
+  @ApiProperty({ example: 3, description: 'Total late count for the month' })
+  totalLate: number;
 
   @ApiProperty({
     example: 86.96,
