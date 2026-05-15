@@ -77,7 +77,7 @@ import { SuperadminModule } from './superadmin/superadmin.module';
       ],
       migrations: ['dist/migrations/*.js'],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
       migrationsRun: false,
 
       ssl:
