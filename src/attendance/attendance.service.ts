@@ -11,7 +11,7 @@ import { Attendance, AttendanceStatus } from './entities/attendance.entity';
 import {
   PeriodAttendance,
   PeriodAttendanceStatus,
-} from './entities/period-attendance-record.entity';
+} from './entities/period-attendance.entity';
 import { SubmitAttendanceDto } from './dto/submit-attendance.dto';
 import {
   SubmitPeriodAttendanceDto,
@@ -603,7 +603,7 @@ export class AttendanceService {
           );
         } catch (error) {
           this.logger.error(
-            `Failed to send absence notification for student ${record.studentId}: ${error.message}`,
+            `Failed to send absence notification for student ${record.studentId}`,
           );
           // Don't throw here, we want to finish the loop
         }

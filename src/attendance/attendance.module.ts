@@ -6,7 +6,7 @@ import { AdminAttendanceController } from './admin-attendance.controller';
 import { AdminTeacherAttendanceController } from './admin-teacher-attendance.controller';
 import { Attendance } from './entities/attendance.entity';
 import { TeacherAttendance } from './entities/teacher-attendance.entity';
-import { PeriodAttendance } from './entities/period-attendance-record.entity';
+import { PeriodAttendance } from './entities/period-attendance.entity';
 import { Routine } from '../general/entities/routine.entity';
 import { UsersModule } from '../users/users.module';
 import { ClassesModule } from '../classes/classes.module';

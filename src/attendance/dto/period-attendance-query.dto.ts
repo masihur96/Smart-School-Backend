@@ -6,7 +6,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { PeriodAttendanceStatus } from '../entities/period-attendance-record.entity';
+import { PeriodAttendanceStatus } from '../entities/period-attendance.entity';
 
 export class PeriodAttendanceQueryDto {
   @ApiProperty({

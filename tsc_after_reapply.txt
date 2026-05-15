@@ -1,0 +1,4 @@
+src/app.module.ts(41,34): error TS2307: Cannot find module './attendance/entities/period-attendance-record.entity' or its corresponding type declarations.
+src/attendance/attendance.module.ts(9,34): error TS2307: Cannot find module './entities/period-attendance-record.entity' or its corresponding type declarations.
+src/attendance/dto/period-attendance-query.dto.ts(9,40): error TS2307: Cannot find module '../entities/period-attendance-record.entity' or its corresponding type declarations.
+src/attendance/dto/submit-period-attendance.dto.ts(10,40): error TS2307: Cannot find module '../entities/period-attendance-record.entity' or its corresponding type declarations.
