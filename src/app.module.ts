@@ -78,7 +78,7 @@ import { SchemaFix1778872754000 } from './migrations/1778872754000-SchemaFix';
       ],
       migrations: [],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
       migrationsRun: false,
 
       ssl:
