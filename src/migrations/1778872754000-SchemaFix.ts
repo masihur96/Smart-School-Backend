@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class SchemaFix1778864505000 implements MigrationInterface {
-  name = 'SchemaFix1778864505000';
+export class SchemaFix1778872754000 implements MigrationInterface {
+  name = 'SchemaFix1778872754000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Ensure UUID extension is available
