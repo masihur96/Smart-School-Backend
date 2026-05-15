@@ -76,10 +76,10 @@ import { SchemaFix1778872754000 } from './migrations/1778872754000-SchemaFix';
         PeriodAttendance,
         TeacherAttendance,
       ],
-      migrations: [SchemaFix1778872754000],
+      migrations: [],
       autoLoadEntities: true,
-      synchronize: false,
-      migrationsRun: true,
+      synchronize: true,
+      migrationsRun: false,
 
       ssl:
         process.env.NODE_ENV === 'production'
