@@ -4,6 +4,9 @@ export class SchemaFix1778864505000 implements MigrationInterface {
   name = 'SchemaFix1778864505000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // Ensure UUID extension is available
+    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+
     // 1. Period Attendance Setup
     await queryRunner.query(`
       DO $$ BEGIN

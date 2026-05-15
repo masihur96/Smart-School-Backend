@@ -41,6 +41,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { PeriodAttendance } from './attendance/entities/period-attendance.entity';
 import { TeacherAttendance } from './attendance/entities/teacher-attendance.entity';
 import { SuperadminModule } from './superadmin/superadmin.module';
+import { SchemaFix1778864505000 } from './migrations/1778864505000-SchemaFix';
 
 @Module({
   imports: [
@@ -78,7 +79,7 @@ import { SuperadminModule } from './superadmin/superadmin.module';
       migrations: ['dist/migrations/*.js'],
       autoLoadEntities: true,
       synchronize: false,
-      migrationsRun: false,
+      migrationsRun: true,
 
       ssl:
         process.env.NODE_ENV === 'production'
