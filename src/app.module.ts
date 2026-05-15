@@ -76,7 +76,7 @@ import { SchemaFix1778864505000 } from './migrations/1778864505000-SchemaFix';
         PeriodAttendance,
         TeacherAttendance,
       ],
-      migrations: ['dist/migrations/*.js'],
+     migrations: [__dirname + '/migrations/*.js'],
       autoLoadEntities: true,
       synchronize: false,
       migrationsRun: true,
