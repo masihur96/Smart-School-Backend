@@ -491,6 +491,7 @@ export class DashboardService {
         absent: number;
         leave: number;
         total: number;
+        records: PeriodAttendance[];
       }
     >();
     for (const record of attendanceRecords) {
@@ -501,10 +502,12 @@ export class DashboardService {
           absent: 0,
           leave: 0,
           total: 0,
+          records: [],
         });
       }
       const entry = classMap.get(record.classId);
       entry.total++;
+      entry.records.push(record);
       if (
         record.status === PeriodAttendanceStatus.PRESENT ||
         record.status === PeriodAttendanceStatus.LATE
