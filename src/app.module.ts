@@ -41,7 +41,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { PeriodAttendance } from './attendance/entities/period-attendance.entity';
 import { TeacherAttendance } from './attendance/entities/teacher-attendance.entity';
 import { SuperadminModule } from './superadmin/superadmin.module';
-import { SchemaFix1778872754000 } from './migrations/1778872754000-SchemaFix';
+
 
 @Module({
   imports: [

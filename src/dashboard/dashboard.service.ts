@@ -14,6 +14,10 @@ import {
   AttendanceStatus,
 } from '../attendance/entities/attendance.entity';
 import { TeacherAttendance } from '../attendance/entities/teacher-attendance.entity';
+import {
+  PeriodAttendance,
+  PeriodAttendanceStatus,
+} from '../attendance/entities/period-attendance.entity';
 import { Homework } from '../homework/entities/homework.entity';
 import { StudentHomework } from '../homework/entities/student-homework.entity';
 import { Notice } from '../general/entities/notice.entity';
@@ -60,6 +64,8 @@ export class DashboardService {
     private readonly subjectRepo: Repository<Subject>,
     @InjectRepository(Section)
     private readonly sectionRepo: Repository<Section>,
+    @InjectRepository(PeriodAttendance)
+    private readonly periodAttendanceRepo: Repository<PeriodAttendance>,
   ) {}
 
   // ─────────────────────────────────────────────────────────────
@@ -288,54 +294,34 @@ export class DashboardService {
       where: { schoolId, role: UserRole.STUDENT, isActive: true },
     });
 
-    // Get all classIds that belong to this school
-    const schoolClasses = await this.classRepo.find({
-      where: { schoolId },
-      select: ['id'],
+    // Fetch attendance records from period_attendance
+    const records = await this.periodAttendanceRepo.find({
+      where: { schoolId, date },
     });
-    const classIds = schoolClasses.map((c) => c.id);
-
-    if (classIds.length === 0) {
-      return {
-        date,
-        totalStudents: allStudents,
-        recorded: 0,
-        present: 0,
-        absent: 0,
-        leave: 0,
-        attendanceRate: 0,
-        data: [],
-      };
-    }
-
-    // Fetch attendance records by classId belonging to this school (avoids schoolId placeholder issue)
-    const records = await this.attendanceRepo
-      .createQueryBuilder('a')
-      .where('a.classId IN (:...classIds)', { classIds })
-      .andWhere('a.date = :date', { date })
-      .getMany();
 
     // Manually enrich with student and class info
     const enrichedRecords = await Promise.all(
       records.map(async (r) => {
-        const student = r.studentId
-          ? await this.userRepo.findOne({ where: { id: r.studentId } })
-          : null;
-        const classInfo = r.classId
-          ? await this.classRepo.findOne({ where: { id: r.classId } })
-          : null;
+        const student = await this.userRepo.findOne({
+          where: { id: r.studentId },
+        });
+        const classInfo = await this.classRepo.findOne({
+          where: { id: r.classId },
+        });
         return { ...r, student, class: classInfo };
       }),
     );
 
     const presentCount = enrichedRecords.filter(
-      (r) => r.status === AttendanceStatus.PRESENT,
+      (r) =>
+        r.status === PeriodAttendanceStatus.PRESENT ||
+        r.status === PeriodAttendanceStatus.LATE,
     ).length;
     const absentCount = enrichedRecords.filter(
-      (r) => r.status === AttendanceStatus.ABSENT,
+      (r) => r.status === PeriodAttendanceStatus.ABSENT,
     ).length;
     const leaveCount = enrichedRecords.filter(
-      (r) => r.status === AttendanceStatus.LEAVE,
+      (r) => r.status === PeriodAttendanceStatus.LEAVE,
     ).length;
 
     return {
@@ -347,7 +333,9 @@ export class DashboardService {
       leave: leaveCount,
       attendanceRate:
         enrichedRecords.length > 0
-          ? parseFloat(((presentCount / enrichedRecords.length) * 100).toFixed(2))
+          ? parseFloat(
+              ((presentCount / enrichedRecords.length) * 100).toFixed(2),
+            )
           : 0,
       data: enrichedRecords,
     };
@@ -489,12 +477,10 @@ export class DashboardService {
     teacherId: string,
     date: string,
   ) {
-    // Find classes where this teacher has taken attendance
-    const attendanceRecords = await this.attendanceRepo
-      .createQueryBuilder('a')
-      .where('a.takenBy = :teacherId', { teacherId })
-      .andWhere('a.date = :date', { date })
-      .getMany();
+    // Find classes where this teacher has taken attendance in period_attendance
+    const attendanceRecords = await this.periodAttendanceRepo.find({
+      where: { teacherId, date },
+    });
 
     // Group by classId
     const classMap = new Map<
@@ -519,9 +505,13 @@ export class DashboardService {
       }
       const entry = classMap.get(record.classId);
       entry.total++;
-      if (record.status === AttendanceStatus.PRESENT) entry.present++;
-      else if (record.status === AttendanceStatus.ABSENT) entry.absent++;
-      else if (record.status === AttendanceStatus.LEAVE) entry.leave++;
+      if (
+        record.status === PeriodAttendanceStatus.PRESENT ||
+        record.status === PeriodAttendanceStatus.LATE
+      )
+        entry.present++;
+      else if (record.status === PeriodAttendanceStatus.ABSENT) entry.absent++;
+      else if (record.status === PeriodAttendanceStatus.LEAVE) entry.leave++;
     }
 
     const classList = Array.from(classMap.values());
@@ -686,14 +676,13 @@ export class DashboardService {
   }
 
   private async getStudentTodayAttendance(studentId: string, date: string) {
-    const record = await this.attendanceRepo.findOne({
-      where: { studentId, date: date as any },
+    const records = await this.periodAttendanceRepo.find({
+      where: { studentId, date },
     });
 
     return {
       date,
-      status: record ? record.status : 'not-marked',
-      record: record || null,
+      records: records || [],
     };
   }
 

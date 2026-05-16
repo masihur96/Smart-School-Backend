@@ -18,6 +18,7 @@ import { Marquee } from '../general/entities/marquee.entity';
 import { Class } from '../classes/entities/class.entity';
 import { Subject } from '../subjects/entities/subject.entity';
 import { Section } from '../sections/entities/section.entity';
+import { PeriodAttendance } from '../attendance/entities/period-attendance.entity';
 
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
@@ -41,6 +42,7 @@ import { DashboardService } from './dashboard.service';
       Class,
       Subject,
       Section,
+      PeriodAttendance,
     ]),
   ],
   controllers: [DashboardController],
