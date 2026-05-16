@@ -55,7 +55,7 @@ export class StudentService {
 
     const totalAttendance = attendance.length;
     const presentCount = attendance.filter(
-      (a) => a.status === 'present',
+      (a) => a.status === 'present' || a.status === 'late',
     ).length;
     const attendancePercentage =
       totalAttendance > 0 ? (presentCount / totalAttendance) * 100 : 0;

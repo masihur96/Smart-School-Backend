@@ -175,9 +175,10 @@ export class AttendanceService {
   }
 
   async getStudentAttendance(studentId: string) {
-    return await this.attendanceRepository.find({
+    return await this.periodAttendanceRepository.find({
       where: { studentId },
-      order: { date: 'DESC' },
+      relations: ['class', 'section', 'subject', 'teacher', 'routine'],
+      order: { date: 'DESC', createdAt: 'DESC' },
     });
   }
 
