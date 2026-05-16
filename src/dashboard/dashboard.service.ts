@@ -687,21 +687,23 @@ export class DashboardService {
   }
 
   private async getStudentAttendanceList(studentId: string) {
-    const records = await this.attendanceRepo.find({
+    const records = await this.periodAttendanceRepo.find({
       where: { studentId },
-      order: { date: 'DESC' },
-      take: 30,
+      order: { date: 'DESC', createdAt: 'DESC' },
+      take: 50,
     });
 
     const total = records.length;
     const present = records.filter(
-      (r) => r.status === AttendanceStatus.PRESENT,
+      (r) =>
+        r.status === PeriodAttendanceStatus.PRESENT ||
+        r.status === PeriodAttendanceStatus.LATE,
     ).length;
     const absent = records.filter(
-      (r) => r.status === AttendanceStatus.ABSENT,
+      (r) => r.status === PeriodAttendanceStatus.ABSENT,
     ).length;
     const leave = records.filter(
-      (r) => r.status === AttendanceStatus.LEAVE,
+      (r) => r.status === PeriodAttendanceStatus.LEAVE,
     ).length;
 
     return {
