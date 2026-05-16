@@ -702,9 +702,23 @@ export class DashboardService {
       where: { studentId, date },
     });
 
+    const enrichedRecords = await Promise.all(
+      (records || []).map(async (r) => {
+        const classInfo = r.classId ? await this.classRepo.findOne({ where: { id: r.classId } }) : null;
+        const sectionInfo = r.sectionId ? await this.sectionRepo.findOne({ where: { id: r.sectionId } }) : null;
+        const subjectInfo = r.subjectId ? await this.subjectRepo.findOne({ where: { id: r.subjectId } }) : null;
+        return {
+          ...r,
+          classInfo,
+          sectionInfo,
+          subjectInfo,
+        };
+      })
+    );
+
     return {
       date,
-      records: records || [],
+      records: enrichedRecords,
     };
   }
 
@@ -728,6 +742,20 @@ export class DashboardService {
       (r) => r.status === PeriodAttendanceStatus.LEAVE,
     ).length;
 
+    const enrichedRecords = await Promise.all(
+      (records || []).map(async (r) => {
+        const classInfo = r.classId ? await this.classRepo.findOne({ where: { id: r.classId } }) : null;
+        const sectionInfo = r.sectionId ? await this.sectionRepo.findOne({ where: { id: r.sectionId } }) : null;
+        const subjectInfo = r.subjectId ? await this.subjectRepo.findOne({ where: { id: r.subjectId } }) : null;
+        return {
+          ...r,
+          classInfo,
+          sectionInfo,
+          subjectInfo,
+        };
+      })
+    );
+
     return {
       summary: {
         total,
@@ -737,7 +765,7 @@ export class DashboardService {
         attendanceRate:
           total > 0 ? parseFloat(((present / total) * 100).toFixed(2)) : 0,
       },
-      records,
+      records: enrichedRecords,
     };
   }
 
