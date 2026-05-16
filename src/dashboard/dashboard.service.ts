@@ -523,9 +523,28 @@ export class DashboardService {
         const classInfo = await this.classRepo.findOne({
           where: { id: entry.classId },
         });
+
+        const enrichedRecords = await Promise.all(
+          entry.records.map(async (r) => {
+            const sectionInfo = r.sectionId
+              ? await this.sectionRepo.findOne({ where: { id: r.sectionId } })
+              : null;
+            const subjectInfo = r.subjectId
+              ? await this.subjectRepo.findOne({ where: { id: r.subjectId } })
+              : null;
+            return {
+              ...r,
+              classInfo,
+              sectionInfo,
+              subjectInfo,
+            };
+          }),
+        );
+
         return {
           ...entry,
           classInfo,
+          records: enrichedRecords,
           attendanceRate:
             entry.total > 0
               ? parseFloat(((entry.present / entry.total) * 100).toFixed(2))
