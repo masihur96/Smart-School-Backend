@@ -38,6 +38,13 @@ export class ExamsController {
     return await this.examsService.addAcademicAssignment(id, dto);
   }
 
+  @Post(':id/duplicate')
+  @ApiOperation({ summary: 'Duplicate an existing exam' })
+  @HttpCode(HttpStatus.CREATED)
+  async duplicateExam(@Param('id') id: string) {
+    return await this.examsService.duplicateExam(id);
+  }
+
   @Get()
   async findAllExams() {
     return await this.examsService.findAllExams();

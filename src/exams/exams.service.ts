@@ -220,4 +220,45 @@ export class ExamsService {
   async getStudentResults(examId: string, studentId: string) {
     return await this.marksService.getMarks(examId, studentId);
   }
+
+  async duplicateExam(id: string) {
+    const existingExam = await this.examRepository.findOne({
+      where: { id },
+      relations: ['assignments'],
+    });
+
+    if (!existingExam) {
+      throw new NotFoundException(`Exam with ID ${id} not found`);
+    }
+
+    const newExam = this.examRepository.create({
+      exam_name: `${existingExam.exam_name} (Copy)`,
+      description: existingExam.description,
+      start_date: existingExam.start_date,
+      end_date: existingExam.end_date,
+      isPublished: false,
+    });
+
+    const savedNewExam = await this.examRepository.save(newExam);
+
+    if (existingExam.assignments && existingExam.assignments.length > 0) {
+      const newAssignments = existingExam.assignments.map((assignment) => {
+        return this.academicAssignmentRepository.create({
+          examId: savedNewExam.id,
+          class: assignment.class,
+          subject: assignment.subject,
+          examiner: assignment.examiner,
+          date: assignment.date,
+          syllabus: assignment.syllabus,
+        });
+      });
+
+      await this.academicAssignmentRepository.save(newAssignments);
+      savedNewExam.assignments = newAssignments;
+    } else {
+      savedNewExam.assignments = [];
+    }
+
+    return savedNewExam;
+  }
 }
