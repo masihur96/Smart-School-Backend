@@ -1,3 +1,5 @@
+process.env.TZ = 'UTC'; // Force UTC timezone globally for all date operations
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';

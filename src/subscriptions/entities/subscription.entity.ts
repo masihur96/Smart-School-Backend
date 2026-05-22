@@ -28,10 +28,10 @@ export class Subscription {
   @ManyToOne(() => PricingPlan, { eager: true })
   pricingPlan: PricingPlan;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   startDate: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   endDate: Date;
 
   @Column({ default: true })
@@ -40,12 +40,12 @@ export class Subscription {
   @Column({ type: 'int', default: 0 })
   lastStudentCount: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date | null;
 }

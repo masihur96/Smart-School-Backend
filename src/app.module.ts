@@ -51,6 +51,7 @@ import { SuperadminModule } from './superadmin/superadmin.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL, // ✅ use full connection string
+      extra: { options: '-c timezone=UTC' }, // ✅ Store and retrieve all timestamps in UTC
 
 
 
