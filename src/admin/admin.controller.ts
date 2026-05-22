@@ -172,6 +172,13 @@ export class AdminController {
     return await this.adminService.addAcademicAssignment(id, dto);
   }
 
+  @Post('exams/:id/duplicate')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Duplicate an existing exam with all its assignments' })
+  async duplicateExam(@Param('id') id: string) {
+    return await this.adminService.duplicateExam(id);
+  }
+
   @Put('exams/:id')
   async updateExam(@Param('id') id: string, @Body() dto: UpdateExamDto) {
     return await this.adminService.updateExam(id, dto);

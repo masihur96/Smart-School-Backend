@@ -150,6 +150,10 @@ export class AdminService {
     return await this.examsService.addAcademicAssignment(examId, data);
   }
 
+  async duplicateExam(id: string) {
+    return await this.examsService.duplicateExam(id);
+  }
+
   // Marks management
   async submitMarks(data: SubmitMarksDto) {
     return await this.marksService.submitMarks(data);
