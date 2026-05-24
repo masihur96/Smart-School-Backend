@@ -227,27 +227,33 @@ export class DashboardService {
   async getAdminDashboard(schoolId: string) {
     const today = getLocalDateString();
 
-    const [
-      attendTeacher,
-      attendStudent,
-      recentHomework,
-      recentNotice,
-      currentExam,
-    ] = await Promise.all([
-      this.getAdminTeacherAttendance(schoolId, today),
-      this.getAdminStudentAttendance(schoolId, today),
-      this.getAdminRecentHomework(schoolId),
-      this.getAdminRecentNotice(schoolId),
-      this.getAdminCurrentExam(schoolId),
-    ]);
+    try {
+      const [
+        attendTeacher,
+        attendStudent,
+        recentHomework,
+        recentNotice,
+        currentExam,
+      ] = await Promise.all([
+        this.getAdminTeacherAttendance(schoolId, today),
+        this.getAdminStudentAttendance(schoolId, today),
+        this.getAdminRecentHomework(schoolId),
+        this.getAdminRecentNotice(schoolId),
+        this.getAdminCurrentExam(schoolId),
+      ]);
 
-    return {
-      attendTeacher,
-      attendStudent,
-      recentHomework,
-      recentNotice,
-      currentExam,
-    };
+      return {
+        attendTeacher,
+        attendStudent,
+        recentHomework,
+        recentNotice,
+        currentExam,
+      };
+    } catch (err) {
+      // Re-throw with a meaningful message so Railway logs show the real cause
+      const msg = err instanceof Error ? err.message : String(err);
+      throw new Error(`getAdminDashboard failed for school ${schoolId}: ${msg}`);
+    }
   }
 
   private async getAdminTeacherAttendance(schoolId: string, date: string) {
@@ -256,10 +262,11 @@ export class DashboardService {
     });
 
     // Fetch attendance records WITHOUT join to avoid varchar vs uuid mismatch
+    // Use DATE() cast because ta.date is timestamptz, not a plain date
     const presentRecords = await this.teacherAttendanceRepo
       .createQueryBuilder('ta')
       .where('ta.schoolId = :schoolId', { schoolId })
-      .andWhere('ta.date = :date', { date })
+      .andWhere(`DATE(ta.date AT TIME ZONE 'UTC') = :date`, { date })
       .getMany();
 
     // Manually enrich with teacher info
@@ -294,10 +301,13 @@ export class DashboardService {
       where: { schoolId, role: UserRole.STUDENT, isActive: true },
     });
 
-    // Fetch attendance records from period_attendance
-    const records = await this.periodAttendanceRepo.find({
-      where: { schoolId, date },
-    });
+    // Use QueryBuilder with explicit date cast to avoid timestamptz vs string mismatch
+    const records = await this.periodAttendanceRepo
+      .createQueryBuilder('pa')
+      .where('pa.schoolId = :schoolId', { schoolId })
+      .andWhere(`DATE(pa.date AT TIME ZONE 'UTC') = :date`, { date })
+      .andWhere('pa.deletedAt IS NULL')
+      .getMany();
 
     // Manually enrich with student and class info
     const enrichedRecords = await Promise.all(
@@ -373,8 +383,13 @@ export class DashboardService {
   }
 
   private async getAdminCurrentExam(schoolId: string) {
-    // Fetch exams WITHOUT relations join to avoid potential uuid/varchar mismatch
+    // Filter exams by schoolId so admins only see their own school's exams
+    const where: any = {};
+    if (schoolId) {
+      where.schoolId = schoolId;
+    }
     const exams = await this.examRepo.find({
+      where,
       order: { start_date: 'DESC' },
     });
 
@@ -698,9 +713,13 @@ export class DashboardService {
   }
 
   private async getStudentTodayAttendance(studentId: string, date: string) {
-    const records = await this.periodAttendanceRepo.find({
-      where: { studentId, date },
-    });
+    // Use QueryBuilder with explicit DATE cast to avoid timestamptz vs string mismatch
+    const records = await this.periodAttendanceRepo
+      .createQueryBuilder('pa')
+      .where('pa.studentId = :studentId', { studentId })
+      .andWhere(`DATE(pa.date AT TIME ZONE 'UTC') = :date`, { date })
+      .andWhere('pa.deletedAt IS NULL')
+      .getMany();
 
     const enrichedRecords = await Promise.all(
       (records || []).map(async (r) => {
