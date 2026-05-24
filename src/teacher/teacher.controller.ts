@@ -184,10 +184,14 @@ export class TeacherController {
   async getAssignedSubjectsByExam(
     @Param('examId') examId: string,
     @Request() req,
+    @Query('classId') classId?: string,
+    @Query('sectionId') sectionId?: string,
   ) {
     return await this.teacherService.getAssignedSubjectsByExam(
       req.user.userId,
       examId,
+      classId,
+      sectionId,
     );
   }
 

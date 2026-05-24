@@ -211,13 +211,23 @@ export class TeacherService {
     return Array.from(classesMap.values());
   }
 
-  async getAssignedSubjectsByExam(teacherId: string, examId: string) {
+  async getAssignedSubjectsByExam(
+    teacherId: string,
+    examId: string,
+    classId?: string,
+    sectionId?: string,
+  ) {
     const assignments =
       await this.examsService.findAssignmentsByExaminer(teacherId);
     const subjectsMap = new Map();
     for (const a of assignments) {
-      if (a.examId === examId && a.subject && !subjectsMap.has(a.subject.uuid)) {
-        subjectsMap.set(a.subject.uuid, a.subject);
+      if (a.examId === examId && a.subject) {
+        if (classId && a.class?.uuid !== classId) {
+          continue;
+        }
+        if (!subjectsMap.has(a.subject.uuid)) {
+          subjectsMap.set(a.subject.uuid, a.subject);
+        }
       }
     }
     return Array.from(subjectsMap.values());
