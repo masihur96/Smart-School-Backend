@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Homework } from './homework.entity';
 import { User } from '../../users/entities/user.entity';
@@ -26,12 +27,14 @@ export class StudentHomework {
   @ManyToOne(() => Homework, (homework) => homework.studentHomeworks, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'homeworkId' })
   homework: Homework;
 
   @Column({ type: 'uuid' })
   studentId: string;
 
   @ManyToOne(() => User)
+  @JoinColumn({ name: 'studentId' })
   student: User;
 
   @Column({
