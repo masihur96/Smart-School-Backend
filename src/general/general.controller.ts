@@ -7,12 +7,10 @@ import {
   Put,
   Delete,
   Query,
-  Request,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GeneralService } from './general.service';
 import { UsersService } from '../users/users.service';
-import { UserRole } from '../users/entities/user.entity';
 import { Public } from '../auth/decorators/public.decorator';
 import {
   CreateNoticeDto,
@@ -35,12 +33,8 @@ export class GeneralController {
   // Notices - public endpoint for getting notices
   @Public()
   @Get('notices')
-  async getNotices(@Request() req: any, @Query('schoolId') querySchoolId?: string) {
-    const schoolId =
-      req?.user?.role === UserRole.SUPER_ADMIN
-        ? querySchoolId
-        : req?.user?.schoolId || querySchoolId;
-    return await this.generalService.getAllNotices(schoolId);
+  async getNotices() {
+    return await this.generalService.getAllNotices();
   }
 
   @Public()
@@ -50,10 +44,7 @@ export class GeneralController {
   }
 
   @Post('notices')
-  async createNotice(@Request() req: any, @Body() data: CreateNoticeDto) {
-    if (req?.user && req.user.role !== UserRole.SUPER_ADMIN) {
-      data.schoolId = req.user.schoolId;
-    }
+  async createNotice(@Body() data: CreateNoticeDto) {
     return await this.generalService.createNotice(data);
   }
 
@@ -79,19 +70,12 @@ export class GeneralController {
 
   @Public()
   @Get('routine')
-  async getAllRoutines(@Request() req: any, @Query('schoolId') querySchoolId?: string) {
-    const schoolId =
-      req?.user?.role === UserRole.SUPER_ADMIN
-        ? querySchoolId
-        : req?.user?.schoolId || querySchoolId;
-    return await this.generalService.getAllRoutines(schoolId);
+  async getAllRoutines() {
+    return await this.generalService.getAllRoutines();
   }
 
   @Post('routine')
-  async createRoutine(@Request() req: any, @Body() data: CreateRoutineDto) {
-    if (req?.user && req.user.role !== UserRole.SUPER_ADMIN) {
-      data.schoolId = req.user.schoolId;
-    }
+  async createRoutine(@Body() data: CreateRoutineDto) {
     return await this.generalService.createRoutine(data);
   }
 
@@ -138,11 +122,7 @@ export class GeneralController {
 
   @Public()
   @Get('school-data')
-  async getSchoolData(@Request() req: any, @Query('schoolId') querySchoolId?: string) {
-    const schoolId =
-      req?.user?.role === UserRole.SUPER_ADMIN
-        ? querySchoolId
-        : req?.user?.schoolId || querySchoolId;
-    return await this.generalService.getSchoolData(schoolId);
+  async getSchoolData() {
+    return await this.generalService.getSchoolData();
   }
 }

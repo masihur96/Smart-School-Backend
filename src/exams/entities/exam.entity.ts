@@ -30,9 +30,6 @@ export class Exam {
   @Column({ default: false })
   isPublished: boolean;
 
-  @Column({ nullable: true })
-  schoolId: string;
-
   @OneToMany(() => Marks, (result) => result.exam, { cascade: true })
   results: Marks[];
 

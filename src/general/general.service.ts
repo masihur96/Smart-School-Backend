@@ -44,15 +44,8 @@ export class GeneralService {
     return savedNotice;
   }
 
-  async getAllNotices(schoolId?: string) {
-    const where: any = {};
-    if (schoolId) {
-      where.schoolId = schoolId;
-    }
-    return await this.noticeRepository.find({
-      where,
-      order: { createdAt: 'DESC' },
-    });
+  async getAllNotices() {
+    return await this.noticeRepository.find({ order: { createdAt: 'DESC' } });
   }
 
   async getNoticeById(id: string) {
@@ -92,13 +85,8 @@ export class GeneralService {
     });
   }
 
-  async getAllRoutines(schoolId?: string) {
-    const where: any = {};
-    if (schoolId) {
-      where.schoolId = schoolId;
-    }
+  async getAllRoutines() {
     return await this.routineRepository.find({
-      where,
       relations: [
         'classEntity',
         'subjectEntity',
@@ -159,27 +147,10 @@ export class GeneralService {
     });
   }
 
-  async getSchoolData(schoolId?: string) {
-    const classWhere = schoolId ? { schoolId } : {};
-    // Section doesn't have schoolId directly, but usually it's tied to Class.
-    // If needed, filtering sections by class is safer, but returning all sections for the school's classes.
-    const classes = await this.classRepository.find({ where: classWhere });
-    
-    // Subjects have schoolId
-    const subjectWhere = schoolId ? { schoolId } : {};
-    const subjects = await this.subjectRepository.find({ where: subjectWhere });
-
-    let sections = [];
-    if (schoolId) {
-      const classIds = classes.map((c) => c.id);
-      if (classIds.length > 0) {
-        sections = await this.sectionRepository.createQueryBuilder('section')
-          .where('section.classId IN (:...classIds)', { classIds })
-          .getMany();
-      }
-    } else {
-      sections = await this.sectionRepository.find();
-    }
+  async getSchoolData() {
+    const classes = await this.classRepository.find();
+    const sections = await this.sectionRepository.find();
+    const subjects = await this.subjectRepository.find();
 
     return {
       classes,

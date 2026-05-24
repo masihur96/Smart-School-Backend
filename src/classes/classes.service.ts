@@ -16,10 +16,7 @@ export class ClassesService {
     return await this.classRepository.save(newClass);
   }
 
-  async findAll(schoolId?: string) {
-    if (schoolId) {
-      return await this.classRepository.find({ where: { schoolId } });
-    }
+  async findAll() {
     return await this.classRepository.find();
   }
 

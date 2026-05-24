@@ -72,7 +72,6 @@ export class AdminService {
     search?: string,
     classId?: string,
     sectionId?: string,
-    schoolId?: string,
   ) {
     return await this.usersService.findAll(
       role,
@@ -82,7 +81,6 @@ export class AdminService {
       search,
       classId,
       sectionId,
-      schoolId,
     );
   }
 
@@ -99,8 +97,8 @@ export class AdminService {
     return await this.classesService.create(data);
   }
 
-  async getClasses(schoolId?: string) {
-    return await this.classesService.findAll(schoolId);
+  async getClasses() {
+    return await this.classesService.findAll();
   }
 
   async updateClass(id: string, data: UpdateClassDto) {
@@ -116,8 +114,8 @@ export class AdminService {
     return await this.subjectsService.create(data);
   }
 
-  async getSubjects(schoolId?: string) {
-    return await this.subjectsService.findAll(schoolId);
+  async getSubjects() {
+    return await this.subjectsService.findAll();
   }
 
   async updateSubject(id: string, data: UpdateSubjectDto) {
@@ -133,8 +131,8 @@ export class AdminService {
     return await this.examsService.createExam(data);
   }
 
-  async getExams(schoolId?: string) {
-    return await this.examsService.findAllExams(schoolId);
+  async getExams() {
+    return await this.examsService.findAllExams();
   }
 
   async updateExam(id: string, data: UpdateExamDto) {

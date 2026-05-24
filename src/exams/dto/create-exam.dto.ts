@@ -46,11 +46,6 @@ export class CreateExamDto {
   @ValidateNested({ each: true })
   @Type(() => CreateAcademicAssignmentDto)
   assignments?: CreateAcademicAssignmentDto[];
-
-  @ApiPropertyOptional({ example: 'uuid-school-001' })
-  @IsOptional()
-  @IsString()
-  schoolId?: string;
 }
 
 export class UpdateExamDto {

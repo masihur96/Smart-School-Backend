@@ -9,7 +9,6 @@ import {
   Query,
   HttpCode,
   HttpStatus,
-  Request,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
@@ -70,7 +69,6 @@ export class AdminController {
   // ─── Users ───────────────────────────────────────
   @Get('users')
   async getUsers(
-    @Request() req: any,
     @Query('role') role?: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
@@ -78,11 +76,7 @@ export class AdminController {
     @Query('search') search?: string,
     @Query('classId') classId?: string,
     @Query('sectionId') sectionId?: string,
-    @Query('schoolId') querySchoolId?: string,
   ) {
-    const schoolId =
-      req.user.role === UserRole.SUPER_ADMIN ? querySchoolId : req.user.schoolId;
-
     return await this.adminService.getUsers(
       role as any,
       page,
@@ -91,16 +85,12 @@ export class AdminController {
       search,
       classId,
       sectionId,
-      schoolId,
     );
   }
 
   @Post('users')
   @HttpCode(HttpStatus.CREATED)
-  async createUser(@Request() req: any, @Body() dto: CreateUserDto) {
-    if (req.user.role !== UserRole.SUPER_ADMIN) {
-      dto.schoolId = req.user.schoolId;
-    }
+  async createUser(@Body() dto: CreateUserDto) {
     return await this.adminService.createUser(dto);
   }
 
@@ -117,18 +107,13 @@ export class AdminController {
 
   // ─── Classes ─────────────────────────────────────
   @Get('classes')
-  async getClasses(@Request() req: any, @Query('schoolId') querySchoolId?: string) {
-    const schoolId =
-      req.user.role === UserRole.SUPER_ADMIN ? querySchoolId : req.user.schoolId;
-    return await this.adminService.getClasses(schoolId);
+  async getClasses() {
+    return await this.adminService.getClasses();
   }
 
   @Post('classes')
   @HttpCode(HttpStatus.CREATED)
-  async createClass(@Request() req: any, @Body() dto: CreateClassDto) {
-    if (req.user.role !== UserRole.SUPER_ADMIN) {
-      dto.schoolId = req.user.schoolId;
-    }
+  async createClass(@Body() dto: CreateClassDto) {
     return await this.adminService.createClass(dto);
   }
 
@@ -145,18 +130,13 @@ export class AdminController {
 
   // ─── Subjects ────────────────────────────────────
   @Get('subjects')
-  async getSubjects(@Request() req: any, @Query('schoolId') querySchoolId?: string) {
-    const schoolId =
-      req.user.role === UserRole.SUPER_ADMIN ? querySchoolId : req.user.schoolId;
-    return await this.adminService.getSubjects(schoolId);
+  async getSubjects() {
+    return await this.adminService.getSubjects();
   }
 
   @Post('subjects')
   @HttpCode(HttpStatus.CREATED)
-  async createSubject(@Request() req: any, @Body() dto: CreateSubjectDto) {
-    if (req.user.role !== UserRole.SUPER_ADMIN) {
-      dto.schoolId = req.user.schoolId;
-    }
+  async createSubject(@Body() dto: CreateSubjectDto) {
     return await this.adminService.createSubject(dto);
   }
 
@@ -173,18 +153,13 @@ export class AdminController {
 
   // ─── Exams ───────────────────────────────────────
   @Get('exams')
-  async getExams(@Request() req: any, @Query('schoolId') querySchoolId?: string) {
-    const schoolId =
-      req.user.role === UserRole.SUPER_ADMIN ? querySchoolId : req.user.schoolId;
-    return await this.adminService.getExams(schoolId);
+  async getExams() {
+    return await this.adminService.getExams();
   }
 
   @Post('exams')
   @HttpCode(HttpStatus.CREATED)
-  async createExam(@Request() req: any, @Body() dto: CreateExamDto) {
-    if (req.user.role !== UserRole.SUPER_ADMIN) {
-      dto.schoolId = req.user.schoolId;
-    }
+  async createExam(@Body() dto: CreateExamDto) {
     return await this.adminService.createExam(dto);
   }
 
@@ -264,16 +239,12 @@ export class AdminController {
     summary: 'Get homework filtered by date, class, section, subject',
   })
   async getHomework(
-    @Request() req: any,
     @Query('classId') classId?: string,
     @Query('sectionId') sectionId?: string,
     @Query('subjectId') subjectId?: string,
     @Query('date') date?: string,
-    @Query('schoolId') querySchoolId?: string,
+    @Query('schoolId') schoolId?: string,
   ) {
-    const schoolId =
-      req.user.role === UserRole.SUPER_ADMIN ? querySchoolId : req.user.schoolId;
-
     return await this.adminService.getHomeworks(
       classId,
       subjectId,
@@ -288,10 +259,7 @@ export class AdminController {
   @ApiOperation({
     summary: 'Submit homework for any class, section and subject',
   })
-  async createHomework(@Request() req: any, @Body() dto: CreateHomeworkDto) {
-    if (req.user.role !== UserRole.SUPER_ADMIN) {
-      dto.schoolId = req.user.schoolId;
-    }
+  async createHomework(@Body() dto: CreateHomeworkDto) {
     return await this.adminService.createHomework(dto);
   }
 

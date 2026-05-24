@@ -32,13 +32,8 @@ export class ExamsService {
     return await this.examRepository.save(exam);
   }
 
-  async findAllExams(schoolId?: string) {
-    const where: any = {};
-    if (schoolId) {
-      where.schoolId = schoolId;
-    }
+  async findAllExams() {
     return await this.examRepository.find({
-      where,
       relations: ['assignments', 'results'],
     });
   }
@@ -242,7 +237,6 @@ export class ExamsService {
       start_date: existingExam.start_date,
       end_date: existingExam.end_date,
       isPublished: false,
-      schoolId: existingExam.schoolId,
     });
 
     const savedNewExam = await this.examRepository.save(newExam);

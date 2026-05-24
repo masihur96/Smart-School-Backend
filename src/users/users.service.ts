@@ -50,7 +50,6 @@ export class UsersService {
     search?: string,
     classId?: string,
     sectionId?: string,
-    schoolId?: string,
   ) {
     const query = this.userRepository.createQueryBuilder('user');
 
@@ -75,10 +74,6 @@ export class UsersService {
 
     if (sectionId) {
       query.andWhere('user.sectionId = :sectionId', { sectionId });
-    }
-
-    if (schoolId) {
-      query.andWhere('user.schoolId = :schoolId', { schoolId });
     }
 
     const total = await query.getCount();
