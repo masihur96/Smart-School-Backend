@@ -81,7 +81,7 @@ import { AlterTeacherAttendanceTimeToTimestamptz1716566400000 } from './migratio
       migrations: [AlterTeacherAttendanceTimeToTimestamptz1716566400000],
       autoLoadEntities: true,
       synchronize: false,
-      migrationsRun: true,
+      migrationsRun: false,
 
       ssl:
         process.env.NODE_ENV === 'production'

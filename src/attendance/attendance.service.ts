@@ -410,14 +410,14 @@ export class AttendanceService {
     });
 
     if (attendance) {
-      // Update existing record: toggle status and update times
+      // Update existing record
       if (attendance.status === 'clock-in') {
+        // First re-submission after clock-in: mark as clock-out and record end time
         attendance.status = 'clock-out';
         attendance.endTime = currentTime;
       } else {
-        attendance.status = 'clock-in';
-        attendance.startTime = currentTime;
-        attendance.endTime = null;
+        // Already clocked-out: only update endTime, preserve original startTime
+        attendance.endTime = currentTime;
       }
       attendance.time = currentTime;
       attendance.lat = data.lat;
