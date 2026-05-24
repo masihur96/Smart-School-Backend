@@ -79,8 +79,8 @@ import { SuperadminModule } from './superadmin/superadmin.module';
       ],
       migrations: [],
       autoLoadEntities: true,
-      synchronize: true,
-      migrationsRun: false,
+      synchronize: false,
+      migrationsRun: true,
 
       ssl:
         process.env.NODE_ENV === 'production'
