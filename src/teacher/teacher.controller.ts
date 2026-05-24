@@ -180,6 +180,17 @@ export class TeacherController {
     );
   }
 
+  @Get('assignments/exams/:examId/subjects')
+  async getAssignedSubjectsByExam(
+    @Param('examId') examId: string,
+    @Request() req,
+  ) {
+    return await this.teacherService.getAssignedSubjectsByExam(
+      req.user.userId,
+      examId,
+    );
+  }
+
   @Get('assignments/exams/:examId/classes/:classId/students')
   async getAssignedStudents(
     @Param('examId') examId: string,

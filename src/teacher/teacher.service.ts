@@ -211,6 +211,18 @@ export class TeacherService {
     return Array.from(classesMap.values());
   }
 
+  async getAssignedSubjectsByExam(teacherId: string, examId: string) {
+    const assignments =
+      await this.examsService.findAssignmentsByExaminer(teacherId);
+    const subjectsMap = new Map();
+    for (const a of assignments) {
+      if (a.examId === examId && a.subject && !subjectsMap.has(a.subject.uuid)) {
+        subjectsMap.set(a.subject.uuid, a.subject);
+      }
+    }
+    return Array.from(subjectsMap.values());
+  }
+
   async getAssignedStudents(
     teacherId: string,
     examId: string,
