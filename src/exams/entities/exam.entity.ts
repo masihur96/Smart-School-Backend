@@ -21,10 +21,10 @@ export class Exam {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   start_date: string;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   end_date: string;
 
   @Column({ default: false })

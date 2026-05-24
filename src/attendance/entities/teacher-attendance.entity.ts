@@ -22,7 +22,7 @@ export class TeacherAttendance {
   @JoinColumn({ name: 'teacherId' })
   teacher: User;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   date: Date;
 
   @Column({ type: 'time' })

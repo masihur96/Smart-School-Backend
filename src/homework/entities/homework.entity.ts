@@ -47,7 +47,7 @@ export class Homework {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   dueDate: Date;
 
   @Column({ type: 'uuid', nullable: true })

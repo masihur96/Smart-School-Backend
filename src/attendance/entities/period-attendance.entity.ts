@@ -87,7 +87,7 @@ export class PeriodAttendance {
   @JoinColumn({ name: 'teacherId' })
   teacher: User;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   date: string;
 
   @Column({

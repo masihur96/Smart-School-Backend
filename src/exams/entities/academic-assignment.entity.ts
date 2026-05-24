@@ -26,7 +26,7 @@ export class AcademicAssignment {
   @Column({ type: 'jsonb', nullable: true })
   examiner: { uuid: string; name: string };
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   date: string;
 
   @Column({ type: 'text', nullable: true })

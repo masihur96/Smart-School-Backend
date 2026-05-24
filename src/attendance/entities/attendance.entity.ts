@@ -23,7 +23,7 @@ export class Attendance {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   date: Date;
 
   @Column()
