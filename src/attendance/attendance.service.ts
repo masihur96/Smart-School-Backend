@@ -400,7 +400,7 @@ export class AttendanceService {
     }
 
     const today = this.normalizeDate(new Date());
-    const currentTime = new Date().toLocaleTimeString('en-GB'); // 24h format
+    const currentTime = new Date();
 
     let attendance = await this.teacherAttendanceRepository.findOne({
       where: {

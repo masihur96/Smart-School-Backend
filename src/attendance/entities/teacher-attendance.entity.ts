@@ -25,8 +25,8 @@ export class TeacherAttendance {
   @Column({ type: 'timestamptz' })
   date: Date;
 
-  @Column({ type: 'time' })
-  time: string;
+  @Column({ type: 'timestamptz' })
+  time: Date;
 
   @Column({ type: 'decimal', precision: 10, scale: 8 })
   lat: number;
@@ -37,11 +37,11 @@ export class TeacherAttendance {
   @Column({ type: 'float', nullable: true })
   distanceFromCenter: number;
 
-  @Column({ type: 'time', nullable: true })
-  startTime: string;
+  @Column({ type: 'timestamptz', nullable: true })
+  startTime: Date;
 
-  @Column({ type: 'time', nullable: true })
-  endTime: string;
+  @Column({ type: 'timestamptz', nullable: true })
+  endTime: Date;
 
   @Column()
   status: string; // 'clock-in' | 'clock-out'
