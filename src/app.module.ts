@@ -79,7 +79,7 @@ import { SuperadminModule } from './superadmin/superadmin.module';
       ],
       migrations: [],
       autoLoadEntities: true,
-      synchronize: false,
+      synchronize: true,
       migrationsRun: false,
 
       ssl:
