@@ -41,6 +41,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { PeriodAttendance } from './attendance/entities/period-attendance.entity';
 import { TeacherAttendance } from './attendance/entities/teacher-attendance.entity';
 import { SuperadminModule } from './superadmin/superadmin.module';
+import { AlterTeacherAttendanceTimeToTimestamptz1716566400000 } from './migrations/1716566400000-AlterTeacherAttendanceTimeToTimestamptz';
 
 
 @Module({
@@ -77,7 +78,7 @@ import { SuperadminModule } from './superadmin/superadmin.module';
         PeriodAttendance,
         TeacherAttendance,
       ],
-      migrations: [],
+      migrations: [AlterTeacherAttendanceTimeToTimestamptz1716566400000],
       autoLoadEntities: true,
       synchronize: false,
       migrationsRun: true,
