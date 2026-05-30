@@ -299,7 +299,7 @@ export class DashboardService {
       where: { schoolId, date },
     });
 
-    // Manually enrich with student and class info
+    // Manually enrich with student, class, and subject info
     const enrichedRecords = await Promise.all(
       records.map(async (r) => {
         const student = await this.userRepo.findOne({
@@ -308,7 +308,10 @@ export class DashboardService {
         const classInfo = await this.classRepo.findOne({
           where: { id: r.classId },
         });
-        return { ...r, student, class: classInfo };
+        const subjectInfo = r.subjectId
+          ? await this.subjectRepo.findOne({ where: { id: r.subjectId } })
+          : null;
+        return { ...r, student, class: classInfo, subject: subjectInfo };
       }),
     );
 
