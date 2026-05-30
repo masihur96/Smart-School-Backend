@@ -445,6 +445,8 @@ export class AttendanceService {
     schoolId?: string,
     teacherId?: string,
     date?: string,
+    startDate?: string,
+    endDate?: string,
   ) {
     const query = this.teacherAttendanceRepository
       .createQueryBuilder('ta')
@@ -461,6 +463,15 @@ export class AttendanceService {
     if (date) {
       const normalizedDate = this.normalizeDate(date);
       query.andWhere('ta.date = :date', { date: normalizedDate });
+    } else {
+      if (startDate) {
+        const normalizedStart = this.normalizeDate(startDate);
+        query.andWhere('ta.date >= :startDate', { startDate: normalizedStart });
+      }
+      if (endDate) {
+        const normalizedEnd = this.normalizeDate(endDate);
+        query.andWhere('ta.date <= :endDate', { endDate: normalizedEnd });
+      }
     }
 
     query.orderBy('ta.date', 'DESC').addOrderBy('ta.time', 'DESC');

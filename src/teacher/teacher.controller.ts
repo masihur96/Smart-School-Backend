@@ -35,6 +35,7 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 @ApiTags('Teacher')
@@ -103,12 +104,22 @@ export class TeacherController {
 
   @Get('self-attendance')
   @ApiOperation({ summary: 'Get own attendance records' })
-  async getSelfAttendance(@Request() req, @Query('date') date?: string) {
+  @ApiQuery({ name: 'date', required: false })
+  @ApiQuery({ name: 'startDate', required: false })
+  @ApiQuery({ name: 'endDate', required: false })
+  async getSelfAttendance(
+    @Request() req,
+    @Query('date') date?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
     const teacherId = req.user.userId;
     return await this.teacherService.getTeacherAttendance(
       undefined,
       teacherId,
       date,
+      startDate,
+      endDate,
     );
   }
 

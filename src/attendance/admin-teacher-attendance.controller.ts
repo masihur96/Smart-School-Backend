@@ -28,15 +28,21 @@ export class AdminTeacherAttendanceController {
   @ApiQuery({ name: 'teacherId', required: false })
   @ApiQuery({ name: 'schoolId', required: false })
   @ApiQuery({ name: 'date', required: false })
+  @ApiQuery({ name: 'startDate', required: false })
+  @ApiQuery({ name: 'endDate', required: false })
   async getTeacherAttendance(
     @Query('teacherId') teacherId?: string,
     @Query('schoolId') schoolId?: string,
     @Query('date') date?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ) {
     return await this.attendanceService.getTeacherAttendance(
       schoolId,
       teacherId,
       date,
+      startDate,
+      endDate,
     );
   }
 

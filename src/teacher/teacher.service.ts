@@ -90,11 +90,15 @@ export class TeacherService {
     schoolId?: string,
     teacherId?: string,
     date?: string,
+    startDate?: string,
+    endDate?: string,
   ) {
     return await this.attendanceService.getTeacherAttendance(
       schoolId,
       teacherId,
       date,
+      startDate,
+      endDate,
     );
   }
 
