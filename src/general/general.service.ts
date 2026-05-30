@@ -153,10 +153,14 @@ export class GeneralService {
     });
   }
 
-  async getSchoolData() {
-    const classes = await this.classRepository.find();
-    const sections = await this.sectionRepository.find();
-    const subjects = await this.subjectRepository.find();
+  async getSchoolData(schoolId?: string) {
+    const classWhere = schoolId ? { schoolId } : {};
+    const sectionWhere = schoolId ? { classEntity: { schoolId } } : {};
+    const subjectWhere = schoolId ? { schoolId } : {};
+
+    const classes = await this.classRepository.find({ where: classWhere });
+    const sections = await this.sectionRepository.find({ where: sectionWhere });
+    const subjects = await this.subjectRepository.find({ where: subjectWhere });
 
     return {
       classes,

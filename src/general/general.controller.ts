@@ -125,9 +125,12 @@ export class GeneralController {
     return await this.generalService.getMarquee(schoolId, type);
   }
 
-  @Public()
   @Get('school-data')
-  async getSchoolData() {
-    return await this.generalService.getSchoolData();
+  async getSchoolData(
+    @Query('schoolId') querySchoolId?: string,
+    @CurrentUser() user?: any,
+  ) {
+    const schoolId = user?.role === UserRole.SUPER_ADMIN ? querySchoolId : user?.schoolId;
+    return await this.generalService.getSchoolData(schoolId);
   }
 }
