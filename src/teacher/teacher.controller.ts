@@ -373,8 +373,8 @@ export class TeacherController {
 
   // ─── Exams ───────────────────────────────────────
   @Get('exams')
-  async getExams() {
-    return await this.teacherService.getExams();
+  async getExams(@Request() req) {
+    return await this.teacherService.getAssignedExams(req.user.userId);
   }
 
   @Get('todays-classes')
