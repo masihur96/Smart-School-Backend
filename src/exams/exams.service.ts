@@ -33,12 +33,6 @@ export class ExamsService {
   }
 
   async findAllExams(schoolId?: string | null) {
-    if (schoolId) {
-      return await this.examRepository.find({
-        where: { schoolId },
-        relations: ['assignments', 'results'],
-      });
-    }
     return await this.examRepository.find({
       relations: ['assignments', 'results'],
     });

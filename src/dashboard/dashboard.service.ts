@@ -234,11 +234,26 @@ export class DashboardService {
       recentNotice,
       currentExam,
     ] = await Promise.all([
-      this.getAdminTeacherAttendance(schoolId, today),
-      this.getAdminStudentAttendance(schoolId, today),
-      this.getAdminRecentHomework(schoolId),
-      this.getAdminRecentNotice(schoolId),
-      this.getAdminCurrentExam(schoolId),
+      this.getAdminTeacherAttendance(schoolId, today).catch((err) => {
+        console.error('[Dashboard] getAdminTeacherAttendance failed:', err?.message);
+        return null;
+      }),
+      this.getAdminStudentAttendance(schoolId, today).catch((err) => {
+        console.error('[Dashboard] getAdminStudentAttendance failed:', err?.message);
+        return null;
+      }),
+      this.getAdminRecentHomework(schoolId).catch((err) => {
+        console.error('[Dashboard] getAdminRecentHomework failed:', err?.message);
+        return null;
+      }),
+      this.getAdminRecentNotice(schoolId).catch((err) => {
+        console.error('[Dashboard] getAdminRecentNotice failed:', err?.message);
+        return null;
+      }),
+      this.getAdminCurrentExam(schoolId).catch((err) => {
+        console.error('[Dashboard] getAdminCurrentExam failed:', err?.message);
+        return null;
+      }),
     ]);
 
     return {
@@ -376,14 +391,37 @@ export class DashboardService {
   }
 
   private async getAdminCurrentExam(schoolId: string) {
-    // Fetch exams WITHOUT relations join to avoid potential uuid/varchar mismatch
-    const exams = await this.examRepo.find({
-      order: { start_date: 'DESC' },
-    });
+    // Get all class IDs belonging to this school
+    const schoolClasses = await this.classRepo.find({ where: { schoolId } });
+    const classIds = schoolClasses.map((c) => c.id);
+
+    // If no classes, return empty
+    if (classIds.length === 0) return [];
+
+    // Fetch all assignments and filter by class UUID belonging to this school
+    const allAssignments = await this.academicAssignmentRepo
+      .createQueryBuilder('aa')
+      .getMany();
+
+    const relevantAssignments = allAssignments.filter((a) =>
+      classIds.includes(a.class?.uuid),
+    );
+    const relevantExamIds = [
+      ...new Set(relevantAssignments.map((a) => a.examId).filter(Boolean)),
+    ];
+
+    // Fetch those exams
+    const exams =
+      relevantExamIds.length > 0
+        ? await this.examRepo
+            .createQueryBuilder('exam')
+            .whereInIds(relevantExamIds)
+            .orderBy('exam.start_date', 'DESC')
+            .getMany()
+        : [];
 
     const today = getLocalDateString();
 
-    // Fetch assignments separately for each exam
     const examList = await Promise.all(
       exams.map(async (e) => {
         let status: 'current' | 'recent' | 'upcoming';
@@ -400,15 +438,14 @@ export class DashboardService {
           status = 'upcoming';
         }
 
-        const assignments = await this.academicAssignmentRepo.find({
-          where: { examId: e.id },
-        });
+        const examAssignments = relevantAssignments.filter(
+          (a) => a.examId === e.id,
+        );
 
-        return { ...e, assignments, status };
+        return { ...e, assignments: examAssignments, status };
       }),
     );
 
-    // Sort: current first, then upcoming, then recent
     const order = { current: 0, upcoming: 1, recent: 2 };
     examList.sort((a, b) => order[a.status] - order[b.status]);
 
