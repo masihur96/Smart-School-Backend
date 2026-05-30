@@ -12,6 +12,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GeneralService } from './general.service';
 import { UsersService } from '../users/users.service';
 import { Public } from '../auth/decorators/public.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserRole } from '../users/entities/user.entity';
 import {
   CreateNoticeDto,
   UpdateNoticeDto,
@@ -30,14 +32,16 @@ export class GeneralController {
     private usersService: UsersService,
   ) {}
 
-  // Notices - public endpoint for getting notices
-  @Public()
+  // Notices
   @Get('notices')
-  async getNotices() {
-    return await this.generalService.getAllNotices();
+  async getNotices(
+    @Query('schoolId') querySchoolId?: string,
+    @CurrentUser() user?: any,
+  ) {
+    const schoolId = user?.role === UserRole.SUPER_ADMIN ? querySchoolId : user?.schoolId;
+    return await this.generalService.getAllNotices(schoolId);
   }
 
-  @Public()
   @Get('notices/:id')
   async getNoticeById(@Param('id') id: string) {
     return await this.generalService.getNoticeById(id);
@@ -59,7 +63,6 @@ export class GeneralController {
   }
 
   // Routine endpoints
-  @Public()
   @Get('routine/:classId')
   async getRoutineByClass(
     @Param('classId') classId: string,
@@ -68,10 +71,13 @@ export class GeneralController {
     return await this.generalService.getRoutineByClass(classId, sectionId);
   }
 
-  @Public()
   @Get('routine')
-  async getAllRoutines() {
-    return await this.generalService.getAllRoutines();
+  async getAllRoutines(
+    @Query('schoolId') querySchoolId?: string,
+    @CurrentUser() user?: any,
+  ) {
+    const schoolId = user?.role === UserRole.SUPER_ADMIN ? querySchoolId : user?.schoolId;
+    return await this.generalService.getAllRoutines(schoolId);
   }
 
   @Post('routine')
@@ -90,7 +96,6 @@ export class GeneralController {
   }
 
   // Students endpoint
-  @Public()
   @Get('students/:classId')
   async getStudentsByClass(
     @Param('classId') classId: string,

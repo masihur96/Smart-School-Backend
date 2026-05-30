@@ -44,8 +44,12 @@ export class GeneralService {
     return savedNotice;
   }
 
-  async getAllNotices() {
-    return await this.noticeRepository.find({ order: { createdAt: 'DESC' } });
+  async getAllNotices(schoolId?: string) {
+    const where = schoolId ? { schoolId } : {};
+    return await this.noticeRepository.find({
+      where,
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async getNoticeById(id: string) {
@@ -85,8 +89,10 @@ export class GeneralService {
     });
   }
 
-  async getAllRoutines() {
+  async getAllRoutines(schoolId?: string) {
+    const where = schoolId ? { schoolId } : {};
     return await this.routineRepository.find({
+      where,
       relations: [
         'classEntity',
         'subjectEntity',
