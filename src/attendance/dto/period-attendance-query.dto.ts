@@ -117,6 +117,10 @@ export class PeriodAttendanceQueryDto {
   @IsOptional()
   @Type(() => Number)
   limit?: number;
+
+  @IsOptional()
+  @IsString()
+  schoolId?: string;
 }
 
 // ---------- Daily report DTOs ----------

@@ -243,6 +243,12 @@ export class AttendanceService {
         });
       }
 
+      if (query.schoolId) {
+        qb.andWhere('attendance.schoolId = :schoolId', {
+          schoolId: query.schoolId,
+        });
+      }
+
       const rawResults = await qb
         .groupBy('attendance.classId')
         .addGroupBy('student.sectionId')
@@ -698,6 +704,10 @@ export class AttendanceService {
       }
     }
 
+    if (query.schoolId) {
+      qb.andWhere('pa.schoolId = :schoolId', { schoolId: query.schoolId });
+    }
+
     qb.orderBy('pa.date', 'DESC')
       .addOrderBy('routine.startTime', 'ASC')
       .skip(skip)
@@ -722,6 +732,7 @@ export class AttendanceService {
     date: string,
     classId?: string,
     sectionId?: string,
+    schoolId?: string,
   ): Promise<DailyPeriodReportDto[]> {
     const normalizedDate = this.normalizeDate(date);
 
@@ -739,6 +750,9 @@ export class AttendanceService {
     }
     if (sectionId) {
       qb.andWhere('pa.sectionId = :sectionId', { sectionId });
+    }
+    if (schoolId) {
+      qb.andWhere('pa.schoolId = :schoolId', { schoolId });
     }
 
     qb.orderBy('routine.startTime', 'ASC');
@@ -777,6 +791,7 @@ export class AttendanceService {
     year: number,
     classId?: string,
     sectionId?: string,
+    schoolId?: string,
   ): Promise<MonthlyPeriodOverviewResponseDto> {
     const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
     const endDate = new Date(year, month, 1)
@@ -793,6 +808,7 @@ export class AttendanceService {
     const addOptional = (qb: any) => {
       if (classId) qb.andWhere('pa.classId = :classId', { classId });
       if (sectionId) qb.andWhere('pa.sectionId = :sectionId', { sectionId });
+      if (schoolId) qb.andWhere('pa.schoolId = :schoolId', { schoolId });
       return qb;
     };
 
@@ -910,6 +926,7 @@ export class AttendanceService {
     studentId: string,
     month?: number,
     year?: number,
+    schoolId?: string,
   ): Promise<StudentAttendanceAnalyticsDto> {
     const student = await this.usersService.findById(studentId);
     if (!student) throw new NotFoundException('Student not found');
@@ -948,6 +965,10 @@ export class AttendanceService {
       } else {
         qb.andWhere(`EXTRACT(YEAR FROM pa.date) = :year`, { year });
       }
+    }
+
+    if (schoolId) {
+      qb.andWhere('pa.schoolId = :schoolId', { schoolId });
     }
 
     qb.groupBy('pa.subjectId').addGroupBy('subject.name');

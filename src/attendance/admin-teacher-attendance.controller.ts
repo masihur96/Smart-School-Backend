@@ -14,6 +14,8 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { AttendanceService } from './attendance.service';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @ApiTags('Admin Teacher Attendance')
 @ApiBearerAuth('bearer')
@@ -31,12 +33,15 @@ export class AdminTeacherAttendanceController {
   @ApiQuery({ name: 'startDate', required: false })
   @ApiQuery({ name: 'endDate', required: false })
   async getTeacherAttendance(
+    @CurrentUser() user: any,
     @Query('teacherId') teacherId?: string,
-    @Query('schoolId') schoolId?: string,
+    @Query('schoolId') querySchoolId?: string,
     @Query('date') date?: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
+    const schoolId = user.role === UserRole.SUPER_ADMIN ? querySchoolId : user.schoolId;
+
     return await this.attendanceService.getTeacherAttendance(
       schoolId,
       teacherId,

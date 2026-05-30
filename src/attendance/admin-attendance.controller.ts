@@ -22,6 +22,8 @@ import {
 } from './dto/attendance-overview.dto';
 import { SubmitPeriodAttendanceDto } from './dto/submit-period-attendance.dto';
 import { PeriodAttendanceQueryDto } from './dto/period-attendance-query.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @ApiTags('Admin Attendance')
 @ApiBearerAuth('bearer')
@@ -40,7 +42,13 @@ export class AdminAttendanceController {
     description: 'Attendance overview retrieved successfully',
     type: AttendanceOverviewResponseDto,
   })
-  async getOverview(@Query() query: AttendanceOverviewQueryDto) {
+  async getOverview(
+    @Query() query: AttendanceOverviewQueryDto,
+    @CurrentUser() user: any,
+  ) {
+    if (user.role !== UserRole.SUPER_ADMIN) {
+      query.schoolId = user.schoolId;
+    }
     return await this.attendanceService.getAttendanceOverview(query);
   }
 
@@ -48,7 +56,13 @@ export class AdminAttendanceController {
   @ApiOperation({
     summary: '(Legacy) Get monthly attendance overview for a specific year',
   })
-  async getMonthlyOverview(@Query() query: MonthlyAttendanceOverviewQueryDto) {
+  async getMonthlyOverview(
+    @Query() query: MonthlyAttendanceOverviewQueryDto,
+    @CurrentUser() user: any,
+  ) {
+    if (user.role !== UserRole.SUPER_ADMIN) {
+      query.schoolId = user.schoolId;
+    }
     return await this.attendanceService.getMonthlyAttendanceOverview(query);
   }
 
@@ -75,7 +89,13 @@ export class AdminAttendanceController {
       'Filters: studentName (ILIKE), studentId, classId, sectionId, ' +
       'subjectId, teacherId, routineId, date, startDate, endDate, status. Paginated.',
   })
-  async getPeriodAttendance(@Query() query: PeriodAttendanceQueryDto) {
+  async getPeriodAttendance(
+    @Query() query: PeriodAttendanceQueryDto,
+    @CurrentUser() user: any,
+  ) {
+    if (user.role !== UserRole.SUPER_ADMIN) {
+      query.schoolId = user.schoolId;
+    }
     return await this.attendanceService.getPeriodAttendance(query);
   }
 
@@ -89,15 +109,20 @@ export class AdminAttendanceController {
   @ApiQuery({ name: 'date', required: true, example: '2026-05-14' })
   @ApiQuery({ name: 'classId', required: false })
   @ApiQuery({ name: 'sectionId', required: false })
+  @ApiQuery({ name: 'schoolId', required: false })
   async getDailyReport(
     @Query('date') date: string,
     @Query('classId') classId?: string,
     @Query('sectionId') sectionId?: string,
+    @Query('schoolId') querySchoolId?: string,
+    @CurrentUser() user?: any,
   ) {
+    const schoolId = user?.role === UserRole.SUPER_ADMIN ? querySchoolId : user?.schoolId;
     return await this.attendanceService.getDailyAttendanceReport(
       date,
       classId,
       sectionId,
+      schoolId,
     );
   }
 
@@ -113,17 +138,22 @@ export class AdminAttendanceController {
   @ApiQuery({ name: 'year', required: true, example: 2026 })
   @ApiQuery({ name: 'classId', required: false })
   @ApiQuery({ name: 'sectionId', required: false })
+  @ApiQuery({ name: 'schoolId', required: false })
   async getMonthlyOverviewPeriod(
     @Query('month') month: string,
     @Query('year') year: string,
     @Query('classId') classId?: string,
     @Query('sectionId') sectionId?: string,
+    @Query('schoolId') querySchoolId?: string,
+    @CurrentUser() user?: any,
   ) {
+    const schoolId = user?.role === UserRole.SUPER_ADMIN ? querySchoolId : user?.schoolId;
     return await this.attendanceService.getMonthlyPeriodOverview(
       parseInt(month, 10),
       parseInt(year, 10),
       classId,
       sectionId,
+      schoolId,
     );
   }
 
@@ -137,15 +167,20 @@ export class AdminAttendanceController {
   })
   @ApiQuery({ name: 'month', required: false, example: 5 })
   @ApiQuery({ name: 'year', required: false, example: 2026 })
+  @ApiQuery({ name: 'schoolId', required: false })
   async getStudentAnalytics(
     @Param('studentId') studentId: string,
     @Query('month') month?: string,
     @Query('year') year?: string,
+    @Query('schoolId') querySchoolId?: string,
+    @CurrentUser() user?: any,
   ) {
+    const schoolId = user?.role === UserRole.SUPER_ADMIN ? querySchoolId : user?.schoolId;
     return await this.attendanceService.getStudentAttendanceAnalytics(
       studentId,
       month ? parseInt(month, 10) : undefined,
       year ? parseInt(year, 10) : undefined,
+      schoolId,
     );
   }
 

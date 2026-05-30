@@ -37,6 +37,10 @@ export class AttendanceOverviewQueryDto {
   @IsOptional()
   @IsString()
   sectionId?: string;
+
+  @IsOptional()
+  @IsString()
+  schoolId?: string;
 }
 
 export class AttendanceSummaryDto {
@@ -178,6 +182,10 @@ export class MonthlyAttendanceOverviewQueryDto {
   @IsOptional()
   @IsString()
   sectionId?: string;
+
+  @IsOptional()
+  @IsString()
+  schoolId?: string;
 }
 
 export class MonthlyAttendanceSummaryDto {
