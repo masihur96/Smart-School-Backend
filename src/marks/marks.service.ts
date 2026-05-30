@@ -52,11 +52,15 @@ export class MarksService {
     }
   }
 
-  async getMarks(examId?: string, studentId?: string) {
+  async getMarks(examId?: string, studentId?: string, schoolId?: string | null) {
     const query = this.marksRepository
       .createQueryBuilder('marks')
       .leftJoinAndSelect('marks.subject', 'subject')
       .leftJoinAndSelect('marks.teacher', 'teacher');
+
+    if (schoolId) {
+      query.andWhere('marks.schoolId = :schoolId', { schoolId });
+    }
 
     if (examId) {
       query.andWhere('marks.examId = :examId', { examId });

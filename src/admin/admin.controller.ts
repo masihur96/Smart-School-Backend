@@ -13,6 +13,7 @@ import {
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
@@ -35,6 +36,14 @@ import {
   UpdateHomeworkDto,
 } from '../homework/dto/create-homework.dto';
 
+/** Shape returned by JwtStrategy.validate() */
+interface JwtUser {
+  id: string;
+  userId: string;
+  role: string;
+  schoolId: string | null;
+}
+
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
 @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
@@ -45,8 +54,8 @@ export class AdminController {
 
   // ─── Schools ───────────────────────────────────────
   @Get('schools')
-  async getSchools() {
-    return await this.adminService.getSchools();
+  async getSchools(@CurrentUser() user: JwtUser) {
+    return await this.adminService.getSchools(user.schoolId, user.role);
   }
 
   @Post('schools')
@@ -56,19 +65,24 @@ export class AdminController {
   }
 
   @Put('schools/:id')
-  async updateSchool(@Param('id') id: string, @Body() dto: UpdateSchoolDto) {
-    return await this.adminService.updateSchool(id, dto);
+  async updateSchool(
+    @Param('id') id: string,
+    @Body() dto: UpdateSchoolDto,
+    @CurrentUser() user: JwtUser,
+  ) {
+    return await this.adminService.updateSchool(id, dto, user.schoolId, user.role);
   }
 
   @Delete('schools/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteSchool(@Param('id') id: string) {
-    return await this.adminService.deleteSchool(id);
+  async deleteSchool(@Param('id') id: string, @CurrentUser() user: JwtUser) {
+    return await this.adminService.deleteSchool(id, user.schoolId, user.role);
   }
 
   // ─── Users ───────────────────────────────────────
   @Get('users')
   async getUsers(
+    @CurrentUser() user: JwtUser,
     @Query('role') role?: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
@@ -85,6 +99,8 @@ export class AdminController {
       search,
       classId,
       sectionId,
+      user.schoolId,
+      user.role,
     );
   }
 
@@ -107,8 +123,8 @@ export class AdminController {
 
   // ─── Classes ─────────────────────────────────────
   @Get('classes')
-  async getClasses() {
-    return await this.adminService.getClasses();
+  async getClasses(@CurrentUser() user: JwtUser) {
+    return await this.adminService.getClasses(user.schoolId, user.role);
   }
 
   @Post('classes')
@@ -130,8 +146,8 @@ export class AdminController {
 
   // ─── Subjects ────────────────────────────────────
   @Get('subjects')
-  async getSubjects() {
-    return await this.adminService.getSubjects();
+  async getSubjects(@CurrentUser() user: JwtUser) {
+    return await this.adminService.getSubjects(user.schoolId, user.role);
   }
 
   @Post('subjects')
@@ -153,8 +169,8 @@ export class AdminController {
 
   // ─── Exams ───────────────────────────────────────
   @Get('exams')
-  async getExams() {
-    return await this.adminService.getExams();
+  async getExams(@CurrentUser() user: JwtUser) {
+    return await this.adminService.getExams(user.schoolId, user.role);
   }
 
   @Post('exams')
@@ -221,10 +237,16 @@ export class AdminController {
 
   @Get('marks')
   async getMarks(
+    @CurrentUser() user: JwtUser,
     @Query('examId') examId?: string,
     @Query('studentId') studentId?: string,
   ) {
-    return await this.adminService.getMarks(examId, studentId);
+    return await this.adminService.getMarks(
+      examId,
+      studentId,
+      user.schoolId,
+      user.role,
+    );
   }
 
   @Delete('marks/:id')
@@ -239,18 +261,25 @@ export class AdminController {
     summary: 'Get homework filtered by date, class, section, subject',
   })
   async getHomework(
+    @CurrentUser() user: JwtUser,
     @Query('classId') classId?: string,
     @Query('sectionId') sectionId?: string,
     @Query('subjectId') subjectId?: string,
     @Query('date') date?: string,
     @Query('schoolId') schoolId?: string,
   ) {
+    // Scope to the logged-in admin's school (SUPER_ADMIN may pass an explicit schoolId)
+    const effectiveSchoolId =
+      user.role === UserRole.SUPER_ADMIN
+        ? schoolId || user.schoolId
+        : user.schoolId;
+
     return await this.adminService.getHomeworks(
       classId,
       subjectId,
       sectionId,
       date,
-      schoolId,
+      effectiveSchoolId,
     );
   }
 

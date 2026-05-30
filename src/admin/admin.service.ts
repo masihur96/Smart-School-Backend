@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { School } from '../schools/entities/school.entity';
@@ -40,26 +40,64 @@ export class AdminService {
     private homeworkService: HomeworkService,
   ) {}
 
-  // School management
+  // ─── Helpers ────────────────────────────────────
+
+  /** Returns true if the caller is a SUPER_ADMIN */
+  private isSuperAdmin(role: string) {
+    return role === UserRole.SUPER_ADMIN;
+  }
+
+  // ─── School management ──────────────────────────
+
   async createSchool(data: CreateSchoolDto) {
     const school = this.schoolRepository.create(data);
     return await this.schoolRepository.save(school);
   }
 
-  async getSchools() {
-    return await this.schoolRepository.find();
+  async getSchools(callerSchoolId: string | null, callerRole: string) {
+    if (this.isSuperAdmin(callerRole)) {
+      return await this.schoolRepository.find();
+    }
+    // Regular admin: only their own school
+    if (!callerSchoolId) return [];
+    return await this.schoolRepository.find({
+      where: { schoolId: callerSchoolId },
+    });
   }
 
-  async updateSchool(id: string, data: UpdateSchoolDto) {
+  async updateSchool(
+    id: string,
+    data: UpdateSchoolDto,
+    callerSchoolId: string | null,
+    callerRole: string,
+  ) {
+    if (!this.isSuperAdmin(callerRole)) {
+      // Verify the target school belongs to the caller
+      const school = await this.schoolRepository.findOne({ where: { id } });
+      if (!school || school.schoolId !== callerSchoolId) {
+        throw new ForbiddenException('You can only update your own school');
+      }
+    }
     await this.schoolRepository.update(id, data);
     return await this.schoolRepository.findOne({ where: { id } });
   }
 
-  async deleteSchool(id: string) {
+  async deleteSchool(
+    id: string,
+    callerSchoolId: string | null,
+    callerRole: string,
+  ) {
+    if (!this.isSuperAdmin(callerRole)) {
+      const school = await this.schoolRepository.findOne({ where: { id } });
+      if (!school || school.schoolId !== callerSchoolId) {
+        throw new ForbiddenException('You can only delete your own school');
+      }
+    }
     return await this.schoolRepository.softDelete(id);
   }
 
-  // User management
+  // ─── User management ────────────────────────────
+
   async createUser(data: CreateUserDto) {
     return await this.usersService.create(data);
   }
@@ -72,7 +110,10 @@ export class AdminService {
     search?: string,
     classId?: string,
     sectionId?: string,
+    callerSchoolId?: string | null,
+    callerRole?: string,
   ) {
+    const schoolId = this.isSuperAdmin(callerRole) ? undefined : callerSchoolId;
     return await this.usersService.findAll(
       role,
       page,
@@ -81,6 +122,7 @@ export class AdminService {
       search,
       classId,
       sectionId,
+      schoolId,
     );
   }
 
@@ -92,13 +134,15 @@ export class AdminService {
     return await this.usersService.delete(id);
   }
 
-  // Class management
+  // ─── Class management ───────────────────────────
+
   async createClass(data: CreateClassDto) {
     return await this.classesService.create(data);
   }
 
-  async getClasses() {
-    return await this.classesService.findAll();
+  async getClasses(callerSchoolId: string | null, callerRole: string) {
+    const schoolId = this.isSuperAdmin(callerRole) ? undefined : callerSchoolId;
+    return await this.classesService.findAll(schoolId);
   }
 
   async updateClass(id: string, data: UpdateClassDto) {
@@ -109,13 +153,15 @@ export class AdminService {
     return await this.classesService.delete(id);
   }
 
-  // Subject management
+  // ─── Subject management ─────────────────────────
+
   async createSubject(data: CreateSubjectDto) {
     return await this.subjectsService.create(data);
   }
 
-  async getSubjects() {
-    return await this.subjectsService.findAll();
+  async getSubjects(callerSchoolId: string | null, callerRole: string) {
+    const schoolId = this.isSuperAdmin(callerRole) ? undefined : callerSchoolId;
+    return await this.subjectsService.findAll(schoolId);
   }
 
   async updateSubject(id: string, data: UpdateSubjectDto) {
@@ -126,13 +172,15 @@ export class AdminService {
     return await this.subjectsService.delete(id);
   }
 
-  // Exam management
+  // ─── Exam management ────────────────────────────
+
   async createExam(data: CreateExamDto) {
     return await this.examsService.createExam(data);
   }
 
-  async getExams() {
-    return await this.examsService.findAllExams();
+  async getExams(callerSchoolId: string | null, callerRole: string) {
+    const schoolId = this.isSuperAdmin(callerRole) ? undefined : callerSchoolId;
+    return await this.examsService.findAllExams(schoolId);
   }
 
   async updateExam(id: string, data: UpdateExamDto) {
@@ -154,20 +202,28 @@ export class AdminService {
     return await this.examsService.duplicateExam(id);
   }
 
-  // Marks management
+  // ─── Marks management ───────────────────────────
+
   async submitMarks(data: SubmitMarksDto) {
     return await this.marksService.submitMarks(data);
   }
 
-  async getMarks(examId?: string, studentId?: string) {
-    return await this.marksService.getMarks(examId, studentId);
+  async getMarks(
+    examId?: string,
+    studentId?: string,
+    callerSchoolId?: string | null,
+    callerRole?: string,
+  ) {
+    const schoolId = this.isSuperAdmin(callerRole) ? undefined : callerSchoolId;
+    return await this.marksService.getMarks(examId, studentId, schoolId);
   }
 
   async deleteMark(id: string) {
     return await this.marksService.deleteMark(id);
   }
 
-  // Homework management
+  // ─── Homework management ─────────────────────────
+
   async getHomeworks(
     classId?: string,
     subjectId?: string,

@@ -50,8 +50,14 @@ export class UsersService {
     search?: string,
     classId?: string,
     sectionId?: string,
+    schoolId?: string | null,
   ) {
     const query = this.userRepository.createQueryBuilder('user');
+
+    // Scope to the caller's school (undefined = no restriction for super-admin)
+    if (schoolId) {
+      query.andWhere('user.schoolId = :schoolId', { schoolId });
+    }
 
     if (role) {
       query.andWhere('user.role = :role', { role });

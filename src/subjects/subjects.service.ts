@@ -16,7 +16,10 @@ export class SubjectsService {
     return await this.subjectRepository.save(newSubject);
   }
 
-  async findAll() {
+  async findAll(schoolId?: string | null) {
+    if (schoolId) {
+      return await this.subjectRepository.find({ where: { schoolId } });
+    }
     return await this.subjectRepository.find();
   }
 
