@@ -270,11 +270,12 @@ export class TeacherController {
   @Get('homework')
   @ApiOperation({ summary: 'List homework for a class/section' })
   async getHomework(
+    @Request() req: any,
     @Query('classId') classId?: string,
     @Query('sectionId') sectionId?: string,
     @Query('subjectId') subjectId?: string,
   ) {
-    return await this.teacherService.getHomework(classId, subjectId, sectionId);
+    return await this.teacherService.getHomework(classId, subjectId, sectionId, req.user?.schoolId);
   }
 
   @Get('homework/:id')

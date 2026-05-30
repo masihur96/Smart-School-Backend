@@ -305,8 +305,8 @@ export class TeacherService {
     return await this.homeworkService.create(data);
   }
 
-  async getHomework(classId?: string, subjectId?: string, sectionId?: string) {
-    return await this.homeworkService.findAll(classId, subjectId, sectionId);
+  async getHomework(classId?: string, subjectId?: string, sectionId?: string, schoolId?: string) {
+    return await this.homeworkService.findAll(classId, subjectId, sectionId, undefined, schoolId);
   }
 
   async getHomeworkById(id: string) {

@@ -62,7 +62,13 @@ export class AttendanceController {
       'Supports filters: studentName (ILIKE), studentId, classId, sectionId, ' +
       'subjectId, teacherId, routineId, date, startDate, endDate, status. Paginated.',
   })
-  async getPeriodAttendance(@Query() query: PeriodAttendanceQueryDto) {
+  async getPeriodAttendance(
+    @Query() query: PeriodAttendanceQueryDto,
+    @Req() req: any,
+  ) {
+    if (req.user?.role !== 'super_admin') {
+      query.schoolId = req.user?.schoolId;
+    }
     return await this.attendanceService.getPeriodAttendance(query);
   }
 
@@ -73,14 +79,17 @@ export class AttendanceController {
       'Returns each routine that had attendance taken that day, with all student records grouped under it.',
   })
   async getDailyReport(
+    @Req() req: any,
     @Query('date') date: string,
     @Query('classId') classId?: string,
     @Query('sectionId') sectionId?: string,
   ) {
+    const schoolId = req.user?.role === 'super_admin' ? undefined : req.user?.schoolId;
     return await this.attendanceService.getDailyAttendanceReport(
       date,
       classId,
       sectionId,
+      schoolId,
     );
   }
 }
