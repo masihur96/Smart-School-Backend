@@ -16,8 +16,12 @@ export class SectionsService {
     return await this.sectionRepository.save(section);
   }
 
-  async findAll(): Promise<Section[]> {
-    return await this.sectionRepository.find({ relations: ['classEntity'] });
+  async findAll(schoolId?: string): Promise<Section[]> {
+    const where: any = schoolId ? { classEntity: { schoolId } } : {};
+    return await this.sectionRepository.find({
+      where,
+      relations: ['classEntity'],
+    });
   }
 
   async findOne(id: string): Promise<Section> {
@@ -46,14 +50,19 @@ export class SectionsService {
     }
   }
 
-  async findAllDeleted(): Promise<Section[]> {
-    return await this.sectionRepository
+  async findAllDeleted(schoolId?: string): Promise<Section[]> {
+    const query = this.sectionRepository
       .createQueryBuilder('section')
       .withDeleted()
       .where('section.deletedAt IS NOT NULL')
       .leftJoinAndSelect('section.classEntity', 'class')
-      .orderBy('section.deletedAt', 'DESC')
-      .getMany();
+      .orderBy('section.deletedAt', 'DESC');
+
+    if (schoolId) {
+      query.andWhere('class.schoolId = :schoolId', { schoolId });
+    }
+
+    return await query.getMany();
   }
 
   async restore(id: string): Promise<Section> {

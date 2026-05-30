@@ -7,15 +7,19 @@ import {
   Put,
   Delete,
   Patch,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiBearerAuth,
   ApiResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { SectionsService } from './sections.service';
 import { CreateSectionDto, UpdateSectionDto } from './dto/create-section.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
@@ -35,8 +39,13 @@ export class SectionsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all sections' })
-  async findAll() {
-    return await this.sectionsService.findAll();
+  @ApiQuery({ name: 'schoolId', required: false })
+  async findAll(
+    @Query('schoolId') querySchoolId?: string,
+    @CurrentUser() user?: any,
+  ) {
+    const schoolId = user?.role === UserRole.SUPER_ADMIN ? querySchoolId : user?.schoolId;
+    return await this.sectionsService.findAll(schoolId);
   }
 
   @Get(':id')
@@ -62,8 +71,13 @@ export class SectionsController {
 
   @Get('trash')
   @ApiOperation({ summary: 'Get all soft-deleted sections' })
-  async findDeleted() {
-    return await this.sectionsService.findAllDeleted();
+  @ApiQuery({ name: 'schoolId', required: false })
+  async findDeleted(
+    @Query('schoolId') querySchoolId?: string,
+    @CurrentUser() user?: any,
+  ) {
+    const schoolId = user?.role === UserRole.SUPER_ADMIN ? querySchoolId : user?.schoolId;
+    return await this.sectionsService.findAllDeleted(schoolId);
   }
 
   @Patch(':id/restore')
