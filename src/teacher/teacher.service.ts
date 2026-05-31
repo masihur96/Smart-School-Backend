@@ -192,15 +192,16 @@ export class TeacherService {
   async getAssignedExams(teacherId: string) {
     const assignments =
       await this.examsService.findAssignmentsByExaminer(teacherId);
-    const examsMap = new Map();
-    for (const a of assignments) {
-      if (a.exam && !examsMap.has(a.examId)) {
-        examsMap.set(a.examId, a.exam);
-      } else if (!a.exam && !examsMap.has(a.examId)) {
-        examsMap.set(a.examId, { id: a.examId });
-      }
-    }
-    return Array.from(examsMap.values());
+
+    const examIds = Array.from(
+      new Set(assignments.map((a) => a.examId).filter(Boolean)),
+    );
+
+    const fullExams = await Promise.all(
+      examIds.map((id) => this.examsService.findExamById(id)),
+    );
+
+    return fullExams.filter((exam) => exam !== null);
   }
 
   async getAssignedClasses(teacherId: string, examId: string) {
