@@ -72,19 +72,31 @@ export class DashboardService {
   // SUPER ADMIN DASHBOARD
   // ─────────────────────────────────────────────────────────────
 
-  async getSuperAdminDashboard() {
+  async getSuperAdminDashboard(superAdminId: string) {
     const [
       systemStatus,
       recentSubscriptions,
       pricingPlans,
       engagedSchools,
       backupDataList,
+      superAdminInfo,
     ] = await Promise.all([
       this.getSystemStatus(),
       this.getRecentSubscriptions(),
       this.getPricingPlans(),
       this.getEngagedSchools(),
       this.getBackupDataList(),
+      this.userRepo.findOne({
+        where: { id: superAdminId, role: UserRole.SUPER_ADMIN },
+        select: [
+          'id',
+          'name',
+          'email',
+          'phone',
+          'role',
+          'isActive',
+        ],
+      }),
     ]);
 
     return {
@@ -93,6 +105,7 @@ export class DashboardService {
       pricingPlans,
       engagedSchools,
       backupDataList,
+      superAdminInfo,
     };
   }
 

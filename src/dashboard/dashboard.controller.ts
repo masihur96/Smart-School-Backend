@@ -26,8 +26,9 @@ export class DashboardController {
    */
   @Get('super-admin')
   @Roles(UserRole.SUPER_ADMIN)
-  async getSuperAdminDashboard() {
-    return this.dashboardService.getSuperAdminDashboard();
+  async getSuperAdminDashboard(@Request() req: any) {
+    const { id: superAdminId } = req.user;
+    return this.dashboardService.getSuperAdminDashboard(superAdminId);
   }
 
   /**
