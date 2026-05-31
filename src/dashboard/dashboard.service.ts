@@ -467,6 +467,7 @@ export class DashboardService {
       marqueeData,
       recentNotice,
       recentExamList,
+      schoolAdminInfo,
     ] = await Promise.all([
       this.getTeacherTodayAttendanceStatus(teacherId, today),
       this.getTeacherAttendanceList(teacherId),
@@ -475,6 +476,20 @@ export class DashboardService {
       this.getMarqueeForRole(schoolId, MarqueeType.TEACHER),
       this.getTeacherRecentNotices(schoolId),
       this.getTeacherExamList(teacherId),
+      this.userRepo.findOne({
+        where: { schoolId, role: UserRole.ADMIN },
+        select: [
+          'id',
+          'name',
+          'email',
+          'phone',
+          'lat',
+          'lon',
+          'radius',
+          'role',
+          'isActive',
+        ],
+      }),
     ]);
 
     return {
@@ -485,6 +500,7 @@ export class DashboardService {
       marqueeData,
       recentNotice,
       recentExamList,
+      schoolAdminInfo,
     };
   }
 
