@@ -33,6 +33,37 @@ export class ExamsService {
   }
 
   async findAllExams(schoolId?: string | null) {
+    if (schoolId) {
+      // Get classes belonging to this school
+      const schoolClasses = await this.classRepository.find({
+        where: { schoolId },
+      });
+      const classIds = schoolClasses.map((c) => c.id);
+
+      if (classIds.length === 0) return [];
+
+      // Fetch all assignments and filter in-memory for JSON containment
+      const allAssignments = await this.academicAssignmentRepository
+        .createQueryBuilder('aa')
+        .getMany();
+
+      const relevantAssignments = allAssignments.filter((a) =>
+        classIds.includes(a.class?.uuid),
+      );
+      const relevantExamIds = [
+        ...new Set(relevantAssignments.map((a) => a.examId).filter(Boolean)),
+      ];
+
+      if (relevantExamIds.length === 0) return [];
+
+      return await this.examRepository
+        .createQueryBuilder('exam')
+        .whereInIds(relevantExamIds)
+        .leftJoinAndSelect('exam.assignments', 'assignments')
+        .leftJoinAndSelect('exam.results', 'results')
+        .getMany();
+    }
+
     return await this.examRepository.find({
       relations: ['assignments', 'results'],
     });
