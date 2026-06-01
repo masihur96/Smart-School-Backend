@@ -72,31 +72,19 @@ export class DashboardService {
   // SUPER ADMIN DASHBOARD
   // ─────────────────────────────────────────────────────────────
 
-  async getSuperAdminDashboard(superAdminId: string) {
+  async getSuperAdminDashboard() {
     const [
       systemStatus,
       recentSubscriptions,
       pricingPlans,
       engagedSchools,
       backupDataList,
-      superAdminInfo,
     ] = await Promise.all([
       this.getSystemStatus(),
       this.getRecentSubscriptions(),
       this.getPricingPlans(),
       this.getEngagedSchools(),
       this.getBackupDataList(),
-      this.userRepo.findOne({
-        where: { id: superAdminId, role: UserRole.SUPER_ADMIN },
-        select: [
-          'id',
-          'name',
-          'email',
-          'phone',
-          'role',
-          'isActive',
-        ],
-      }),
     ]);
 
     return {
@@ -105,7 +93,6 @@ export class DashboardService {
       pricingPlans,
       engagedSchools,
       backupDataList,
-      superAdminInfo,
     };
   }
 
@@ -246,6 +233,7 @@ export class DashboardService {
       recentHomework,
       recentNotice,
       currentExam,
+      superAdminInfo,
     ] = await Promise.all([
       this.getAdminTeacherAttendance(schoolId, today).catch((err) => {
         console.error('[Dashboard] getAdminTeacherAttendance failed:', err?.message);
@@ -267,6 +255,20 @@ export class DashboardService {
         console.error('[Dashboard] getAdminCurrentExam failed:', err?.message);
         return null;
       }),
+      this.userRepo.findOne({
+        where: { role: UserRole.SUPER_ADMIN },
+        select: [
+          'id',
+          'name',
+          'email',
+          'phone',
+          'lat',
+          'lon',
+          'radius',
+          'role',
+          'isActive',
+        ],
+      }),
     ]);
 
     return {
@@ -275,6 +277,7 @@ export class DashboardService {
       recentHomework,
       recentNotice,
       currentExam,
+      superAdminInfo,
     };
   }
 
