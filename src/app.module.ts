@@ -80,7 +80,7 @@ import { AlterTeacherAttendanceTimeToTimestamptz1716566400000 } from './migratio
       ],
       migrations: [AlterTeacherAttendanceTimeToTimestamptz1716566400000],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
       migrationsRun: false,
 
       ssl:
