@@ -1,5 +1,10 @@
 process.env.TZ = 'UTC'; // Force UTC timezone globally for all date operations
 
+import * as WebSocket from 'ws';
+if (typeof global.WebSocket === 'undefined') {
+  (global as any).WebSocket = WebSocket;
+}
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
