@@ -32,6 +32,11 @@ export class CreateSchoolDto {
   @IsEmail()
   @IsOptional()
   email?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  avatar?: string;
 }
 
 export class UpdateSchoolDto {
@@ -59,4 +64,9 @@ export class UpdateSchoolDto {
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  avatar?: string;
 }

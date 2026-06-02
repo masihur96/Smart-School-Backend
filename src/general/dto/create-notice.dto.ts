@@ -35,6 +35,11 @@ export class CreateNoticeDto {
   @ApiProperty({ example: 'd290f1ee-6c54-4b01-90e6-d701748f0851' })
   @IsUUID()
   schoolId: string;
+
+  @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg' })
+  @IsOptional()
+  @IsString()
+  avatar?: string;
 }
 
 export class UpdateNoticeDto {
@@ -53,6 +58,10 @@ export class UpdateNoticeDto {
   @IsOptional()
   @IsBoolean()
   isImportent?: boolean;
+
+  @IsOptional()
+  @IsString()
+  avatar?: string;
 }
 
 export class CreateRoutineDto {

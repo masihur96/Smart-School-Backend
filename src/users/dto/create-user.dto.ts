@@ -121,6 +121,15 @@ export class CreateUserDto {
   @IsOptional()
   @IsNumber()
   radius?: number;
+
+  @ApiProperty({
+    example: 'https://example.com/avatar.jpg',
+    description: 'The avatar URL of the user',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  avatar?: string;
 }
 
 export class UpdateUserDto {
@@ -236,4 +245,13 @@ export class UpdateUserDto {
   @IsOptional()
   @IsNumber()
   radius?: number;
+
+  @ApiProperty({
+    example: 'https://example.com/avatar.jpg',
+    description: 'The avatar URL of the user',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  avatar?: string;
 }

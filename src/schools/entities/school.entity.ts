@@ -30,6 +30,9 @@ export class School {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ nullable: true })
+  avatar: string;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 

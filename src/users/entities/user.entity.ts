@@ -52,6 +52,9 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ nullable: true })
+  avatar: string;
+
   @Column({ type: 'decimal', precision: 10, scale: 8, nullable: true })
   lat: number;
 

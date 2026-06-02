@@ -30,6 +30,9 @@ export class Notice {
   @Column()
   schoolId: string;
 
+  @Column({ nullable: true })
+  avatar: string;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
