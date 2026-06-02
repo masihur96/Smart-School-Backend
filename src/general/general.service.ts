@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Notice } from './entities/notice.entity';
 import { Routine, Day } from './entities/routine.entity';
 import { Marquee, MarqueeType } from './entities/marquee.entity';
@@ -26,7 +28,16 @@ export class GeneralService {
     @InjectRepository(Subject)
     private subjectRepository: Repository<Subject>,
     private notificationsService: NotificationsService,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
+    const supabaseKey = this.configService.get<string>('SUPABASE_KEY');
+    if (supabaseUrl && supabaseKey) {
+      this.supabase = createClient(supabaseUrl, supabaseKey);
+    }
+  }
+
+  private supabase: SupabaseClient;
 
   // Notices
   async createNotice(data: Partial<Notice>) {
@@ -193,5 +204,38 @@ export class GeneralService {
     }
 
     return timeStr;
+  }
+
+  // Upload File
+  async uploadFile(file: Express.Multer.File) {
+    if (!this.supabase) {
+      throw new BadRequestException('Supabase is not configured');
+    }
+
+    if (!file) {
+      throw new BadRequestException('No file provided');
+    }
+
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const fileExt = file.originalname.split('.').pop();
+    const fileName = `${uniqueSuffix}.${fileExt}`;
+    const bucketName = this.configService.get<string>('SUPABASE_BUCKET_NAME') || 'uploads';
+
+    const { data, error } = await this.supabase.storage
+      .from(bucketName)
+      .upload(fileName, file.buffer, {
+        contentType: file.mimetype,
+        upsert: false,
+      });
+
+    if (error) {
+      throw new BadRequestException(`Failed to upload file: ${error.message}`);
+    }
+
+    const { data: { publicUrl } } = this.supabase.storage
+      .from(bucketName)
+      .getPublicUrl(fileName);
+
+    return { url: publicUrl };
   }
 }

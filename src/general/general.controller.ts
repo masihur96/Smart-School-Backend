@@ -7,8 +7,11 @@ import {
   Put,
   Delete,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { GeneralService } from './general.service';
 import { UsersService } from '../users/users.service';
 import { Public } from '../auth/decorators/public.decorator';
@@ -133,4 +136,24 @@ export class GeneralController {
     const schoolId = user?.role === UserRole.SUPER_ADMIN ? querySchoolId : user?.schoolId;
     return await this.generalService.getSchoolData(schoolId);
   }
+
+  // File upload endpoint
+  @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return await this.generalService.uploadFile(file);
+  }
 }
+
