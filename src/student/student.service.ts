@@ -87,21 +87,21 @@ export class StudentService {
 
   async getExams(studentId: string) {
     const student = await this.usersService.findById(studentId);
-    if (!student || !student.classId) return [];
-    return await this.examsService.findExamsByClass(student.classId);
+    if (!student || !student.classIds?.length) return [];
+    return await this.examsService.findExamsByClass(student.classIds[0]);
   }
 
   async getExamRoutine(studentId: string, examId: string) {
     const student = await this.usersService.findById(studentId);
-    if (!student || !student.classId) return [];
-    return await this.examsService.getExamAssignments(examId, student.classId);
+    if (!student || !student.classIds?.length) return [];
+    return await this.examsService.getExamAssignments(examId, student.classIds[0]);
   }
 
   async getExamSyllabus(studentId: string, examId: string) {
     const student = await this.usersService.findById(studentId);
-    if (!student || !student.classId) return [];
+    if (!student || !student.classIds?.length) return [];
     // Syllabus is part of the assignment data
-    return await this.examsService.getExamAssignments(examId, student.classId);
+    return await this.examsService.getExamAssignments(examId, student.classIds[0]);
   }
 
   async getExamResults(studentId: string, examId: string) {

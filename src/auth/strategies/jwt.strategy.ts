@@ -17,8 +17,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     sub: string;
     role: string;
     schoolId?: string;
-    classId?: string;
-    sectionId?: string;
+    classIds?: string[];
+    sectionIds?: string[];
   }) {
     // req.user will have all these fields available to controllers
     return {
@@ -26,8 +26,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userId: payload.sub, // keep backward compat with anything reading userId
       role: payload.role,
       schoolId: payload.schoolId || null,
-      classId: payload.classId || null,
-      sectionId: payload.sectionId || null,
+      classIds: payload.classIds || [],
+      sectionIds: payload.sectionIds || [],
     };
   }
 }

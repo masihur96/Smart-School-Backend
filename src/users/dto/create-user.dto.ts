@@ -6,6 +6,8 @@ import {
   IsOptional,
   IsBoolean,
   IsNumber,
+  IsArray,
+  ArrayUnique,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../entities/user.entity';
@@ -56,22 +58,28 @@ export class CreateUserDto {
   phone?: string;
 
   @ApiProperty({
-    example: 'uuid-of-class',
-    description: 'The class ID',
+    example: ['uuid-of-class-1', 'uuid-of-class-2'],
+    description: 'The class IDs (a user can belong to multiple classes)',
     required: false,
+    type: [String],
   })
   @IsOptional()
-  @IsUUID()
-  classId?: string;
+  @IsArray()
+  @ArrayUnique()
+  @IsUUID('4', { each: true })
+  classIds?: string[];
 
   @ApiProperty({
-    example: 'uuid-of-section',
-    description: 'The section ID',
+    example: ['uuid-of-section-1', 'uuid-of-section-2'],
+    description: 'The section IDs (a user can belong to multiple sections)',
     required: false,
+    type: [String],
   })
   @IsOptional()
-  @IsUUID()
-  sectionId?: string;
+  @IsArray()
+  @ArrayUnique()
+  @IsUUID('4', { each: true })
+  sectionIds?: string[];
 
   @ApiProperty({
     example: '101',
@@ -180,22 +188,28 @@ export class UpdateUserDto {
   phone?: string;
 
   @ApiProperty({
-    example: 'uuid-of-class',
-    description: 'The class ID',
+    example: ['uuid-of-class-1', 'uuid-of-class-2'],
+    description: 'The class IDs (a user can belong to multiple classes)',
     required: false,
+    type: [String],
   })
   @IsOptional()
-  @IsUUID()
-  classId?: string;
+  @IsArray()
+  @ArrayUnique()
+  @IsUUID('4', { each: true })
+  classIds?: string[];
 
   @ApiProperty({
-    example: 'uuid-of-section',
-    description: 'The section ID',
+    example: ['uuid-of-section-1', 'uuid-of-section-2'],
+    description: 'The section IDs (a user can belong to multiple sections)',
     required: false,
+    type: [String],
   })
   @IsOptional()
-  @IsUUID()
-  sectionId?: string;
+  @IsArray()
+  @ArrayUnique()
+  @IsUUID('4', { each: true })
+  sectionIds?: string[];
 
   @ApiProperty({
     example: '101',

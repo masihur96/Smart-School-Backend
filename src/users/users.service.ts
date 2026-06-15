@@ -75,11 +75,12 @@ export class UsersService {
     }
 
     if (classId) {
-      query.andWhere('user.classId = :classId', { classId });
+      // simple-json stores the array as a JSON string, e.g. ["id1","id2"]
+      query.andWhere('user.classIds LIKE :classId', { classId: `%${classId}%` });
     }
 
     if (sectionId) {
-      query.andWhere('user.sectionId = :sectionId', { sectionId });
+      query.andWhere('user.sectionIds LIKE :sectionId', { sectionId: `%${sectionId}%` });
     }
 
     const total = await query.getCount();
@@ -136,10 +137,11 @@ export class UsersService {
     const query = this.userRepository
       .createQueryBuilder('user')
       .where('user.role = :role', { role: UserRole.STUDENT })
-      .andWhere('user.classId = :classId', { classId });
+      // simple-json stores arrays as JSON strings, use LIKE for membership check
+      .andWhere('user.classIds LIKE :classId', { classId: `%${classId}%` });
 
     if (sectionId) {
-      query.andWhere('user.sectionId = :sectionId', { sectionId });
+      query.andWhere('user.sectionIds LIKE :sectionId', { sectionId: `%${sectionId}%` });
     }
 
     return await query.getMany();

@@ -171,7 +171,7 @@ export class TeacherService {
       const key = `${assignment.examId}-${assignment.subject.uuid}-${assignment.class.uuid}`;
       if (!subjectsMap.has(key)) {
         const classStudents = allStudents.filter(
-          (s) => s.classId === assignment.class.uuid,
+          (s) => s.classIds?.includes(assignment.class.uuid),
         );
         subjectsMap.set(key, {
           exam: assignment.exam || { uuid: assignment.examId },
@@ -261,7 +261,7 @@ export class TeacherService {
       true,
     );
     return studentsRes.data
-      .filter((s) => s.classId === classId)
+      .filter((s) => s.classIds?.includes(classId))
       .map((s) => ({
         id: s.id,
         name: s.name,

@@ -37,11 +37,11 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
-  @Column({ nullable: true })
-  classId: string;
+  @Column({ type: 'simple-json', nullable: true })
+  classIds: string[];
 
-  @Column({ nullable: true })
-  sectionId: string;
+  @Column({ type: 'simple-json', nullable: true })
+  sectionIds: string[];
 
   @Column({ nullable: true })
   rollNumber: string;

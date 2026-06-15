@@ -756,7 +756,7 @@ export class DashboardService {
       this.getStudentRecentHomework(studentId),
       this.getMarqueeForRole(schoolId, MarqueeType.STUDENT),
       this.getStudentRecentNotices(schoolId),
-      this.getStudentExamListWithResults(studentId, student.classId),
+      this.getStudentExamListWithResults(studentId, student.classIds?.[0] || null),
     ]);
 
     return {
@@ -894,7 +894,7 @@ export class DashboardService {
 
   private async getStudentExamListWithResults(
     studentId: string,
-    classId: string,
+    classId: string | null,
   ) {
     if (!classId) return [];
 

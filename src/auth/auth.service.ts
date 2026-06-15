@@ -42,8 +42,8 @@ export class AuthService {
       sub: user.id,
       role: user.role,
       schoolId: user.schoolId || null,
-      classId: user.classId || null,
-      sectionId: user.sectionId || null,
+      classIds: user.classIds || [],
+      sectionIds: user.sectionIds || [],
     };
     const accessToken = this.jwtService.sign(payload);
 

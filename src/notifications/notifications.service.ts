@@ -113,8 +113,12 @@ export class NotificationsService {
 
       // Use explicit IDs if provided, otherwise fallback to user's database records
       const sId = explicitIds?.schoolId || user.schoolId;
-      const cId = explicitIds?.classId || user.classId;
-      const secId = explicitIds?.sectionId || user.sectionId;
+      const cIds: string[] = explicitIds?.classId
+        ? [explicitIds.classId]
+        : (user.classIds || []);
+      const secIds: string[] = explicitIds?.sectionId
+        ? [explicitIds.sectionId]
+        : (user.sectionIds || []);
       const uId = explicitIds?.userId || user.id;
 
       // 1. School topic
@@ -122,13 +126,13 @@ export class NotificationsService {
         topics.push(`school_${sId}`);
       }
 
-      // 2. Class topic
-      if (cId) {
+      // 2. Class topics (one per class)
+      for (const cId of cIds) {
         topics.push(`class_${cId}`);
       }
 
-      // 3. Section topic
-      if (secId) {
+      // 3. Section topics (one per section)
+      for (const secId of secIds) {
         topics.push(`section_${secId}`);
       }
 
@@ -357,8 +361,12 @@ export class NotificationsService {
       `student_${userId}`, // For student role
     ];
 
-    if (user.classId) possibleRecipientIds.push(`class_${user.classId}`);
-    if (user.sectionId) possibleRecipientIds.push(`section_${user.sectionId}`);
+    for (const cId of (user.classIds || [])) {
+      possibleRecipientIds.push(`class_${cId}`);
+    }
+    for (const secId of (user.sectionIds || [])) {
+      possibleRecipientIds.push(`section_${secId}`);
+    }
     if (user.schoolId) possibleRecipientIds.push(`school_${user.schoolId}`);
 
     const notifications = await this.notificationRepository.find({
