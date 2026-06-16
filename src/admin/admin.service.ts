@@ -141,8 +141,8 @@ export class AdminService {
   }
 
   async getClasses(callerSchoolId: string | null, callerRole: string) {
-    const schoolId = this.isSuperAdmin(callerRole) ? undefined : callerSchoolId;
-    return await this.classesService.findAll(schoolId);
+    // Always scope to the caller's own school – never return classes from all schools
+    return await this.classesService.findAll(callerSchoolId);
   }
 
   async updateClass(id: string, data: UpdateClassDto) {
