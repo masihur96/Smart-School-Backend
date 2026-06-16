@@ -160,8 +160,8 @@ export class AdminService {
   }
 
   async getSubjects(callerSchoolId: string | null, callerRole: string) {
-    const schoolId = this.isSuperAdmin(callerRole) ? undefined : callerSchoolId;
-    return await this.subjectsService.findAll(schoolId);
+    // Always scope to the caller's own school – never return subjects from all schools
+    return await this.subjectsService.findAll(callerSchoolId);
   }
 
   async updateSubject(id: string, data: UpdateSubjectDto) {
