@@ -50,7 +50,7 @@ export class UsersController {
   @Get(':id')
   @ApiOperation({ summary: 'Get user by ID' })
   async findOne(@Param('id') id: string) {
-    return await this.usersService.findById(id);
+    return await this.usersService.findByIdWithDetails(id);
   }
 
   @Put(':id')
