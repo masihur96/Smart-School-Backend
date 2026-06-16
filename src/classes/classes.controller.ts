@@ -8,21 +8,35 @@ import {
   Delete,
   Patch,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ClassesService } from './classes.service';
 import { CreateClassDto, UpdateClassDto } from './dto/create-class.dto';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserRole } from '../users/entities/user.entity';
+
+interface JwtUser {
+  id: string;
+  role: string;
+  schoolId: string | null;
+}
 
 @ApiTags('Admin')
 @ApiBearerAuth('bearer')
+@Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('admin/classes')
 export class ClassesController {
   constructor(private classesService: ClassesService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all classes' })
-  async findAll() {
-    return await this.classesService.findAll();
+  @ApiOperation({ summary: 'Get all classes for the logged-in school' })
+  async findAll(@CurrentUser() user: JwtUser) {
+    return await this.classesService.findAll(user.schoolId);
   }
 
   @Get(':id')
