@@ -120,7 +120,6 @@ export class AdminController {
   async deleteUser(@Param('id') id: string) {
     return await this.adminService.deleteUser(id);
   }
-
   // ─── Classes ─────────────────────────────────────
   @Get('classes')
   async getClasses(@CurrentUser() user: JwtUser) {
