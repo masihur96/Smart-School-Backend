@@ -115,6 +115,8 @@ export class AdminController {
     return await this.adminService.updateUser(id, dto);
   }
 
+  
+
   @Delete('users/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id') id: string) {
