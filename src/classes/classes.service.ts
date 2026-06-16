@@ -17,10 +17,10 @@ export class ClassesService {
   }
 
   async findAll(schoolId?: string | null) {
-    if (schoolId) {
-      return await this.classRepository.find({ where: { schoolId } });
+    if (!schoolId) {
+      throw new Error('schoolId is required to fetch classes');
     }
-    return await this.classRepository.find();
+    return await this.classRepository.find({ where: { schoolId } });
   }
 
   async findById(id: string) {
