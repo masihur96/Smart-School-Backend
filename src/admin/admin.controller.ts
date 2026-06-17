@@ -131,8 +131,9 @@ export class AdminController {
 
   @Post('classes')
   @HttpCode(HttpStatus.CREATED)
-  async createClass(@Body() dto: CreateClassDto) {
-    return await this.adminService.createClass(dto);
+  async createClass(@Body() dto: CreateClassDto, @CurrentUser() user: JwtUser) {
+    // Always stamp the logged-in admin's schoolId so classes are never orphaned
+    return await this.adminService.createClass({ ...dto, schoolId: user.schoolId ?? dto.schoolId });
   }
 
   @Put('classes/:id')
