@@ -17,6 +17,12 @@ export class ClassesService {
   }
 
   async findAll(schoolId?: string | null) {
+    // When a schoolId is explicitly passed (even null), scope the query to that school.
+    // null means the caller has no school context → return nothing to prevent leaking
+    // data across schools. Pass `undefined` to retrieve all (super-admin use-case).
+    if (schoolId === null) {
+      return [];
+    }
     if (schoolId) {
       return await this.classRepository.find({ where: { schoolId } });
     }
