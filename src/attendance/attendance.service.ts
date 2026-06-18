@@ -204,19 +204,19 @@ export class AttendanceService {
         .select('attendance.classId', 'classId')
         .addSelect('COUNT(*)', 'totalRecords')
         .addSelect(
-          `SUM(CASE WHEN attendance.status = :presentStatus THEN 1 ELSE 0 END)`,
+          `SUM(CASE WHEN attendance.status::text = :presentStatus THEN 1 ELSE 0 END)`,
           'totalPresent',
         )
         .addSelect(
-          `SUM(CASE WHEN attendance.status = :absentStatus THEN 1 ELSE 0 END)`,
+          `SUM(CASE WHEN attendance.status::text = :absentStatus THEN 1 ELSE 0 END)`,
           'totalAbsent',
         )
         .addSelect(
-          `SUM(CASE WHEN attendance.status = :leaveStatus THEN 1 ELSE 0 END)`,
+          `SUM(CASE WHEN attendance.status::text = :leaveStatus THEN 1 ELSE 0 END)`,
           'totalLeave',
         )
         .addSelect(
-          `SUM(CASE WHEN attendance.status = :lateStatus THEN 1 ELSE 0 END)`,
+          `SUM(CASE WHEN attendance.status::text = :lateStatus THEN 1 ELSE 0 END)`,
           'totalLate',
         )
         .where('attendance.date >= :startDate', { startDate })
