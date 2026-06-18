@@ -202,7 +202,6 @@ export class AttendanceService {
         .createQueryBuilder('attendance')
         .leftJoin(User, 'student', 'attendance.studentId = student.id::text')
         .select('attendance.classId', 'classId')
-        .addSelect('student.sectionId', 'sectionId')
         .addSelect('COUNT(*)', 'totalRecords')
         .addSelect(
           `SUM(CASE WHEN attendance.status = :presentStatus THEN 1 ELSE 0 END)`,
@@ -238,8 +237,8 @@ export class AttendanceService {
       }
 
       if (query.sectionId) {
-        qb.andWhere('student.sectionId = :sectionId', {
-          sectionId: query.sectionId,
+        qb.andWhere('student.sectionIds LIKE :sectionId', {
+          sectionId: `%${query.sectionId}%`,
         });
       }
 
@@ -251,7 +250,6 @@ export class AttendanceService {
 
       const rawResults = await qb
         .groupBy('attendance.classId')
-        .addGroupBy('student.sectionId')
         .getRawMany();
 
       // Get all classes and sections to map names
@@ -271,8 +269,6 @@ export class AttendanceService {
         return {
           classId: res.classId,
           className: classMap.get(res.classId) || 'Unknown Class',
-          sectionId: res.sectionId,
-          sectionName: sectionMap.get(res.sectionId) || 'Unknown Section',
           totalPresent,
           totalAbsent,
           totalLeave,
