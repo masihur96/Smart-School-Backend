@@ -351,6 +351,7 @@ export class AttendanceService {
         month: month.toString(),
         classId: query.classId,
         sectionId: query.sectionId,
+        schoolId: query.schoolId,
       });
 
       monthlyData.push({
