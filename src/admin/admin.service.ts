@@ -149,6 +149,7 @@ export class AdminService {
     return await this.classesService.update(id, data);
   }
 
+  
   async deleteClass(id: string) {
     return await this.classesService.delete(id);
   }
