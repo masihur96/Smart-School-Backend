@@ -35,6 +35,7 @@ import { SectionsService } from '../sections/sections.service';
 import { User, UserRole } from '../users/entities/user.entity';
 import { TeacherAttendance } from './entities/teacher-attendance.entity';
 import { SubmitTeacherAttendanceDto } from './dto/submit-teacher-attendance.dto';
+import { AdminCreateTeacherAttendanceDto } from './dto/admin-create-teacher-attendance.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { formatReadableDate } from '../common/utils/date.util';
 import { Routine } from '../general/entities/routine.entity';
@@ -484,6 +485,54 @@ export class AttendanceService {
 
   async deleteTeacherAttendance(id: string) {
     return await this.teacherAttendanceRepository.softDelete(id);
+  }
+
+  /**
+   * Admin creates / upserts a teacher attendance record without geo-validation.
+   * Allows specifying status (clock-in | clock-out | absent) and optional times.
+   */
+  async adminCreateTeacherAttendance(
+    dto: AdminCreateTeacherAttendanceDto,
+    callerSchoolId: string | null,
+  ) {
+    const teacher = await this.usersService.findById(dto.teacherId);
+    if (!teacher || teacher.role !== UserRole.TEACHER) {
+      throw new NotFoundException('Teacher not found');
+    }
+
+    const normalizedDate = this.normalizeDate(dto.date);
+    const now = new Date();
+    const actionTime = dto.time ? new Date(dto.time) : now;
+    const schoolId = teacher.schoolId ?? callerSchoolId ?? '';
+
+    // Upsert: check if a record already exists for this teacher on this date
+    let attendance = await this.teacherAttendanceRepository.findOne({
+      where: { teacherId: dto.teacherId, date: normalizedDate as any },
+    });
+
+    if (attendance) {
+      // Overwrite the fields supplied by the admin
+      attendance.status = dto.status;
+      attendance.time = actionTime;
+      if (dto.startTime) attendance.startTime = new Date(dto.startTime);
+      if (dto.endTime) attendance.endTime = new Date(dto.endTime);
+    } else {
+      attendance = this.teacherAttendanceRepository.create({
+        teacherId: dto.teacherId,
+        schoolId,
+        // Admin-created records have no GPS coordinates; default to 0
+        lat: 0,
+        lon: 0,
+        distanceFromCenter: 0,
+        date: normalizedDate as any,
+        time: actionTime,
+        status: dto.status,
+        startTime: dto.startTime ? new Date(dto.startTime) : actionTime,
+        endTime: dto.endTime ? new Date(dto.endTime) : undefined,
+      });
+    }
+
+    return await this.teacherAttendanceRepository.save(attendance);
   }
 
   async deletePeriodAttendance(id: string) {

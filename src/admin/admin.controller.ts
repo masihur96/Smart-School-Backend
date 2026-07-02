@@ -35,6 +35,8 @@ import {
   CreateHomeworkDto,
   UpdateHomeworkDto,
 } from '../homework/dto/create-homework.dto';
+import { AttendanceService } from '../attendance/attendance.service';
+import { AdminCreateTeacherAttendanceDto } from '../attendance/dto/admin-create-teacher-attendance.dto';
 
 /** Shape returned by JwtStrategy.validate() */
 interface JwtUser {
@@ -50,7 +52,10 @@ interface JwtUser {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('admin')
 export class AdminController {
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    private attendanceService: AttendanceService,
+  ) {}
 
   // ─── Schools ───────────────────────────────────────
   @Get('schools')
@@ -304,5 +309,21 @@ export class AdminController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteHomework(@Param('id') id: string) {
     return await this.adminService.deleteHomework(id);
+  }
+
+  // ─── Teacher Attendance ──────────────────────────
+  @Post('teacher-attendance')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create or update a teacher attendance record (admin, no geo-check)',
+  })
+  async createTeacherAttendance(
+    @Body() dto: AdminCreateTeacherAttendanceDto,
+    @CurrentUser() user: JwtUser,
+  ) {
+    return await this.attendanceService.adminCreateTeacherAttendance(
+      dto,
+      user.schoolId,
+    );
   }
 }
