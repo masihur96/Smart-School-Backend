@@ -149,4 +149,28 @@ export class PerformanceService {
       },
     };
   }
+
+  async getAllStudentsPerformance(schoolId: string) {
+    const students = await this.userRepository.find({
+      where: { schoolId, role: UserRole.STUDENT },
+    });
+
+    const performancePromises = students.map(student =>
+      this.getStudentPerformance(student.id, schoolId).catch(() => null)
+    );
+    const results = await Promise.all(performancePromises);
+    return results.filter(r => r !== null);
+  }
+
+  async getAllTeachersPerformance(schoolId: string) {
+    const teachers = await this.userRepository.find({
+      where: { schoolId, role: UserRole.TEACHER },
+    });
+
+    const performancePromises = teachers.map(teacher =>
+      this.getTeacherPerformance(teacher.id, schoolId).catch(() => null)
+    );
+    const results = await Promise.all(performancePromises);
+    return results.filter(r => r !== null);
+  }
 }
