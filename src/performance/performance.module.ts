@@ -8,6 +8,8 @@ import { StudentHomework } from '../homework/entities/student-homework.entity';
 import { Homework } from '../homework/entities/homework.entity';
 import { Marks } from '../marks/entities/marks.entity';
 import { User } from '../users/entities/user.entity';
+import { Class } from '../classes/entities/class.entity';
+import { Section } from '../sections/entities/section.entity';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { User } from '../users/entities/user.entity';
       Homework,
       Marks,
       User,
+      Class,
+      Section,
     ]),
   ],
   controllers: [PerformanceController],

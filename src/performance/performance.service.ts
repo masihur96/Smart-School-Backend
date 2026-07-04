@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Attendance, AttendanceStatus } from '../attendance/entities/attendance.entity';
 import { TeacherAttendance } from '../attendance/entities/teacher-attendance.entity';
 import { StudentHomework, StudentHomeworkStatus } from '../homework/entities/student-homework.entity';
 import { Homework } from '../homework/entities/homework.entity';
 import { Marks } from '../marks/entities/marks.entity';
 import { User, UserRole } from '../users/entities/user.entity';
+import { Class } from '../classes/entities/class.entity';
+import { Section } from '../sections/entities/section.entity';
 
 @Injectable()
 export class PerformanceService {
@@ -23,6 +25,10 @@ export class PerformanceService {
     private marksRepository: Repository<Marks>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
+    @InjectRepository(Section)
+    private sectionRepository: Repository<Section>,
   ) {}
 
   async getStudentPerformance(studentId: string, schoolId: string) {
@@ -81,10 +87,27 @@ export class PerformanceService {
         ? (totalMarksObtained / totalMaximumMarks) * 100
         : 0;
 
+    let studentClass = null;
+    let studentSection = null;
+
+    if (student.classIds && student.classIds.length > 0) {
+      studentClass = await this.classRepository.findOne({
+        where: { id: student.classIds[0] },
+      });
+    }
+
+    if (student.sectionIds && student.sectionIds.length > 0) {
+      studentSection = await this.sectionRepository.findOne({
+        where: { id: student.sectionIds[0] },
+      });
+    }
+
     return {
       studentId: student.id,
       name: student.name,
       rollNumber: student.rollNumber,
+      class: studentClass,
+      section: studentSection,
       attendance: {
         totalWorkingDays,
         presentDays,
@@ -119,7 +142,7 @@ export class PerformanceService {
       where: { teacherId, schoolId },
     });
 
-    // Get unique dates
+    // Get unique dates for this teacher
     const uniqueDates = new Set(
       allAttendances.map(a => {
         const d = new Date(a.date);
@@ -128,24 +151,41 @@ export class PerformanceService {
     );
     const presentDays = uniqueDates.size;
     
-    // In a real system, you might have a table for total working days in a school.
-    // Here, we just return presentDays, or if we had a total days, calculate percentage.
-    // For now, we return the count.
+    // Get total working days for the school based on any teacher's attendance
+    const totalWorkingDaysQuery = await this.teacherAttendanceRepository
+      .createQueryBuilder('ta')
+      .select('COUNT(DISTINCT DATE(ta.date))', 'count')
+      .where('ta.schoolId = :schoolId', { schoolId })
+      .getRawOne();
+      
+    const totalWorkingDays = parseInt(totalWorkingDaysQuery.count, 10) || 0;
+    
+    const attendancePercentage = totalWorkingDays > 0 
+      ? (presentDays / totalWorkingDays) * 100 
+      : 0;
 
     // 2. Homework Provided
     const totalHomeworkProvided = await this.homeworkRepository.count({
       where: { teacherId, schoolId },
     });
+    
+    // Assume a generic target of 10 homeworks for now, since there's no fixed target in DB
+    const homeworkTarget = 10;
+    const homeworkPercentage = (totalHomeworkProvided / homeworkTarget) * 100;
 
     return {
       teacherId: teacher.id,
       name: teacher.name,
       designation: teacher.designation,
       attendance: {
+        totalWorkingDays,
         presentDays,
+        percentage: Number(attendancePercentage.toFixed(2)),
       },
       homework: {
         totalProvided: totalHomeworkProvided,
+        target: homeworkTarget,
+        percentage: Number(Math.min(homeworkPercentage, 100).toFixed(2)),
       },
     };
   }
