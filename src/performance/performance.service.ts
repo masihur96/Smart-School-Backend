@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, Between } from 'typeorm';
 import { Attendance, AttendanceStatus } from '../attendance/entities/attendance.entity';
 import { TeacherAttendance } from '../attendance/entities/teacher-attendance.entity';
 import { StudentHomework, StudentHomeworkStatus } from '../homework/entities/student-homework.entity';
@@ -31,7 +31,27 @@ export class PerformanceService {
     private sectionRepository: Repository<Section>,
   ) {}
 
-  async getStudentPerformance(studentId: string, schoolId: string) {
+  private getDateCondition(fieldName: string, month?: string, year?: string) {
+    if (!year && !month) return {};
+    
+    let y = year ? parseInt(year, 10) : new Date().getFullYear();
+    if (isNaN(y)) y = new Date().getFullYear();
+
+    if (month) {
+      const m = parseInt(month, 10);
+      if (!isNaN(m) && m >= 1 && m <= 12) {
+        const startDate = new Date(Date.UTC(y, m - 1, 1, 0, 0, 0));
+        const endDate = new Date(Date.UTC(y, m, 0, 23, 59, 59, 999));
+        return { [fieldName]: Between(startDate, endDate) };
+      }
+    }
+    
+    const startDate = new Date(Date.UTC(y, 0, 1, 0, 0, 0));
+    const endDate = new Date(Date.UTC(y, 11, 31, 23, 59, 59, 999));
+    return { [fieldName]: Between(startDate, endDate) };
+  }
+
+  async getStudentPerformance(studentId: string, schoolId: string, month?: string, year?: string) {
     // Verify student exists
     const student = await this.userRepository.findOne({
       where: { id: studentId, schoolId, role: UserRole.STUDENT },
@@ -41,27 +61,31 @@ export class PerformanceService {
     }
 
     // 1. Attendance Performance
+    const dateCondition = this.getDateCondition('date', month, year);
     const totalWorkingDays = await this.attendanceRepository.count({
-      where: { studentId, schoolId },
+      where: { studentId, schoolId, ...dateCondition },
     });
     const presentDays = await this.attendanceRepository.count({
       where: {
         studentId,
         schoolId,
         status: AttendanceStatus.PRESENT,
+        ...dateCondition,
       },
     });
     const attendancePercentage =
       totalWorkingDays > 0 ? (presentDays / totalWorkingDays) * 100 : 0;
 
     // 2. Homework Performance
+    const homeworkDateCondition = this.getDateCondition('createdAt', month, year);
     const totalHomeworkAssigned = await this.studentHomeworkRepository.count({
-      where: { studentId },
+      where: { studentId, ...homeworkDateCondition },
     });
     const totalHomeworkDone = await this.studentHomeworkRepository.count({
       where: {
         studentId,
         status: StudentHomeworkStatus.DONE,
+        ...homeworkDateCondition,
       },
     });
     const homeworkPercentage =
@@ -70,8 +94,9 @@ export class PerformanceService {
         : 0;
 
     // 3. Exam Performance (Average Marks)
+    const marksDateCondition = this.getDateCondition('createdAt', month, year);
     const marks = await this.marksRepository.find({
-      where: { studentId, schoolId },
+      where: { studentId, schoolId, ...marksDateCondition },
     });
     
     let totalMarksObtained = 0;
@@ -126,7 +151,7 @@ export class PerformanceService {
     };
   }
 
-  async getTeacherPerformance(teacherId: string, schoolId: string) {
+  async getTeacherPerformance(teacherId: string, schoolId: string, month?: string, year?: string) {
     // Verify teacher exists
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, schoolId, role: UserRole.TEACHER },
@@ -136,10 +161,9 @@ export class PerformanceService {
     }
 
     // 1. Attendance Performance
-    // Note: TeacherAttendance usually tracks clock-in events. We'll count unique days.
-    // Assuming a clock-in record for a day implies presence.
+    const teacherDateCondition = this.getDateCondition('date', month, year);
     const allAttendances = await this.teacherAttendanceRepository.find({
-      where: { teacherId, schoolId },
+      where: { teacherId, schoolId, ...teacherDateCondition },
     });
 
     // Get unique dates for this teacher
@@ -152,11 +176,20 @@ export class PerformanceService {
     const presentDays = uniqueDates.size;
     
     // Get total working days for the school based on any teacher's attendance
-    const totalWorkingDaysQuery = await this.teacherAttendanceRepository
+    let totalWorkingDaysQueryBuilder = this.teacherAttendanceRepository
       .createQueryBuilder('ta')
       .select('COUNT(DISTINCT DATE(ta.date))', 'count')
-      .where('ta.schoolId = :schoolId', { schoolId })
-      .getRawOne();
+      .where('ta.schoolId = :schoolId', { schoolId });
+      
+    if (teacherDateCondition.date) {
+      // Need to use the raw value for the between operator in query builder
+      const between: any = teacherDateCondition.date; // TypeORM Between object
+      const start = between.value[0];
+      const end = between.value[1];
+      totalWorkingDaysQueryBuilder = totalWorkingDaysQueryBuilder.andWhere('ta.date >= :start AND ta.date <= :end', { start, end });
+    }
+
+    const totalWorkingDaysQuery = await totalWorkingDaysQueryBuilder.getRawOne();
       
     const totalWorkingDays = parseInt(totalWorkingDaysQuery.count, 10) || 0;
     
@@ -165,8 +198,9 @@ export class PerformanceService {
       : 0;
 
     // 2. Homework Provided
+    const hwDateCondition = this.getDateCondition('createdAt', month, year);
     const totalHomeworkProvided = await this.homeworkRepository.count({
-      where: { teacherId, schoolId },
+      where: { teacherId, schoolId, ...hwDateCondition },
     });
     
     // Assume a generic target of 10 homeworks for now, since there's no fixed target in DB
@@ -190,25 +224,25 @@ export class PerformanceService {
     };
   }
 
-  async getAllStudentsPerformance(schoolId: string) {
+  async getAllStudentsPerformance(schoolId: string, month?: string, year?: string) {
     const students = await this.userRepository.find({
       where: { schoolId, role: UserRole.STUDENT },
     });
 
     const performancePromises = students.map(student =>
-      this.getStudentPerformance(student.id, schoolId).catch(() => null)
+      this.getStudentPerformance(student.id, schoolId, month, year).catch(() => null)
     );
     const results = await Promise.all(performancePromises);
     return results.filter(r => r !== null);
   }
 
-  async getAllTeachersPerformance(schoolId: string) {
+  async getAllTeachersPerformance(schoolId: string, month?: string, year?: string) {
     const teachers = await this.userRepository.find({
       where: { schoolId, role: UserRole.TEACHER },
     });
 
     const performancePromises = teachers.map(teacher =>
-      this.getTeacherPerformance(teacher.id, schoolId).catch(() => null)
+      this.getTeacherPerformance(teacher.id, schoolId, month, year).catch(() => null)
     );
     const results = await Promise.all(performancePromises);
     return results.filter(r => r !== null);
