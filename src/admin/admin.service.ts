@@ -153,6 +153,8 @@ export class AdminService {
     return await this.classesService.delete(id);
   }
 
+  
+
   // ─── Subject management ─────────────────────────
 
   async createSubject(data: CreateSubjectDto) {
