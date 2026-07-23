@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { School } from '../schools/entities/school.entity';
 
 @Injectable()
@@ -65,6 +66,38 @@ export class AuthService {
         school,
       },
     };
+  }
+
+  async refreshToken(refreshTokenDto: RefreshTokenDto) {
+    try {
+      const payload = await this.jwtService.verifyAsync(refreshTokenDto.refreshToken);
+      
+      const user = await this.usersService.findById(payload.sub);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      if (!user.isActive) {
+        throw new UnauthorizedException('Your account is deactivated');
+      }
+
+      const newPayload = {
+        sub: user.id,
+        role: user.role,
+        schoolId: user.schoolId || null,
+        classIds: user.classIds || [],
+        sectionIds: user.sectionIds || [],
+      };
+
+      const accessToken = this.jwtService.sign(newPayload);
+      const newRefreshToken = this.jwtService.sign(newPayload, { expiresIn: '7d' });
+
+      return {
+        accessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
   }
 
   async getCurrentUser(userId: string) {
