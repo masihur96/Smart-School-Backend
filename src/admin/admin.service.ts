@@ -134,7 +134,7 @@ export class AdminService {
     return await this.usersService.delete(id);
   }
 
-  // ─── Class management ───────────────────────────
+
 
   async createClass(data: CreateClassDto) {
     return await this.classesService.create(data);
