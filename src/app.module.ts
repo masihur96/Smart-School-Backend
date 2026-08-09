@@ -43,6 +43,7 @@ import { TeacherAttendance } from './attendance/entities/teacher-attendance.enti
 import { SuperadminModule } from './superadmin/superadmin.module';
 import { PerformanceModule } from './performance/performance.module';
 import { AlterTeacherAttendanceTimeToTimestamptz1716566400000 } from './migrations/1716566400000-AlterTeacherAttendanceTimeToTimestamptz';
+import { SmsModule } from './sms/sms.module';
 
 
 @Module({
@@ -109,6 +110,7 @@ import { AlterTeacherAttendanceTimeToTimestamptz1716566400000 } from './migratio
     NotificationsModule,
     DashboardModule,
     PerformanceModule,
+    SmsModule,
   ],
   controllers: [AppController],
   providers: [
