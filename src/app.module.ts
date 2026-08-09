@@ -44,6 +44,8 @@ import { SuperadminModule } from './superadmin/superadmin.module';
 import { PerformanceModule } from './performance/performance.module';
 import { AlterTeacherAttendanceTimeToTimestamptz1716566400000 } from './migrations/1716566400000-AlterTeacherAttendanceTimeToTimestamptz';
 import { SmsModule } from './sms/sms.module';
+import { OnlineClassesModule } from './online-classes/online-classes.module';
+import { OnlineClass } from './online-classes/entities/online-class.entity';
 
 
 @Module({
@@ -79,6 +81,7 @@ import { SmsModule } from './sms/sms.module';
         School,
         PeriodAttendance,
         TeacherAttendance,
+        OnlineClass,
       ],
       migrations: [AlterTeacherAttendanceTimeToTimestamptz1716566400000],
       autoLoadEntities: true,
@@ -111,6 +114,7 @@ import { SmsModule } from './sms/sms.module';
     DashboardModule,
     PerformanceModule,
     SmsModule,
+    OnlineClassesModule,
   ],
   controllers: [AppController],
   providers: [
