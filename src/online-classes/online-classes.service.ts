@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OnlineClass } from './entities/online-class.entity';
@@ -14,12 +14,17 @@ export class OnlineClassesService {
   ) {}
 
   async create(createOnlineClassDto: CreateOnlineClassDto, user: any): Promise<OnlineClass> {
-    const newClass = this.onlineClassRepository.create({
-      ...createOnlineClassDto,
-      hostId: user.id,
-      schoolId: user.schoolId,
-    });
-    return await this.onlineClassRepository.save(newClass);
+    try {
+      const newClass = this.onlineClassRepository.create({
+        ...createOnlineClassDto,
+        hostId: user.id,
+        schoolId: user.schoolId,
+      });
+      return await this.onlineClassRepository.save(newClass);
+    } catch (error) {
+      console.error('Error creating online class:', error);
+      throw new InternalServerErrorException(`Failed to create online class: ${error.message || error}`);
+    }
   }
 
   async findAll(user: any): Promise<OnlineClass[]> {
