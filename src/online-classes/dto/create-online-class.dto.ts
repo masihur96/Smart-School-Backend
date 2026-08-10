@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsDate } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateOnlineClassDto {
@@ -18,7 +18,7 @@ export class CreateOnlineClassDto {
   meetLink: string;
 
   @ApiProperty({ example: '2026-08-15T10:00:00Z' })
-  @IsDateString()
+  @IsDate()
   @IsNotEmpty()
   date: Date;
 
