@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { OnlineClassesService } from './online-classes.service';
 import { CreateOnlineClassDto } from './dto/create-online-class.dto';
 import { UpdateOnlineClassDto } from './dto/update-online-class.dto';
@@ -8,6 +9,8 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '../users/entities/user.entity';
 
+@ApiTags('online-classes')
+@ApiBearerAuth()
 @Controller('online-classes')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class OnlineClassesController {
