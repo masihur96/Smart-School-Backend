@@ -129,4 +129,5 @@ import { OnlineClass } from './online-classes/entities/online-class.entity';
     },
   ],
 })
+
 export class AppModule { }
