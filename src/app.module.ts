@@ -85,7 +85,7 @@ import { OnlineClass } from './online-classes/entities/online-class.entity';
       ],
       migrations: [AlterTeacherAttendanceTimeToTimestamptz1716566400000],
       autoLoadEntities: true,
-      synchronize: true, // Set to true to create the online_class table automatically
+      synchronize: false,
       migrationsRun: false,
       ssl:
         process.env.NODE_ENV === 'production'
