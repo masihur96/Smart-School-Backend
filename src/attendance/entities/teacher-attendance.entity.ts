@@ -22,10 +22,10 @@ export class TeacherAttendance {
   @JoinColumn({ name: 'teacherId' })
   teacher: User;
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamptz', nullable: true })
   date: Date;
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamptz', nullable: true })
   time: Date;
 
   @Column({ type: 'decimal', precision: 10, scale: 8 })
