@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, UseGuards, Request } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { BookRequestsService } from './book-requests.service';
 import { CreateBookRequestDto } from '../dto/create-book-request.dto';
 import { UpdateBookRequestDto } from '../dto/update-book-request.dto';
@@ -7,6 +8,8 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { UserRole } from '../../users/entities/user.entity';
 
+@ApiTags('Library Books')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('library/book-requests')
 export class BookRequestsController {
