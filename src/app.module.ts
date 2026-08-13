@@ -46,6 +46,10 @@ import { AlterTeacherAttendanceTimeToTimestamptz1716566400000 } from './migratio
 import { SmsModule } from './sms/sms.module';
 import { OnlineClassesModule } from './online-classes/online-classes.module';
 import { OnlineClass } from './online-classes/entities/online-class.entity';
+import { LibraryModule } from './library/library.module';
+import { Book } from './library/entities/book.entity';
+import { BookRequest } from './library/entities/book-request.entity';
+import { IssuedBook } from './library/entities/issued-book.entity';
 
 
 @Module({
@@ -82,6 +86,9 @@ import { OnlineClass } from './online-classes/entities/online-class.entity';
         PeriodAttendance,
         TeacherAttendance,
         OnlineClass,
+        Book,
+        BookRequest,
+        IssuedBook,
       ],
       migrations: [AlterTeacherAttendanceTimeToTimestamptz1716566400000],
       autoLoadEntities: true,
@@ -115,6 +122,7 @@ import { OnlineClass } from './online-classes/entities/online-class.entity';
     PerformanceModule,
     SmsModule,
     OnlineClassesModule,
+    LibraryModule,
   ],
   controllers: [AppController],
   providers: [
