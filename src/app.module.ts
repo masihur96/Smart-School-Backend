@@ -43,6 +43,10 @@ import { TeacherAttendance } from './attendance/entities/teacher-attendance.enti
 import { SuperadminModule } from './superadmin/superadmin.module';
 import { PerformanceModule } from './performance/performance.module';
 import { AlterTeacherAttendanceTimeToTimestamptz1716566400000 } from './migrations/1716566400000-AlterTeacherAttendanceTimeToTimestamptz';
+import { UserClassSectionArrays1750034400000 } from './migrations/1750034400000-UserClassSectionArrays';
+import { AddAvatarFields1780424444421 } from './migrations/1780424444421-AddAvatarFields';
+import { CreateOnlineClass1786645976995 } from './migrations/1786645976995-CreateOnlineClass';
+import { LibraryModule1786651726156 } from './migrations/1786651726156-LibraryModule';
 import { SmsModule } from './sms/sms.module';
 import { OnlineClassesModule } from './online-classes/online-classes.module';
 import { OnlineClass } from './online-classes/entities/online-class.entity';
@@ -90,10 +94,16 @@ import { IssuedBook } from './library/entities/issued-book.entity';
         BookRequest,
         IssuedBook,
       ],
-      migrations: [AlterTeacherAttendanceTimeToTimestamptz1716566400000],
+      migrations: [
+        AlterTeacherAttendanceTimeToTimestamptz1716566400000,
+        UserClassSectionArrays1750034400000,
+        AddAvatarFields1780424444421,
+        CreateOnlineClass1786645976995,
+        LibraryModule1786651726156,
+      ],
       autoLoadEntities: true,
       synchronize: false,
-      migrationsRun: false,
+      migrationsRun: true,
       ssl:
         process.env.NODE_ENV === 'production'
           ? { rejectUnauthorized: false }
