@@ -8,7 +8,7 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { UserRole } from '../../users/entities/user.entity';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller('book-requests')
+@Controller('library/book-requests')
 export class BookRequestsController {
   constructor(private readonly bookRequestsService: BookRequestsService) {}
 
