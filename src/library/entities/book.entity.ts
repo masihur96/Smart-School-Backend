@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { School } from '../../schools/entities/school.entity';
 
-@Entity()
+@Entity('library_books')
 export class Book {
   @PrimaryGeneratedColumn('uuid')
   id: string;
