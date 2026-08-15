@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import { Book } from '../entities/book.entity';
@@ -7,17 +7,30 @@ import { UpdateBookDto } from '../dto/update-book.dto';
 
 @Injectable()
 export class BooksService {
+  private readonly logger = new Logger(BooksService.name);
+
   constructor(
     @InjectRepository(Book)
     private bookRepository: Repository<Book>,
   ) {}
 
   async create(createBookDto: CreateBookDto, schoolId: string): Promise<Book> {
-    const book = this.bookRepository.create({
-      ...createBookDto,
-      schoolId,
-    });
-    return this.bookRepository.save(book);
+    try {
+      this.logger.log(`Creating book for schoolId: ${schoolId}, data: ${JSON.stringify(createBookDto)}`);
+      const book = this.bookRepository.create({
+        ...createBookDto,
+        schoolId,
+      });
+      const saved = await this.bookRepository.save(book);
+      this.logger.log(`Book created successfully: ${saved.id}`);
+      return saved;
+    } catch (error) {
+      this.logger.error(`Failed to create book for schoolId ${schoolId}:`, error);
+      this.logger.error(`Error message: ${error?.message}`);
+      this.logger.error(`Error detail: ${error?.detail}`);
+      this.logger.error(`Error code: ${error?.code}`);
+      throw error;
+    }
   }
 
   async findAll(schoolId: string, search?: string, category?: string): Promise<Book[]> {
@@ -25,8 +38,6 @@ export class BooksService {
 
     if (search) {
       where.title = ILike(`%${search}%`);
-      // Optional: search by author as well
-      // where = [{ schoolId, title: ILike(`%${search}%`) }, { schoolId, author: ILike(`%${search}%`) }];
     }
 
     if (category) {

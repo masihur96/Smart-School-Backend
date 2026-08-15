@@ -10,6 +10,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { UnauthorizedExceptionFilter } from './common/filters/unauthorized.filter';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,8 +24,8 @@ async function bootstrap() {
     }),
   );
 
-  // Apply global exception filters
-  app.useGlobalFilters(new UnauthorizedExceptionFilter());
+  // Apply global exception filters (AllExceptionsFilter first = catch-all, then specific)
+  app.useGlobalFilters(new AllExceptionsFilter(), new UnauthorizedExceptionFilter());
 
   // Enable CORS
   app.enableCors();
