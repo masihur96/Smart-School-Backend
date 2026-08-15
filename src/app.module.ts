@@ -56,6 +56,9 @@ import { OnlineClass } from './online-classes/entities/online-class.entity';
 import { LibraryModule } from './library/library.module';
 import { Book } from './library/entities/book.entity';
 import { IssuedBook } from './library/entities/issued-book.entity';
+import { AcademicEbooksModule } from './academic-ebooks/academic-ebooks.module';
+import { AcademicEbook } from './academic-ebooks/entities/academic-ebook.entity';
+import { CreateAcademicEbooks1787000000000 } from './migrations/1787000000000-CreateAcademicEbooks';
 
 
 @Module({
@@ -94,6 +97,7 @@ import { IssuedBook } from './library/entities/issued-book.entity';
         OnlineClass,
         Book,
         IssuedBook,
+        AcademicEbook,
       ],
       migrations: [
         AlterTeacherAttendanceTimeToTimestamptz1716566400000,
@@ -104,6 +108,7 @@ import { IssuedBook } from './library/entities/issued-book.entity';
         CleanupLibrary1786900000000,
         DropLibraryBooksFk1786901000000,
         CreateIssuedBook1786902000000,
+        CreateAcademicEbooks1787000000000,
       ],
       autoLoadEntities: true,
       synchronize: false,
@@ -137,6 +142,7 @@ import { IssuedBook } from './library/entities/issued-book.entity';
     SmsModule,
     OnlineClassesModule,
     LibraryModule,
+    AcademicEbooksModule,
   ],
   controllers: [AppController],
   providers: [
