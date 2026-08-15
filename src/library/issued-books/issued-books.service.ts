@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { IssuedBook } from '../entities/issued-book.entity';
@@ -7,6 +7,8 @@ import { IssueBookDto } from '../dto/issue-book.dto';
 
 @Injectable()
 export class IssuedBooksService {
+  private readonly logger = new Logger(IssuedBooksService.name);
+
   constructor(
     @InjectRepository(IssuedBook)
     private issuedBookRepository: Repository<IssuedBook>,
@@ -17,7 +19,6 @@ export class IssuedBooksService {
   async issueBook(issueBookDto: IssueBookDto, schoolId: string): Promise<IssuedBook> {
     const { bookId, studentId, dueDate } = issueBookDto;
 
-    // Use a transaction or sequential checks
     const book = await this.bookRepository.findOne({ where: { id: bookId, schoolId } });
     if (!book) {
       throw new NotFoundException('Book not found');
@@ -26,7 +27,7 @@ export class IssuedBooksService {
       throw new BadRequestException('Book is already issued or not available');
     }
 
-    // Set book as unavailable
+    // Mark book unavailable
     book.isAvailable = false;
     await this.bookRepository.save(book);
 
@@ -35,36 +36,41 @@ export class IssuedBooksService {
       bookId,
       schoolId,
       studentId,
-      dueDate,
+      dueDate: new Date(dueDate),
     });
 
-    return this.issuedBookRepository.save(issuedBook);
+    const saved = await this.issuedBookRepository.save(issuedBook);
+    this.logger.log(`Book ${bookId} issued to student ${studentId}, due: ${dueDate}`);
+    return saved;
   }
 
   async findAll(schoolId: string, status?: string): Promise<IssuedBook[]> {
-    const where: any = { schoolId };
-    
+    const qb = this.issuedBookRepository
+      .createQueryBuilder('issuedBook')
+      .leftJoinAndSelect('issuedBook.book', 'book')
+      .where('issuedBook.schoolId = :schoolId', { schoolId })
+      .orderBy('issuedBook.issueDate', 'DESC');
+
     if (status === 'active') {
-      where.returnDate = IsNull();
+      qb.andWhere('issuedBook.returnDate IS NULL');
+    } else if (status === 'returned') {
+      qb.andWhere('issuedBook.returnDate IS NOT NULL');
     } else if (status === 'overdue') {
-      // Overdue is active AND dueDate < now
-      // This requires query builder for accurate time comparison in TypeORM, 
-      // but for simplicity we can use query builder for this condition.
-      return this.issuedBookRepository
-        .createQueryBuilder('issuedBook')
-        .leftJoinAndSelect('issuedBook.book', 'book')
-        .leftJoinAndSelect('issuedBook.student', 'student')
-        .where('issuedBook.schoolId = :schoolId', { schoolId })
-        .andWhere('issuedBook.returnDate IS NULL')
-        .andWhere('issuedBook.dueDate < :now', { now: new Date() })
-        .getMany();
+      qb.andWhere('issuedBook.returnDate IS NULL')
+        .andWhere('issuedBook.dueDate < :now', { now: new Date() });
     }
 
-    return this.issuedBookRepository.find({
-      where,
-      relations: ['book', 'student'],
-      order: { issueDate: 'DESC' },
-    });
+    return qb.getMany();
+  }
+
+  async findByStudent(studentId: string, schoolId: string): Promise<IssuedBook[]> {
+    return this.issuedBookRepository
+      .createQueryBuilder('issuedBook')
+      .leftJoinAndSelect('issuedBook.book', 'book')
+      .where('issuedBook.schoolId = :schoolId', { schoolId })
+      .andWhere('issuedBook.studentId = :studentId', { studentId })
+      .orderBy('issuedBook.issueDate', 'DESC')
+      .getMany();
   }
 
   async returnBook(id: string, schoolId: string): Promise<IssuedBook> {
@@ -83,11 +89,16 @@ export class IssuedBooksService {
     issuedBook.returnDate = new Date();
     await this.issuedBookRepository.save(issuedBook);
 
+    // Mark book available again
     if (issuedBook.book) {
       issuedBook.book.isAvailable = true;
       await this.bookRepository.save(issuedBook.book);
+    } else {
+      // Fallback: update directly by bookId
+      await this.bookRepository.update({ id: issuedBook.bookId, schoolId }, { isAvailable: true });
     }
 
+    this.logger.log(`Book returned: issuedBook ${id}`);
     return issuedBook;
   }
 }

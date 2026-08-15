@@ -49,11 +49,13 @@ import { CreateOnlineClass1786645976995 } from './migrations/1786645976995-Creat
 import { LibraryModule1786651726156 } from './migrations/1786651726156-LibraryModule';
 import { CleanupLibrary1786900000000 } from './migrations/1786900000000-CleanupLibrary';
 import { DropLibraryBooksFk1786901000000 } from './migrations/1786901000000-DropLibraryBooksFk';
+import { CreateIssuedBook1786902000000 } from './migrations/1786902000000-CreateIssuedBook';
 import { SmsModule } from './sms/sms.module';
 import { OnlineClassesModule } from './online-classes/online-classes.module';
 import { OnlineClass } from './online-classes/entities/online-class.entity';
 import { LibraryModule } from './library/library.module';
 import { Book } from './library/entities/book.entity';
+import { IssuedBook } from './library/entities/issued-book.entity';
 
 
 @Module({
@@ -91,6 +93,7 @@ import { Book } from './library/entities/book.entity';
         TeacherAttendance,
         OnlineClass,
         Book,
+        IssuedBook,
       ],
       migrations: [
         AlterTeacherAttendanceTimeToTimestamptz1716566400000,
@@ -100,6 +103,7 @@ import { Book } from './library/entities/book.entity';
         LibraryModule1786651726156,
         CleanupLibrary1786900000000,
         DropLibraryBooksFk1786901000000,
+        CreateIssuedBook1786902000000,
       ],
       autoLoadEntities: true,
       synchronize: false,

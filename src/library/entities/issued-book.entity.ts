@@ -1,9 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { School } from '../../schools/entities/school.entity';
 import { Book } from './book.entity';
-import { User } from '../../users/entities/user.entity';
 
-@Entity()
+@Entity('issued_book')
 export class IssuedBook {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -11,23 +9,16 @@ export class IssuedBook {
   @Column('uuid')
   schoolId: string;
 
-  @ManyToOne(() => School)
-  @JoinColumn({ name: 'schoolId' })
-  school: School;
-
   @Column('uuid')
   bookId: string;
 
-  @ManyToOne(() => Book)
+  // Relation used only for eager loading (no FK constraint on schoolId/studentId)
+  @ManyToOne(() => Book, { eager: false, nullable: true })
   @JoinColumn({ name: 'bookId' })
   book: Book;
 
   @Column('uuid')
   studentId: string;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'studentId' })
-  student: User;
 
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   issueDate: Date;
