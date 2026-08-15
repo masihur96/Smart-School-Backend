@@ -47,13 +47,12 @@ import { UserClassSectionArrays1750034400000 } from './migrations/1750034400000-
 import { AddAvatarFields1780424444421 } from './migrations/1780424444421-AddAvatarFields';
 import { CreateOnlineClass1786645976995 } from './migrations/1786645976995-CreateOnlineClass';
 import { LibraryModule1786651726156 } from './migrations/1786651726156-LibraryModule';
+import { CleanupLibrary1786900000000 } from './migrations/1786900000000-CleanupLibrary';
 import { SmsModule } from './sms/sms.module';
 import { OnlineClassesModule } from './online-classes/online-classes.module';
 import { OnlineClass } from './online-classes/entities/online-class.entity';
 import { LibraryModule } from './library/library.module';
 import { Book } from './library/entities/book.entity';
-import { BookRequest } from './library/entities/book-request.entity';
-import { IssuedBook } from './library/entities/issued-book.entity';
 
 
 @Module({
@@ -91,8 +90,6 @@ import { IssuedBook } from './library/entities/issued-book.entity';
         TeacherAttendance,
         OnlineClass,
         Book,
-        BookRequest,
-        IssuedBook,
       ],
       migrations: [
         AlterTeacherAttendanceTimeToTimestamptz1716566400000,
@@ -100,6 +97,7 @@ import { IssuedBook } from './library/entities/issued-book.entity';
         AddAvatarFields1780424444421,
         CreateOnlineClass1786645976995,
         LibraryModule1786651726156,
+        CleanupLibrary1786900000000,
       ],
       autoLoadEntities: true,
       synchronize: false,
