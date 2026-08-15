@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { School } from '../../schools/entities/school.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('library_books')
 export class Book {
@@ -8,10 +7,6 @@ export class Book {
 
   @Column('uuid')
   schoolId: string;
-
-  @ManyToOne(() => School)
-  @JoinColumn({ name: 'schoolId' })
-  school: School;
 
   @Column()
   title: string;

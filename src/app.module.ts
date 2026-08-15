@@ -48,6 +48,7 @@ import { AddAvatarFields1780424444421 } from './migrations/1780424444421-AddAvat
 import { CreateOnlineClass1786645976995 } from './migrations/1786645976995-CreateOnlineClass';
 import { LibraryModule1786651726156 } from './migrations/1786651726156-LibraryModule';
 import { CleanupLibrary1786900000000 } from './migrations/1786900000000-CleanupLibrary';
+import { DropLibraryBooksFk1786901000000 } from './migrations/1786901000000-DropLibraryBooksFk';
 import { SmsModule } from './sms/sms.module';
 import { OnlineClassesModule } from './online-classes/online-classes.module';
 import { OnlineClass } from './online-classes/entities/online-class.entity';
@@ -98,6 +99,7 @@ import { Book } from './library/entities/book.entity';
         CreateOnlineClass1786645976995,
         LibraryModule1786651726156,
         CleanupLibrary1786900000000,
+        DropLibraryBooksFk1786901000000,
       ],
       autoLoadEntities: true,
       synchronize: false,
