@@ -59,6 +59,10 @@ import { IssuedBook } from './library/entities/issued-book.entity';
 import { AcademicEbooksModule } from './academic-ebooks/academic-ebooks.module';
 import { AcademicEbook } from './academic-ebooks/entities/academic-ebook.entity';
 import { CreateAcademicEbooks1787000000000 } from './migrations/1787000000000-CreateAcademicEbooks';
+import { WalletModule } from './wallet/wallet.module';
+import { Wallet } from './wallet/entities/wallet.entity';
+import { WalletTransaction } from './wallet/entities/wallet-transaction.entity';
+import { CreateWalletAndTransactions1787100000000 } from './migrations/1787100000000-CreateWalletAndTransactions';
 
 
 @Module({
@@ -98,6 +102,8 @@ import { CreateAcademicEbooks1787000000000 } from './migrations/1787000000000-Cr
         Book,
         IssuedBook,
         AcademicEbook,
+        Wallet,
+        WalletTransaction,
       ],
       migrations: [
         AlterTeacherAttendanceTimeToTimestamptz1716566400000,
@@ -109,6 +115,7 @@ import { CreateAcademicEbooks1787000000000 } from './migrations/1787000000000-Cr
         DropLibraryBooksFk1786901000000,
         CreateIssuedBook1786902000000,
         CreateAcademicEbooks1787000000000,
+        CreateWalletAndTransactions1787100000000,
       ],
       autoLoadEntities: true,
       synchronize: false,
@@ -143,6 +150,7 @@ import { CreateAcademicEbooks1787000000000 } from './migrations/1787000000000-Cr
     OnlineClassesModule,
     LibraryModule,
     AcademicEbooksModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [

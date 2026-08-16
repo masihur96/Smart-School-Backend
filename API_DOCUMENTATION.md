@@ -392,6 +392,66 @@ DB_NAME=smart_school
 JWT_SECRET=your-super-secret-key-min-32-chars
 ```
 
+
+## School Treasury Wallet Endpoints (`/wallet`)
+
+All wallet endpoints are protected and accessible by `admin` and `superadmin` roles with Bearer Token.
+
+### Overview & Balance
+- `GET /wallet` - Get current wallet balance, overview summary (all-time, monthly, yearly), and recent transactions.
+
+### Add Money (Income/Deposit)
+- `POST /wallet/deposit` (or `POST /wallet/add-money`) - Deposit funds / record revenue into the treasury wallet.
+  ```json
+  {
+    "amount": 50000,
+    "category": "Tuition Fee",
+    "title": "August 2026 Tuition Fee Collections",
+    "description": "Collected from grade 9 and 10 students",
+    "paymentMethod": "BANK_TRANSFER",
+    "referenceNumber": "DEP-2026-08-001",
+    "transactionDate": "2026-08-16T10:00:00.000Z",
+    "attachmentUrl": "https://storage.googleapis.com/smart-school/receipts/dep-001.pdf"
+  }
+  ```
+
+### Add Expense
+- `POST /wallet/expense` (or `POST /wallet/add-expense`) - Deduct expense from the treasury wallet.
+  ```json
+  {
+    "amount": 12000,
+    "category": "Electricity Bill",
+    "title": "DESCO Campus Electricity Bill for July",
+    "paymentMethod": "MOBILE_BANKING",
+    "referenceNumber": "EXP-2026-08-042",
+    "transactionDate": "2026-08-16T11:00:00.000Z"
+  }
+  ```
+
+### Transaction History & Filters
+- `GET /wallet/transactions` - Filtered & paginated transaction history.
+  - **Query Parameters**:
+    - `month` (e.g. `8`)
+    - `year` (e.g. `2026`)
+    - `type` (`INCOME` | `EXPENSE`)
+    - `category` (e.g. `Electricity Bill`)
+    - `paymentMethod` (`CASH`, `BANK_TRANSFER`, `MOBILE_BANKING`, etc.)
+    - `startDate` & `endDate` (`YYYY-MM-DD`)
+    - `search` (searches across title, reference number, description, category)
+    - `page` (default `1`), `limit` (default `20`)
+    - `sortBy` (`transactionDate`, `createdAt`, `amount`), `sortOrder` (`ASC`, `DESC`)
+
+### Single Transaction Management
+- `GET /wallet/transactions/:id` - Get transaction details.
+- `PATCH /wallet/transactions/:id` - Update transaction metadata (title, category, reference, etc.).
+- `DELETE /wallet/transactions/:id` - Delete transaction and automatically adjust the school treasury balance.
+
+### Treasury Analytics & Categories
+- `GET /wallet/analytics?year=2026` - 12-month breakdown (income, expense, net for Jan-Dec), category distribution, and annual totals.
+- `GET /wallet/categories` - Returns recommended lists of income categories, expense categories, and payment methods.
+
+---
+
 ## Support & Contribution
 
 For issues, feature requests, or contributions, please contact the development team.
@@ -402,5 +462,6 @@ UNLICENSED
 
 ---
 
-**Last Updated**: March 2026
-**Version**: 1.0.0
+**Last Updated**: August 2026
+**Version**: 1.1.0
+
