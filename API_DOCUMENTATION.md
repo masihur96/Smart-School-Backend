@@ -452,6 +452,89 @@ All wallet endpoints are protected and accessible by `admin` and `superadmin` ro
 
 ---
 
+## 13. Academic Books & E-Book Reader API (`/academic-books`)
+
+The Academic Books module allows schools to store, organize, and serve class-wise PDF textbooks/e-books. Students and teachers can browse books by class/subject, read PDFs directly within the app, and save reading progress like an e-book reader.
+
+### List Academic Books
+- `GET /academic-books`
+  - **Roles**: All (`Admin`, `SuperAdmin`, `Teacher`, `Student`)
+  - **Query Parameters**:
+    - `classId` (UUID) - Filter by class
+    - `subjectId` (UUID) - Filter by subject
+    - `subject` (string) - Filter by subject name
+    - `search` (string) - Search title, author, description
+    - `schoolId` (UUID, SuperAdmin only)
+  - *Note: For students, if `classId` is omitted, the API automatically filters by the student's enrolled classes.*
+
+### List Books Grouped by Class
+- `GET /academic-books/by-class`
+  - **Roles**: All (`Admin`, `SuperAdmin`, `Teacher`, `Student`)
+  - Returns a list of classes with their associated books and total book count.
+
+### Get Single Book (Read E-Book)
+- `GET /academic-books/:id`
+  - **Roles**: All (`Admin`, `SuperAdmin`, `Teacher`, `Student`)
+  - Returns full book details with `pdfUrl` and current user's `readingProgress` (`lastPage`, `totalPages`, `progressPercentage`, `isCompleted`, `lastReadAt`).
+
+### Continue Reading (Recently Read Books)
+- `GET /academic-books/continue-reading`
+  - **Roles**: All (`Admin`, `SuperAdmin`, `Teacher`, `Student`)
+  - **Query Parameters**: `limit` (default: 10)
+  - Returns the list of books the user is currently reading with their last read page and progress percentage.
+
+### Save Reading Progress
+- `POST /academic-books/:id/progress`
+  - **Roles**: All (`Admin`, `SuperAdmin`, `Teacher`, `Student`)
+  - **Request Body**:
+    ```json
+    {
+      "lastPage": 45,
+      "totalPages": 280,
+      "isCompleted": false
+    }
+    ```
+
+### Create Academic Book
+- `POST /academic-books`
+  - **Roles**: `Admin`, `SuperAdmin`, `Teacher`
+  - **Request Body**:
+    ```json
+    {
+      "title": "Class 9 Higher Mathematics",
+      "author": "NCTB",
+      "classId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "subjectId": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "subject": "Higher Mathematics",
+      "edition": "2024 Edition",
+      "coverImageUrl": "https://example.supabase.co/storage/v1/object/public/uploads/cover.jpg",
+      "pdfUrl": "https://example.supabase.co/storage/v1/object/public/uploads/math-book.pdf",
+      "fileSize": 15485760,
+      "description": "Standard syllabus textbook for secondary education.",
+      "totalPages": 280,
+      "publishedYear": 2024,
+      "isActive": true
+    }
+    ```
+
+### Upload PDF or Cover File
+- `POST /academic-books/upload`
+  - **Roles**: `Admin`, `SuperAdmin`, `Teacher`
+  - **Content-Type**: `multipart/form-data` (`file`)
+  - Uploads a PDF or cover image file directly to Supabase storage and returns public URL, file name, and file size.
+
+### Update Academic Book
+- `PATCH /academic-books/:id`
+  - **Roles**: `Admin`, `SuperAdmin`, `Teacher`
+  - **Request Body**: Partial fields of Create DTO.
+
+### Delete Academic Book
+- `DELETE /academic-books/:id`
+  - **Roles**: `Admin`, `SuperAdmin`
+  - Soft-deletes the academic book record.
+
+---
+
 ## Support & Contribution
 
 For issues, feature requests, or contributions, please contact the development team.
@@ -463,5 +546,6 @@ UNLICENSED
 ---
 
 **Last Updated**: August 2026
-**Version**: 1.1.0
+**Version**: 1.2.0
+
 

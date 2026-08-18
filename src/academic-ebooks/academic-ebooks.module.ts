@@ -1,12 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AcademicEbook } from './entities/academic-ebook.entity';
-import { AcademicEbooksService } from './academic-ebooks.service';
+import { AcademicBooksModule } from '../academic-books/academic-books.module';
 import { AcademicEbooksController } from './academic-ebooks.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AcademicEbook])],
+  imports: [AcademicBooksModule],
   controllers: [AcademicEbooksController],
-  providers: [AcademicEbooksService],
 })
 export class AcademicEbooksModule {}

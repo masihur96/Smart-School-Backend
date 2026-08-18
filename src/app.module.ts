@@ -59,6 +59,10 @@ import { IssuedBook } from './library/entities/issued-book.entity';
 import { AcademicEbooksModule } from './academic-ebooks/academic-ebooks.module';
 import { AcademicEbook } from './academic-ebooks/entities/academic-ebook.entity';
 import { CreateAcademicEbooks1787000000000 } from './migrations/1787000000000-CreateAcademicEbooks';
+import { AcademicBooksModule } from './academic-books/academic-books.module';
+import { AcademicBook } from './academic-books/entities/academic-book.entity';
+import { AcademicBookReadingProgress } from './academic-books/entities/academic-book-progress.entity';
+import { CreateAcademicBooksAndProgress1787200000000 } from './migrations/1787200000000-CreateAcademicBooksAndProgress';
 import { WalletModule } from './wallet/wallet.module';
 import { Wallet } from './wallet/entities/wallet.entity';
 import { WalletTransaction } from './wallet/entities/wallet-transaction.entity';
@@ -102,6 +106,8 @@ import { CreateWalletAndTransactions1787100000000 } from './migrations/178710000
         Book,
         IssuedBook,
         AcademicEbook,
+        AcademicBook,
+        AcademicBookReadingProgress,
         Wallet,
         WalletTransaction,
       ],
@@ -116,6 +122,7 @@ import { CreateWalletAndTransactions1787100000000 } from './migrations/178710000
         CreateIssuedBook1786902000000,
         CreateAcademicEbooks1787000000000,
         CreateWalletAndTransactions1787100000000,
+        CreateAcademicBooksAndProgress1787200000000,
       ],
       autoLoadEntities: true,
       synchronize: false,
@@ -150,6 +157,7 @@ import { CreateWalletAndTransactions1787100000000 } from './migrations/178710000
     OnlineClassesModule,
     LibraryModule,
     AcademicEbooksModule,
+    AcademicBooksModule,
     WalletModule,
   ],
   controllers: [AppController],
