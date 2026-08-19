@@ -196,12 +196,69 @@ export class AttendanceService {
         10,
       );
 
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 1);
+      const startMonthStr = String(month).padStart(2, '0');
+      const startDate = `${year}-${startMonthStr}-01T00:00:00.000Z`;
 
-      const qb = this.attendanceRepository
+      const nextYear = month === 12 ? year + 1 : year;
+      const nextMonth = month === 12 ? 1 : month + 1;
+      const nextMonthStr = String(nextMonth).padStart(2, '0');
+      const endDate = `${nextYear}-${nextMonthStr}-01T00:00:00.000Z`;
+
+      // 1. Query period_attendance table (Period / Routine attendance)
+      const periodQb = this.periodAttendanceRepository
+        .createQueryBuilder('pa')
+        .select('pa.classId', 'classId')
+        .addSelect('pa.sectionId', 'sectionId')
+        .addSelect('COUNT(*)', 'totalRecords')
+        .addSelect(
+          `SUM(CASE WHEN pa.status = :presentStatus THEN 1 ELSE 0 END)`,
+          'totalPresent',
+        )
+        .addSelect(
+          `SUM(CASE WHEN pa.status = :absentStatus THEN 1 ELSE 0 END)`,
+          'totalAbsent',
+        )
+        .addSelect(
+          `SUM(CASE WHEN pa.status = :leaveStatus THEN 1 ELSE 0 END)`,
+          'totalLeave',
+        )
+        .addSelect(
+          `SUM(CASE WHEN pa.status = :lateStatus THEN 1 ELSE 0 END)`,
+          'totalLate',
+        )
+        .where('pa.date >= :startDate', { startDate })
+        .andWhere('pa.date < :endDate', { endDate })
+        .andWhere('pa.deletedAt IS NULL')
+        .setParameters({
+          startDate,
+          endDate,
+          presentStatus: PeriodAttendanceStatus.PRESENT,
+          absentStatus: PeriodAttendanceStatus.ABSENT,
+          leaveStatus: PeriodAttendanceStatus.LEAVE,
+          lateStatus: PeriodAttendanceStatus.LATE,
+        });
+
+      if (query.classId) {
+        periodQb.andWhere('pa.classId = :classId', { classId: query.classId });
+      }
+
+      if (query.sectionId) {
+        periodQb.andWhere('pa.sectionId = :sectionId', {
+          sectionId: query.sectionId,
+        });
+      }
+
+      if (query.schoolId) {
+        periodQb.andWhere('pa.schoolId = :schoolId', {
+          schoolId: query.schoolId,
+        });
+      }
+
+      periodQb.groupBy('pa.classId').addGroupBy('pa.sectionId');
+
+      // 2. Query legacy attendance table
+      const legacyQb = this.attendanceRepository
         .createQueryBuilder('attendance')
-        .leftJoin(User, 'student', 'attendance.studentId = student.id::text')
         .select('attendance.classId', 'classId')
         .addSelect('COUNT(*)', 'totalRecords')
         .addSelect(
@@ -222,6 +279,7 @@ export class AttendanceService {
         )
         .where('attendance.date >= :startDate', { startDate })
         .andWhere('attendance.date < :endDate', { endDate })
+        .andWhere('attendance.deletedAt IS NULL')
         .setParameters({
           startDate,
           endDate,
@@ -232,60 +290,130 @@ export class AttendanceService {
         });
 
       if (query.classId) {
-        qb.andWhere('attendance.classId = :classId', {
+        legacyQb.andWhere('attendance.classId = :classId', {
           classId: query.classId,
         });
       }
 
       if (query.sectionId) {
-        qb.andWhere('student.sectionIds LIKE :sectionId', {
-          sectionId: `%${query.sectionId}%`,
-        });
+        legacyQb
+          .leftJoin(User, 'student', 'attendance.studentId = student.id')
+          .andWhere('student.sectionIds LIKE :sectionId', {
+            sectionId: `%${query.sectionId}%`,
+          });
       }
 
       if (query.schoolId) {
-        qb.andWhere('attendance.schoolId = :schoolId', {
+        legacyQb.andWhere('attendance.schoolId = :schoolId', {
           schoolId: query.schoolId,
         });
       }
 
-      const rawResults = await qb
-        .groupBy('attendance.classId')
-        .getRawMany();
+      legacyQb.groupBy('attendance.classId');
 
-      // Get all classes and sections to map names
-      const classes = await this.classesService.findAll();
-      const sections = await this.sectionsService.findAll();
+      const [periodResults, legacyResults, classes, sections] =
+        await Promise.all([
+          periodQb.getRawMany(),
+          legacyQb.getRawMany(),
+          this.classesService.findAll(),
+          this.sectionsService.findAll(),
+        ]);
 
       const classMap = new Map(classes.map((c) => [c.id, c.name]));
       const sectionMap = new Map(sections.map((s) => [s.id, s.name]));
 
-      const data: AttendanceSummaryDto[] = rawResults.map((res: any) => {
-        const totalRecords = parseInt(res.totalRecords, 10);
-        const totalPresent = parseInt(res.totalPresent, 10);
-        const totalAbsent = parseInt(res.totalAbsent, 10);
-        const totalLeave = parseInt(res.totalLeave, 10);
-        const totalLate = parseInt(res.totalLate, 10);
+      interface AggregatedClassSection {
+        classId: string;
+        className: string;
+        sectionId?: string;
+        sectionName?: string;
+        totalPresent: number;
+        totalAbsent: number;
+        totalLeave: number;
+        totalLate: number;
+        totalRecords: number;
+      }
 
-        return {
-          classId: res.classId,
-          className: classMap.get(res.classId) || 'Unknown Class',
-          totalPresent,
-          totalAbsent,
-          totalLeave,
-          totalLate,
-          totalRecords,
-          attendancePercentage:
-            totalRecords > 0
-              ? parseFloat(((totalPresent / totalRecords) * 100).toFixed(2))
-              : 0,
+      const mapKey = (classId: string, sectionId?: string) =>
+        sectionId ? `${classId}_${sectionId}` : classId;
+
+      const aggregatedMap = new Map<string, AggregatedClassSection>();
+
+      for (const res of periodResults) {
+        const cId = res.classId;
+        const sId = res.sectionId || undefined;
+        const key = mapKey(cId, sId);
+
+        const existing = aggregatedMap.get(key) || {
+          classId: cId,
+          className: classMap.get(cId) || 'Unknown Class',
+          sectionId: sId,
+          sectionName: sId
+            ? sectionMap.get(sId) || 'Unknown Section'
+            : undefined,
+          totalPresent: 0,
+          totalAbsent: 0,
+          totalLeave: 0,
+          totalLate: 0,
+          totalRecords: 0,
         };
-      });
 
-      // Filter by class/section if needed (though the query already did it, but good to ensure consistency)
-      // Actually, the aggregation might return only rows with data.
-      // If we want to include all classes even with 0 records, we'd need more logic.
-      // But for a dashboard overview, showing only active ones is often fine.
+        existing.totalPresent += parseInt(res.totalPresent || '0', 10);
+        existing.totalAbsent += parseInt(res.totalAbsent || '0', 10);
+        existing.totalLeave += parseInt(res.totalLeave || '0', 10);
+        existing.totalLate += parseInt(res.totalLate || '0', 10);
+        existing.totalRecords += parseInt(res.totalRecords || '0', 10);
+
+        aggregatedMap.set(key, existing);
+      }
+
+      for (const res of legacyResults) {
+        const cId = res.classId;
+        const sId = query.sectionId;
+        const key = mapKey(cId, sId);
+
+        const existing = aggregatedMap.get(key) || {
+          classId: cId,
+          className: classMap.get(cId) || 'Unknown Class',
+          sectionId: sId,
+          sectionName: sId
+            ? sectionMap.get(sId) || 'Unknown Section'
+            : undefined,
+          totalPresent: 0,
+          totalAbsent: 0,
+          totalLeave: 0,
+          totalLate: 0,
+          totalRecords: 0,
+        };
+
+        existing.totalPresent += parseInt(res.totalPresent || '0', 10);
+        existing.totalAbsent += parseInt(res.totalAbsent || '0', 10);
+        existing.totalLeave += parseInt(res.totalLeave || '0', 10);
+        existing.totalLate += parseInt(res.totalLate || '0', 10);
+        existing.totalRecords += parseInt(res.totalRecords || '0', 10);
+
+        aggregatedMap.set(key, existing);
+      }
+
+      const data: AttendanceSummaryDto[] = Array.from(
+        aggregatedMap.values(),
+      ).map((item) => ({
+        classId: item.classId,
+        className: item.className,
+        sectionId: item.sectionId,
+        sectionName: item.sectionName,
+        totalPresent: item.totalPresent,
+        totalAbsent: item.totalAbsent,
+        totalLeave: item.totalLeave,
+        totalLate: item.totalLate,
+        totalRecords: item.totalRecords,
+        attendancePercentage:
+          item.totalRecords > 0
+            ? parseFloat(
+                ((item.totalPresent / item.totalRecords) * 100).toFixed(2),
+              )
+            : 0,
+      }));
 
       const grandTotalPresent = data.reduce(
         (sum, item) => sum + item.totalPresent,
@@ -311,8 +439,8 @@ export class AttendanceService {
       const overallAttendancePercentage =
         grandTotalRecords > 0
           ? parseFloat(
-            ((grandTotalPresent / grandTotalRecords) * 100).toFixed(2),
-          )
+              ((grandTotalPresent / grandTotalRecords) * 100).toFixed(2),
+            )
           : 0;
 
       return {
@@ -344,24 +472,181 @@ export class AttendanceService {
       query.year || new Date().getFullYear().toString(),
       10,
     );
-    const monthlyData = [];
 
-    for (let month = 1; month <= 12; month++) {
-      const overview = await this.getAttendanceOverview({
-        year: year.toString(),
-        month: month.toString(),
-        classId: query.classId,
+    const yearStartDate = `${year}-01-01T00:00:00.000Z`;
+    const yearEndDate = `${year + 1}-01-01T00:00:00.000Z`;
+
+    // 1. Period Attendance aggregation for the entire year grouped by month
+    const periodQb = this.periodAttendanceRepository
+      .createQueryBuilder('pa')
+      .select('EXTRACT(MONTH FROM pa.date)', 'month')
+      .addSelect('COUNT(*)', 'totalRecords')
+      .addSelect(
+        `SUM(CASE WHEN pa.status = :presentStatus THEN 1 ELSE 0 END)`,
+        'totalPresent',
+      )
+      .addSelect(
+        `SUM(CASE WHEN pa.status = :absentStatus THEN 1 ELSE 0 END)`,
+        'totalAbsent',
+      )
+      .addSelect(
+        `SUM(CASE WHEN pa.status = :leaveStatus THEN 1 ELSE 0 END)`,
+        'totalLeave',
+      )
+      .addSelect(
+        `SUM(CASE WHEN pa.status = :lateStatus THEN 1 ELSE 0 END)`,
+        'totalLate',
+      )
+      .where('pa.date >= :yearStartDate', { yearStartDate })
+      .andWhere('pa.date < :yearEndDate', { yearEndDate })
+      .andWhere('pa.deletedAt IS NULL')
+      .setParameters({
+        yearStartDate,
+        yearEndDate,
+        presentStatus: PeriodAttendanceStatus.PRESENT,
+        absentStatus: PeriodAttendanceStatus.ABSENT,
+        leaveStatus: PeriodAttendanceStatus.LEAVE,
+        lateStatus: PeriodAttendanceStatus.LATE,
+      });
+
+    if (query.classId) {
+      periodQb.andWhere('pa.classId = :classId', { classId: query.classId });
+    }
+    if (query.sectionId) {
+      periodQb.andWhere('pa.sectionId = :sectionId', {
         sectionId: query.sectionId,
+      });
+    }
+    if (query.schoolId) {
+      periodQb.andWhere('pa.schoolId = :schoolId', {
         schoolId: query.schoolId,
       });
+    }
+
+    periodQb.groupBy('EXTRACT(MONTH FROM pa.date)');
+
+    // 2. Legacy Attendance aggregation for the entire year grouped by month
+    const legacyQb = this.attendanceRepository
+      .createQueryBuilder('attendance')
+      .select('EXTRACT(MONTH FROM attendance.date)', 'month')
+      .addSelect('COUNT(*)', 'totalRecords')
+      .addSelect(
+        `SUM(CASE WHEN attendance.status::text = :presentStatus THEN 1 ELSE 0 END)`,
+        'totalPresent',
+      )
+      .addSelect(
+        `SUM(CASE WHEN attendance.status::text = :absentStatus THEN 1 ELSE 0 END)`,
+        'totalAbsent',
+      )
+      .addSelect(
+        `SUM(CASE WHEN attendance.status::text = :leaveStatus THEN 1 ELSE 0 END)`,
+        'totalLeave',
+      )
+      .addSelect(
+        `SUM(CASE WHEN attendance.status::text = :lateStatus THEN 1 ELSE 0 END)`,
+        'totalLate',
+      )
+      .where('attendance.date >= :yearStartDate', { yearStartDate })
+      .andWhere('attendance.date < :yearEndDate', { yearEndDate })
+      .andWhere('attendance.deletedAt IS NULL')
+      .setParameters({
+        yearStartDate,
+        yearEndDate,
+        presentStatus: AttendanceStatus.PRESENT,
+        absentStatus: AttendanceStatus.ABSENT,
+        leaveStatus: AttendanceStatus.LEAVE,
+        lateStatus: AttendanceStatus.LATE,
+      });
+
+    if (query.classId) {
+      legacyQb.andWhere('attendance.classId = :classId', {
+        classId: query.classId,
+      });
+    }
+
+    if (query.sectionId) {
+      legacyQb
+        .leftJoin(User, 'student', 'attendance.studentId = student.id')
+        .andWhere('student.sectionIds LIKE :sectionId', {
+          sectionId: `%${query.sectionId}%`,
+        });
+    }
+
+    if (query.schoolId) {
+      legacyQb.andWhere('attendance.schoolId = :schoolId', {
+        schoolId: query.schoolId,
+      });
+    }
+
+    legacyQb.groupBy('EXTRACT(MONTH FROM attendance.date)');
+
+    const [periodResults, legacyResults] = await Promise.all([
+      periodQb.getRawMany(),
+      legacyQb.getRawMany(),
+    ]);
+
+    const monthMap = new Map<
+      number,
+      {
+        totalPresent: number;
+        totalAbsent: number;
+        totalLeave: number;
+        totalLate: number;
+        totalRecords: number;
+      }
+    >();
+
+    for (let m = 1; m <= 12; m++) {
+      monthMap.set(m, {
+        totalPresent: 0,
+        totalAbsent: 0,
+        totalLeave: 0,
+        totalLate: 0,
+        totalRecords: 0,
+      });
+    }
+
+    for (const r of periodResults) {
+      const m = Math.round(Number(r.month));
+      if (monthMap.has(m)) {
+        const item = monthMap.get(m)!;
+        item.totalPresent += parseInt(r.totalPresent || '0', 10);
+        item.totalAbsent += parseInt(r.totalAbsent || '0', 10);
+        item.totalLeave += parseInt(r.totalLeave || '0', 10);
+        item.totalLate += parseInt(r.totalLate || '0', 10);
+        item.totalRecords += parseInt(r.totalRecords || '0', 10);
+      }
+    }
+
+    for (const r of legacyResults) {
+      const m = Math.round(Number(r.month));
+      if (monthMap.has(m)) {
+        const item = monthMap.get(m)!;
+        item.totalPresent += parseInt(r.totalPresent || '0', 10);
+        item.totalAbsent += parseInt(r.totalAbsent || '0', 10);
+        item.totalLeave += parseInt(r.totalLeave || '0', 10);
+        item.totalLate += parseInt(r.totalLate || '0', 10);
+        item.totalRecords += parseInt(r.totalRecords || '0', 10);
+      }
+    }
+
+    const monthlyData = [];
+    for (let month = 1; month <= 12; month++) {
+      const item = monthMap.get(month)!;
+      const attendancePercentage =
+        item.totalRecords > 0
+          ? parseFloat(
+              ((item.totalPresent / item.totalRecords) * 100).toFixed(2),
+            )
+          : 0;
 
       monthlyData.push({
         month,
-        totalPresent: overview.grandTotalPresent,
-        totalAbsent: overview.grandTotalAbsent,
-        totalLeave: overview.grandTotalLeave,
-        totalLate: overview.grandTotalLate,
-        attendancePercentage: overview.overallAttendancePercentage,
+        totalPresent: item.totalPresent,
+        totalAbsent: item.totalAbsent,
+        totalLeave: item.totalLeave,
+        totalLate: item.totalLate,
+        attendancePercentage,
       });
     }
 
