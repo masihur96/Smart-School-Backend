@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Book } from './book.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('issued_book')
 export class IssuedBook {
@@ -19,6 +20,10 @@ export class IssuedBook {
 
   @Column('uuid')
   studentId: string;
+
+  @ManyToOne(() => User, { eager: false, nullable: true })
+  @JoinColumn({ name: 'studentId' })
+  student: User;
 
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   issueDate: Date;

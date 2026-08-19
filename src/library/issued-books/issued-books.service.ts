@@ -41,13 +41,19 @@ export class IssuedBooksService {
 
     const saved = await this.issuedBookRepository.save(issuedBook);
     this.logger.log(`Book ${bookId} issued to student ${studentId}, due: ${dueDate}`);
-    return saved;
+    return (
+      (await this.issuedBookRepository.findOne({
+        where: { id: saved.id },
+        relations: ['book', 'student'],
+      })) || saved
+    );
   }
 
   async findAll(schoolId: string, status?: string): Promise<IssuedBook[]> {
     const qb = this.issuedBookRepository
       .createQueryBuilder('issuedBook')
       .leftJoinAndSelect('issuedBook.book', 'book')
+      .leftJoinAndSelect('issuedBook.student', 'student')
       .where('issuedBook.schoolId = :schoolId', { schoolId })
       .orderBy('issuedBook.issueDate', 'DESC');
 
@@ -67,6 +73,7 @@ export class IssuedBooksService {
     return this.issuedBookRepository
       .createQueryBuilder('issuedBook')
       .leftJoinAndSelect('issuedBook.book', 'book')
+      .leftJoinAndSelect('issuedBook.student', 'student')
       .where('issuedBook.schoolId = :schoolId', { schoolId })
       .andWhere('issuedBook.studentId = :studentId', { studentId })
       .orderBy('issuedBook.issueDate', 'DESC')
@@ -76,7 +83,7 @@ export class IssuedBooksService {
   async returnBook(id: string, schoolId: string): Promise<IssuedBook> {
     const issuedBook = await this.issuedBookRepository.findOne({
       where: { id, schoolId },
-      relations: ['book'],
+      relations: ['book', 'student'],
     });
 
     if (!issuedBook) {
