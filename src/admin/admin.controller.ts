@@ -257,6 +257,28 @@ export class AdminController {
     );
   }
 
+  @Get('marks/exam')
+  @ApiOperation({
+    summary:
+      'Get all students marks for a specific exam filtered by class, section and subject',
+  })
+  async getExamClassMarks(
+    @CurrentUser() user: JwtUser,
+    @Query('examId') examId: string,
+    @Query('classId') classId: string,
+    @Query('subjectId') subjectId?: string,
+    @Query('sectionId') sectionId?: string,
+  ) {
+    return await this.adminService.getExamClassMarks(
+      examId,
+      classId,
+      subjectId,
+      sectionId,
+      user.schoolId,
+      user.role,
+    );
+  }
+
   @Delete('marks/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteMark(@Param('id') id: string) {

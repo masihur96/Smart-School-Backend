@@ -224,6 +224,26 @@ export class AdminService {
     return await this.marksService.deleteMark(id);
   }
 
+  async getExamClassMarks(
+    examId: string,
+    classId: string,
+    subjectId?: string,
+    sectionId?: string,
+    callerSchoolId?: string | null,
+    callerRole?: string,
+  ) {
+    const schoolId = this.isSuperAdmin(callerRole)
+      ? undefined
+      : callerSchoolId;
+    return await this.marksService.getMarksByExamClassSubject({
+      examId,
+      classId,
+      subjectId,
+      sectionId,
+      schoolId,
+    });
+  }
+
   // ─── Homework management ─────────────────────────
 
   async getHomeworks(

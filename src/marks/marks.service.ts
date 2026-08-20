@@ -81,7 +81,76 @@ export class MarksService {
     });
   }
 
+  async getMarksByExamClassSubject(params: {
+    examId: string;
+    classId: string;
+    subjectId?: string;
+    sectionId?: string;
+    schoolId?: string | null;
+  }) {
+    const { examId, classId, subjectId, sectionId, schoolId } = params;
+
+    // Build base query — join student to filter by class/section stored as simple-json
+    const query = this.marksRepository
+      .createQueryBuilder('marks')
+      .innerJoin(
+        'user',
+        'student',
+        'student.id = marks.studentId AND student.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect('marks.subject', 'subject')
+      .addSelect([
+        'student.id',
+        'student.name',
+        'student.rollNumber',
+        'student.avatar',
+        'student.classIds',
+        'student.sectionIds',
+      ])
+      .where('marks.examId = :examId', { examId })
+      .andWhere('student.classIds LIKE :classId', { classId: `%${classId}%` });
+
+    if (subjectId) {
+      query.andWhere('marks.subjectId = :subjectId', { subjectId });
+    }
+
+    if (sectionId) {
+      query.andWhere('student.sectionIds LIKE :sectionId', {
+        sectionId: `%${sectionId}%`,
+      });
+    }
+
+    if (schoolId) {
+      query.andWhere('marks.schoolId = :schoolId', { schoolId });
+    }
+
+    const rawMarks = await query.getRawAndEntities();
+
+    // Merge raw student fields into the result
+    return rawMarks.entities.map((mark, i) => {
+      const raw = rawMarks.raw[i];
+      return {
+        id: mark.id,
+        examId: mark.examId,
+        subjectId: mark.subjectId,
+        subject: mark.subject ?? null,
+        marksObtained: Number(mark.marksObtained),
+        totalMarks: Number(mark.totalMarks),
+        schoolId: mark.schoolId,
+        createdAt: mark.createdAt,
+        updatedAt: mark.updatedAt,
+        student: {
+          id: raw.student_id,
+          name: raw.student_name,
+          rollNumber: raw.student_rollNumber,
+          avatar: raw.student_avatar,
+        },
+      };
+    });
+  }
+
   async deleteMark(id: string) {
     return await this.marksRepository.softDelete(id);
   }
 }
+
