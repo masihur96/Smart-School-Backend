@@ -408,30 +408,32 @@ export class DashboardService {
 
   private async getAdminCurrentExam(schoolId: string) {
     // Get all class IDs belonging to this school
-    const schoolClasses = await this.classRepo.find({ where: { schoolId } });
+    const schoolClasses = await this.classRepo.find({
+      where: { schoolId },
+      select: ['id'],
+    });
     const classIds = schoolClasses.map((c) => c.id);
 
     // If no classes, return empty
     if (classIds.length === 0) return [];
 
-    // Fetch all assignments and filter by class UUID belonging to this school
-    const allAssignments = await this.academicAssignmentRepo
+    // Fetch distinct exam IDs directly in SQL
+    const relevantAssignments = await this.academicAssignmentRepo
       .createQueryBuilder('aa')
-      .getMany();
+      .select('DISTINCT aa.examId', 'examId')
+      .where(`aa.class->>'uuid' IN (:...classIds)`, { classIds })
+      .getRawMany();
 
-    const relevantAssignments = allAssignments.filter((a) =>
-      classIds.includes(a.class?.uuid),
-    );
-    const relevantExamIds = [
-      ...new Set(relevantAssignments.map((a) => a.examId).filter(Boolean)),
-    ];
+    const relevantExamIds = relevantAssignments
+      .map((a) => a.examId)
+      .filter(Boolean);
 
     // Fetch those exams
     const exams =
       relevantExamIds.length > 0
         ? await this.examRepo
             .createQueryBuilder('exam')
-            .whereInIds(relevantExamIds)
+            .where('exam.id IN (:...relevantExamIds)', { relevantExamIds })
             .orderBy('exam.start_date', 'DESC')
             .getMany()
         : [];

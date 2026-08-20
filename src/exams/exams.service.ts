@@ -37,42 +37,43 @@ export class ExamsService {
       // Get classes belonging to this school
       const schoolClasses = await this.classRepository.find({
         where: { schoolId },
+        select: ['id'],
       });
       const classIds = schoolClasses.map((c) => c.id);
 
       if (classIds.length === 0) return [];
 
-      // Fetch all assignments and filter in-memory for JSON containment
-      const allAssignments = await this.academicAssignmentRepository
+      // Fetch distinct exam IDs matching school classes directly in SQL
+      const relevantAssignments = await this.academicAssignmentRepository
         .createQueryBuilder('aa')
-        .getMany();
+        .select('DISTINCT aa.examId', 'examId')
+        .where(`aa.class->>'uuid' IN (:...classIds)`, { classIds })
+        .getRawMany();
 
-      const relevantAssignments = allAssignments.filter((a) =>
-        classIds.includes(a.class?.uuid),
-      );
-      const relevantExamIds = [
-        ...new Set(relevantAssignments.map((a) => a.examId).filter(Boolean)),
-      ];
+      const relevantExamIds = relevantAssignments
+        .map((a) => a.examId)
+        .filter(Boolean);
 
       if (relevantExamIds.length === 0) return [];
 
       return await this.examRepository
         .createQueryBuilder('exam')
-        .whereInIds(relevantExamIds)
+        .where('exam.id IN (:...relevantExamIds)', { relevantExamIds })
         .leftJoinAndSelect('exam.assignments', 'assignments')
-        .leftJoinAndSelect('exam.results', 'results')
+        .orderBy('exam.createdAt', 'DESC')
         .getMany();
     }
 
     return await this.examRepository.find({
-      relations: ['assignments', 'results'],
+      relations: ['assignments'],
+      order: { createdAt: 'DESC' },
     });
   }
 
   async findExamById(id: string) {
     return await this.examRepository.findOne({
       where: { id },
-      relations: ['assignments', 'results'],
+      relations: ['assignments'],
     });
   }
 
