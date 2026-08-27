@@ -154,6 +154,22 @@ export class TeacherService {
     });
   }
 
+  async getPublishedResults(
+    teacherId: string,
+    examId: string,
+    studentId?: string,
+  ) {
+    const exam = await this.examsService.findExamById(examId);
+    if (!exam) {
+      throw new BadRequestException(`Exam with ID ${examId} not found`);
+    }
+    if (!exam.isPublished) {
+      throw new BadRequestException('Exam results are not published yet');
+    }
+    return this.getMarks(teacherId, examId, studentId);
+  }
+
+
   async getAssignedSubjectsAndStudents(teacherId: string) {
     const assignments =
       await this.examsService.findAssignmentsByExaminer(teacherId);
@@ -227,7 +243,11 @@ export class TeacherService {
     const subjectsMap = new Map();
     for (const a of assignments) {
       if (a.examId === examId && a.subject) {
-        if (classId && a.class?.uuid !== classId) {
+        if (classId && classId !== 'null' && classId !== 'undefined' && classId.trim() !== '' && a.class?.uuid !== classId) {
+          continue;
+        }
+        // Section is not in assignment entity right now, so we can ignore it or just add the check if it ever gets added
+        if (sectionId && sectionId !== 'null' && sectionId !== 'undefined' && sectionId.trim() !== '' && (a as any).section?.uuid !== sectionId) {
           continue;
         }
         if (!subjectsMap.has(a.subject.uuid)) {

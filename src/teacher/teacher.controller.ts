@@ -178,6 +178,19 @@ export class TeacherController {
     );
   }
 
+  @Get('results/:examId')
+  async getPublishedResults(
+    @Request() req,
+    @Param('examId') examId: string,
+    @Query('studentId') studentId?: string,
+  ) {
+    return await this.teacherService.getPublishedResults(
+      req.user.userId,
+      examId,
+      studentId,
+    );
+  }
+
   @Get('assignments/exams')
   async getAssignedExams(@Request() req) {
     return await this.teacherService.getAssignedExams(req.user.userId);
