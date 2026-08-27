@@ -67,7 +67,7 @@ import { WalletModule } from './wallet/wallet.module';
 import { Wallet } from './wallet/entities/wallet.entity';
 import { WalletTransaction } from './wallet/entities/wallet-transaction.entity';
 import { CreateWalletAndTransactions1787100000000 } from './migrations/1787100000000-CreateWalletAndTransactions';
-
+import { RecreateOnlineClass1787850000000 } from './migrations/1787850000000-RecreateOnlineClass';
 
 @Module({
   imports: [
@@ -123,6 +123,7 @@ import { CreateWalletAndTransactions1787100000000 } from './migrations/178710000
         CreateAcademicEbooks1787000000000,
         CreateWalletAndTransactions1787100000000,
         CreateAcademicBooksAndProgress1787200000000,
+        RecreateOnlineClass1787850000000,
       ],
       autoLoadEntities: true,
       synchronize: false,
