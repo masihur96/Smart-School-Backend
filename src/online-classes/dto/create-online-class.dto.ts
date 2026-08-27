@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsDate } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsDate, IsArray } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateOnlineClassDto {
@@ -32,10 +32,10 @@ export class CreateOnlineClassDto {
   @IsOptional()
   endTime?: string;
 
-  @ApiProperty({ example: 'c4d3269b-1234-4a21-93e1-456789abcdef' })
+  @ApiPropertyOptional({ example: 'c4d3269b-1234-4a21-93e1-456789abcdef' })
   @IsString()
-  @IsNotEmpty()
-  classId: string;
+  @IsOptional()
+  classId?: string;
 
   @ApiPropertyOptional({ example: 'b1a2345c-5678-4b32-82d2-123456abcdef' })
   @IsString()
@@ -46,4 +46,10 @@ export class CreateOnlineClassDto {
   @IsString()
   @IsOptional()
   subjectId?: string;
+
+  @ApiPropertyOptional({ example: ['c4d3269b-1234-4a21-93e1-456789abcdef'], type: [String] })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  participantUuids?: string[];
 }

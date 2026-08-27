@@ -29,7 +29,7 @@ export class OnlineClass {
   @Column()
   schoolId: string;
 
-  @Column()
+  @Column({ nullable: true })
   classId: string;
 
   @Column({ nullable: true })
@@ -37,6 +37,9 @@ export class OnlineClass {
 
   @Column({ nullable: true })
   subjectId: string;
+
+  @Column('simple-array', { nullable: true })
+  participantUuids: string[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
