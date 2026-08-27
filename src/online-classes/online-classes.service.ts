@@ -92,25 +92,20 @@ export class OnlineClassesService {
     let records: OnlineClass[] = [];
 
     if (user.role === UserRole.STUDENT) {
-      if (!user.classIds || user.classIds.length === 0) {
-        return [];
-      }
-      const query = this.onlineClassRepository
+      records = await this.onlineClassRepository
         .createQueryBuilder('onlineClass')
         .where('onlineClass.schoolId = :schoolId', { schoolId: user.schoolId })
-        .andWhere('onlineClass.classId IN (:...classIds)', { classIds: user.classIds });
-
-      if (user.sectionIds && user.sectionIds.length > 0) {
-        query.andWhere('(onlineClass.sectionId IS NULL OR onlineClass.sectionId IN (:...sectionIds))', {
-          sectionIds: user.sectionIds,
-        });
-      }
-
-      records = await query.getMany();
+        .andWhere('onlineClass.participantUuids LIKE :userId', { userId: `%${user.id}%` })
+        .getMany();
     } else if (user.role === UserRole.TEACHER) {
-      records = await this.onlineClassRepository.find({
-        where: { hostId: user.id, schoolId: user.schoolId },
-      });
+      records = await this.onlineClassRepository
+        .createQueryBuilder('onlineClass')
+        .where('onlineClass.schoolId = :schoolId', { schoolId: user.schoolId })
+        .andWhere('(onlineClass.hostId = :userId OR onlineClass.participantUuids LIKE :likeUserId)', {
+          userId: user.id,
+          likeUserId: `%${user.id}%`,
+        })
+        .getMany();
     } else if (user.role === UserRole.ADMIN || user.role === UserRole.SUPER_ADMIN) {
       records = await this.onlineClassRepository.find({
         where: { schoolId: user.schoolId },
