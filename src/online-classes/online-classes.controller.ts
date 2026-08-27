@@ -22,6 +22,7 @@ export class OnlineClassesController {
     return this.onlineClassesService.create(createOnlineClassDto, user);
   }
 
+  
   @Get()
   findAll(@CurrentUser() user: any) {
     return this.onlineClassesService.findAll(user);
