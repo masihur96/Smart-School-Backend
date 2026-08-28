@@ -219,13 +219,18 @@ export class TeacherController {
     );
   }
 
-  @Get('assignments/exams/:examId/classes/:classId/students')
+  @Get([
+    'assignments/exams/:examId/classes/:classId/students',
+    'assignments/exams/:examId/students',
+  ])
   async getAssignedStudents(
     @Param('examId') examId: string,
-    @Param('classId') classId: string,
+    @Param('classId') pathClassId: string,
+    @Query('classId') queryClassId: string,
     @Query('subjectId') subjectId: string,
     @Request() req,
   ) {
+    const classId = pathClassId || queryClassId;
     return await this.teacherService.getAssignedStudents(
       req.user.userId,
       examId,

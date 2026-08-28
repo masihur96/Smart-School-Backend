@@ -261,18 +261,25 @@ export class TeacherService {
   async getAssignedStudents(
     teacherId: string,
     examId: string,
-    classId: string,
+    classId?: string,
     subjectId?: string,
   ) {
-    const assignments =
-      await this.examsService.findAssignmentsByExaminer(teacherId);
-    const isAssigned = assignments.some(
-      (a) =>
-        a.examId === examId &&
-        a.class.uuid === classId &&
-        (!subjectId || a.subject.uuid === subjectId),
-    );
-    if (!isAssigned) {
+    const isClassIdNull = !classId || classId === 'null' || classId === 'undefined';
+    const isSubjectIdNull = !subjectId || subjectId === 'null' || subjectId === 'undefined';
+
+    const actualClassId = isClassIdNull ? null : classId;
+    const actualSubjectId = isSubjectIdNull ? null : subjectId;
+
+    const assignments = await this.examsService.findAssignmentsByExaminer(teacherId);
+
+    const relevantAssignments = assignments.filter((a) => {
+      if (a.examId !== examId) return false;
+      if (actualClassId && a.class.uuid !== actualClassId) return false;
+      if (actualSubjectId && a.subject.uuid !== actualSubjectId) return false;
+      return true;
+    });
+
+    if (relevantAssignments.length === 0) {
       throw new ForbiddenException(
         'You are not assigned to this class/subject for the given exam',
       );
@@ -284,13 +291,29 @@ export class TeacherService {
       1000,
       true,
     );
+    const allStudents = studentsRes.data;
 
-    const marksMap = new Map<string, any>();
-    if (subjectId) {
+    const result = [];
+
+    // To prevent duplicate class+subject combinations if a teacher was assigned multiple times
+    const processedAssignments = new Set<string>();
+
+    for (const assignment of relevantAssignments) {
+      const cls = assignment.class;
+      const subj = assignment.subject;
+      
+      const assignmentKey = `${cls.uuid}_${subj.uuid}`;
+      if (processedAssignments.has(assignmentKey)) {
+        continue;
+      }
+      processedAssignments.add(assignmentKey);
+
+      // Fetch marks for this specific class and subject
+      const marksMap = new Map<string, any>();
       const rawMarks = await this.marksService.getMarksByExamClassSubject({
         examId,
-        classId,
-        subjectId,
+        classId: cls.uuid,
+        subjectId: subj.uuid,
       });
       for (const mark of rawMarks) {
         marksMap.set(mark.student.id, {
@@ -298,15 +321,15 @@ export class TeacherService {
           totalMarks: mark.totalMarks,
         });
       }
-    }
 
-    return studentsRes.data
-      .filter((s) => s.classIds?.includes(classId))
-      .map((s) => {
-        const section = s.sections?.find((sec) => sec.classId === classId);
+      // Find students for this class
+      const classStudents = allStudents.filter((s) => s.classIds?.includes(cls.uuid));
+
+      for (const s of classStudents) {
+        const section = s.sections?.find((sec) => sec.classId === cls.uuid);
         const mark = marksMap.get(s.id);
-        
-        return {
+
+        result.push({
           id: s.id,
           name: s.name,
           rollNumber: s.rollNumber,
@@ -316,14 +339,21 @@ export class TeacherService {
                 name: section.name,
               }
             : null,
-          ...(subjectId
-            ? {
-                marksObtained: mark ? mark.marksObtained : null,
-                totalMarks: mark ? mark.totalMarks : null,
-              }
-            : {}),
-        };
-      });
+          class: {
+            uuid: cls.uuid,
+            name: cls.name,
+          },
+          subject: {
+            uuid: subj.uuid,
+            name: subj.name,
+          },
+          marksObtained: mark ? mark.marksObtained : null,
+          totalMarks: mark ? mark.totalMarks : null,
+        });
+      }
+    }
+
+    return result;
   }
 
   async getAssignedSubjectsWithMarks(
