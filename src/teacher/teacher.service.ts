@@ -282,11 +282,20 @@ export class TeacherService {
     );
     return studentsRes.data
       .filter((s) => s.classIds?.includes(classId))
-      .map((s) => ({
-        id: s.id,
-        name: s.name,
-        rollNumber: s.rollNumber,
-      }));
+      .map((s) => {
+        const section = s.sections?.find((sec) => sec.classId === classId);
+        return {
+          id: s.id,
+          name: s.name,
+          rollNumber: s.rollNumber,
+          section: section
+            ? {
+                uuid: section.id,
+                name: section.name,
+              }
+            : null,
+        };
+      });
   }
 
   async getAssignedSubjectsWithMarks(
