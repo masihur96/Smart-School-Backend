@@ -223,12 +223,14 @@ export class TeacherController {
   async getAssignedStudents(
     @Param('examId') examId: string,
     @Param('classId') classId: string,
+    @Query('subjectId') subjectId: string,
     @Request() req,
   ) {
     return await this.teacherService.getAssignedStudents(
       req.user.userId,
       examId,
       classId,
+      subjectId,
     );
   }
 

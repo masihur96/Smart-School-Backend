@@ -262,15 +262,19 @@ export class TeacherService {
     teacherId: string,
     examId: string,
     classId: string,
+    subjectId?: string,
   ) {
     const assignments =
       await this.examsService.findAssignmentsByExaminer(teacherId);
     const isAssigned = assignments.some(
-      (a) => a.examId === examId && a.class.uuid === classId,
+      (a) =>
+        a.examId === examId &&
+        a.class.uuid === classId &&
+        (!subjectId || a.subject.uuid === subjectId),
     );
     if (!isAssigned) {
       throw new ForbiddenException(
-        'You are not assigned to this class for the given exam',
+        'You are not assigned to this class/subject for the given exam',
       );
     }
 
@@ -280,10 +284,28 @@ export class TeacherService {
       1000,
       true,
     );
+
+    const marksMap = new Map<string, any>();
+    if (subjectId) {
+      const rawMarks = await this.marksService.getMarksByExamClassSubject({
+        examId,
+        classId,
+        subjectId,
+      });
+      for (const mark of rawMarks) {
+        marksMap.set(mark.student.id, {
+          marksObtained: mark.marksObtained,
+          totalMarks: mark.totalMarks,
+        });
+      }
+    }
+
     return studentsRes.data
       .filter((s) => s.classIds?.includes(classId))
       .map((s) => {
         const section = s.sections?.find((sec) => sec.classId === classId);
+        const mark = marksMap.get(s.id);
+        
         return {
           id: s.id,
           name: s.name,
@@ -294,6 +316,12 @@ export class TeacherService {
                 name: section.name,
               }
             : null,
+          ...(subjectId
+            ? {
+                marksObtained: mark ? mark.marksObtained : null,
+                totalMarks: mark ? mark.totalMarks : null,
+              }
+            : {}),
         };
       });
   }
