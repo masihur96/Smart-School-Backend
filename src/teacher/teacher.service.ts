@@ -295,10 +295,20 @@ export class TeacherService {
 
     const result = [];
 
+    // Get unique classes the teacher is authorized to view based on the above check
+    const authorizedClassIds = [...new Set(relevantAssignments.map((a) => a.class.uuid))];
+
+    // Fetch all assignments (subjects) for these classes in the exam
+    const allExamAssignments = [];
+    for (const cid of authorizedClassIds) {
+      const classAssignments = await this.examsService.getExamAssignments(examId, cid);
+      allExamAssignments.push(...classAssignments);
+    }
+
     // To prevent duplicate class+subject combinations if a teacher was assigned multiple times
     const processedAssignments = new Set<string>();
 
-    for (const assignment of relevantAssignments) {
+    for (const assignment of allExamAssignments) {
       const cls = assignment.class;
       const subj = assignment.subject;
       
