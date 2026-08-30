@@ -30,7 +30,7 @@ export class IssuedBooksController {
    * GET /library/issued-books?status=active|returned|overdue
    */
   @ApiQuery({ name: 'status', required: false, enum: ['active', 'returned', 'overdue'] })
-  @Roles(UserRole.ADMIN, UserRole.TEACHER)
+  @Roles(UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT)
   @Get()
   findAll(
     @Request() req,
