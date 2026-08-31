@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Between } from 'typeorm';
 import { Attendance, AttendanceStatus } from '../attendance/entities/attendance.entity';
+import { PeriodAttendance, PeriodAttendanceStatus } from '../attendance/entities/period-attendance.entity';
 import { TeacherAttendance } from '../attendance/entities/teacher-attendance.entity';
 import { StudentHomework, StudentHomeworkStatus } from '../homework/entities/student-homework.entity';
 import { Homework } from '../homework/entities/homework.entity';
@@ -15,6 +16,8 @@ export class PerformanceService {
   constructor(
     @InjectRepository(Attendance)
     private attendanceRepository: Repository<Attendance>,
+    @InjectRepository(PeriodAttendance)
+    private periodAttendanceRepository: Repository<PeriodAttendance>,
     @InjectRepository(TeacherAttendance)
     private teacherAttendanceRepository: Repository<TeacherAttendance>,
     @InjectRepository(StudentHomework)
@@ -73,7 +76,7 @@ export class PerformanceService {
 
     const dateRange = this.getDateRange(month, year);
 
-    // 1. Attendance Performance
+    // 1. Attendance Performance (Legacy + Period)
     let attQB = this.attendanceRepository
       .createQueryBuilder('att')
       .select('COUNT(1)', 'totalWorkingDays')
@@ -93,8 +96,29 @@ export class PerformanceService {
     }
 
     const attRes = await attQB.getRawOne();
-    const totalWorkingDays = parseInt(attRes?.totalWorkingDays, 10) || 0;
-    const presentDays = parseInt(attRes?.presentDays, 10) || 0;
+    
+    let periodAttQB = this.periodAttendanceRepository
+      .createQueryBuilder('pa')
+      .select('COUNT(1)', 'totalWorkingDays')
+      .addSelect(
+        `COUNT(CASE WHEN pa.status = :presentStatus THEN 1 END)`,
+        'presentDays',
+      )
+      .where('pa.studentId = :studentId', { studentId })
+      .andWhere('pa.schoolId = :schoolId', { schoolId })
+      .setParameter('presentStatus', PeriodAttendanceStatus.PRESENT);
+
+    if (dateRange) {
+      periodAttQB = periodAttQB.andWhere('pa.date >= :startDate AND pa.date <= :endDate', {
+        startDate: dateRange.startDate.toISOString(),
+        endDate: dateRange.endDate.toISOString(),
+      });
+    }
+
+    const periodAttRes = await periodAttQB.getRawOne();
+
+    const totalWorkingDays = (parseInt(attRes?.totalWorkingDays, 10) || 0) + (parseInt(periodAttRes?.totalWorkingDays, 10) || 0);
+    const presentDays = (parseInt(attRes?.presentDays, 10) || 0) + (parseInt(periodAttRes?.presentDays, 10) || 0);
     const attendancePercentage =
       totalWorkingDays > 0 ? (presentDays / totalWorkingDays) * 100 : 0;
 
@@ -331,7 +355,7 @@ export class PerformanceService {
     const classMap = new Map<string, Class>(classes.map((c) => [c.id, c]));
     const sectionMap = new Map<string, Section>(sections.map((s) => [s.id, s]));
 
-    // 2. Batch aggregate Attendance per student
+    // 2. Batch aggregate Attendance per student (Legacy + Period)
     let attQB = this.attendanceRepository
       .createQueryBuilder('att')
       .select('att.studentId', 'studentId')
@@ -353,16 +377,43 @@ export class PerformanceService {
     }
 
     const attStats = await attQB.getRawMany();
+    
+    let periodAttQB = this.periodAttendanceRepository
+      .createQueryBuilder('pa')
+      .select('pa.studentId', 'studentId')
+      .addSelect('COUNT(1)', 'totalWorkingDays')
+      .addSelect(
+        `COUNT(CASE WHEN pa.status = :presentStatus THEN 1 END)`,
+        'presentDays',
+      )
+      .where('pa.schoolId = :schoolId', { schoolId })
+      .andWhere('pa.studentId IS NOT NULL')
+      .setParameter('presentStatus', PeriodAttendanceStatus.PRESENT)
+      .groupBy('pa.studentId');
+
+    if (dateRange) {
+      periodAttQB = periodAttQB.andWhere('pa.date >= :startDate AND pa.date <= :endDate', {
+        startDate: dateRange.startDate.toISOString(),
+        endDate: dateRange.endDate.toISOString(),
+      });
+    }
+
+    const periodAttStats = await periodAttQB.getRawMany();
+
     const attMap = new Map<
       string,
       { totalWorkingDays: number; presentDays: number }
     >();
-    attStats.forEach((row) => {
-      attMap.set(row.studentId, {
-        totalWorkingDays: parseInt(row.totalWorkingDays, 10) || 0,
-        presentDays: parseInt(row.presentDays, 10) || 0,
-      });
-    });
+
+    const mergeStats = (row: any) => {
+      const existing = attMap.get(row.studentId) || { totalWorkingDays: 0, presentDays: 0 };
+      existing.totalWorkingDays += parseInt(row.totalWorkingDays, 10) || 0;
+      existing.presentDays += parseInt(row.presentDays, 10) || 0;
+      attMap.set(row.studentId, existing);
+    };
+
+    attStats.forEach(mergeStats);
+    periodAttStats.forEach(mergeStats);
 
     // 3. Batch aggregate Homework per student
     let hwQB = this.studentHomeworkRepository

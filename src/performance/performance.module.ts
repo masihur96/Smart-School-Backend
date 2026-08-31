@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PerformanceController } from './performance.controller';
 import { PerformanceService } from './performance.service';
 import { Attendance } from '../attendance/entities/attendance.entity';
+import { PeriodAttendance } from '../attendance/entities/period-attendance.entity';
 import { TeacherAttendance } from '../attendance/entities/teacher-attendance.entity';
 import { StudentHomework } from '../homework/entities/student-homework.entity';
 import { Homework } from '../homework/entities/homework.entity';
@@ -15,6 +16,7 @@ import { Section } from '../sections/entities/section.entity';
   imports: [
     TypeOrmModule.forFeature([
       Attendance,
+      PeriodAttendance,
       TeacherAttendance,
       StudentHomework,
       Homework,
