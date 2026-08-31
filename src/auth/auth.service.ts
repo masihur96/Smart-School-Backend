@@ -55,7 +55,8 @@ export class AuthService {
       });
     }
 
-    const { password, ...userWithoutPassword } = user;
+    const enrichedUser = await this.usersService.enrichUser(user);
+    const { password, ...userWithoutPassword } = enrichedUser;
     console.debug('Login successful for user:', loginDto.identifier);
 
     return {
@@ -101,7 +102,7 @@ export class AuthService {
   }
 
   async getCurrentUser(userId: string) {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByIdWithDetails(userId);
     if (!user) return null;
 
     let school = null;

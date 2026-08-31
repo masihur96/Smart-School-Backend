@@ -18,7 +18,7 @@ export class UsersService {
   // ── helpers ──────────────────────────────────────────────────────────────
 
   /** Attach full class/section objects to a user (non-mutating). */
-  private async enrichUser(user: User) {
+  public async enrichUser(user: User) {
     const classIds: string[] = user.classIds ?? [];
     const sectionIds: string[] = user.sectionIds ?? [];
 
@@ -33,10 +33,15 @@ export class UsersService {
         : Promise.resolve([]),
     ]);
 
+    const validClasses = classes.filter(Boolean);
+    const validSections = sections.filter(Boolean);
+
     return {
       ...user,
-      classes: classes.filter(Boolean),
-      sections: sections.filter(Boolean),
+      classes: validClasses,
+      sections: validSections,
+      class: validClasses[0] || null,
+      section: validSections[0] || null,
     };
   }
 
