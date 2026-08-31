@@ -33,17 +33,20 @@ export class OnlineClassesService {
     const classIds = [...new Set(records.map((r) => r.classId).filter(Boolean))];
     const sectionIds = [...new Set(records.map((r) => r.sectionId).filter(Boolean))];
     const subjectIds = [...new Set(records.map((r) => r.subjectId).filter(Boolean))];
-    const participantIds = [
-      ...new Set(records.flatMap((r) => (Array.isArray(r.participantUuids) ? r.participantUuids : [])).filter(Boolean)),
+    const userIds = [
+      ...new Set([
+        ...records.map(r => r.hostId),
+        ...records.flatMap((r) => (Array.isArray(r.participantUuids) ? r.participantUuids : []))
+      ].filter(Boolean))
     ];
 
     // Fetch all referenced rows in bulk
-    const [classes, sections, subjects, participants] = await Promise.all([
+    const [classes, sections, subjects, users] = await Promise.all([
       classIds.length ? this.classRepository.find({ where: { id: In(classIds) }, select: ['id', 'name'] }) : [],
       sectionIds.length ? this.sectionRepository.find({ where: { id: In(sectionIds) }, select: ['id', 'name'] }) : [],
       subjectIds.length ? this.subjectRepository.find({ where: { id: In(subjectIds) }, select: ['id', 'name'] }) : [],
-      participantIds.length
-        ? this.userRepository.find({ where: { id: In(participantIds) }, select: ['id', 'name', 'avatar'] })
+      userIds.length
+        ? this.userRepository.find({ where: { id: In(userIds) }, select: ['id', 'name', 'avatar'] })
         : [],
     ]);
 
@@ -51,7 +54,7 @@ export class OnlineClassesService {
     const classMap = new Map<string, { id: string; name: string }>(classes.map((c) => [c.id, { id: c.id, name: c.name }] as [string, { id: string; name: string }]));
     const sectionMap = new Map<string, { id: string; name: string }>(sections.map((s) => [s.id, { id: s.id, name: s.name }] as [string, { id: string; name: string }]));
     const subjectMap = new Map<string, { id: string; name: string }>(subjects.map((s) => [s.id, { id: s.id, name: s.name }] as [string, { id: string; name: string }]));
-    const participantMap = new Map<string, { id: string; name: string; avatar: string | null }>(participants.map((u) => [u.id, { id: u.id, name: u.name, avatar: u.avatar }] as [string, { id: string; name: string; avatar: string | null }]));
+    const userMap = new Map<string, { id: string; name: string; avatar: string | null }>(users.map((u) => [u.id, { id: u.id, name: u.name, avatar: u.avatar }] as [string, { id: string; name: string; avatar: string | null }]));
 
     return records.map((r) => ({
       id: r.id,
@@ -62,12 +65,13 @@ export class OnlineClassesService {
       startTime: r.startTime,
       endTime: r.endTime,
       hostId: r.hostId,
+      host: r.hostId ? (userMap.get(r.hostId) ?? { id: r.hostId, name: null, avatar: null }) : null,
       schoolId: r.schoolId,
       class: r.classId ? (classMap.get(r.classId) ?? { id: r.classId, name: null }) : null,
       section: r.sectionId ? (sectionMap.get(r.sectionId) ?? { id: r.sectionId, name: null }) : null,
       subject: r.subjectId ? (subjectMap.get(r.subjectId) ?? { id: r.subjectId, name: null }) : null,
       participants: Array.isArray(r.participantUuids)
-        ? r.participantUuids.map((uid) => participantMap.get(uid) ?? { id: uid, name: null, avatar: null })
+        ? r.participantUuids.map((uid) => userMap.get(uid) ?? { id: uid, name: null, avatar: null })
         : [],
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
