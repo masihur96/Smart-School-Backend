@@ -392,7 +392,13 @@ export class DashboardService {
               select: ['id', 'name'],
             })
           : null;
-        return { ...hw, classInfo, subjectInfo, sectionInfo };
+        const teacherInfo = hw.teacherId
+          ? await this.userRepo.findOne({
+              where: { id: hw.teacherId },
+              select: ['id', 'name'],
+            })
+          : null;
+        return { ...hw, classInfo, subjectInfo, sectionInfo, teacherInfo };
       }),
     );
   }
