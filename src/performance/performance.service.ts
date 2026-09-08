@@ -75,6 +75,7 @@ export class PerformanceService {
     }
 
     const dateRange = this.getDateRange(month, year);
+    const yearDateRange = this.getDateRange(undefined, year || new Date().getFullYear().toString());
 
     // 1. Attendance Performance (Legacy + Period)
     let attQB = this.attendanceRepository
@@ -156,10 +157,10 @@ export class PerformanceService {
       .where('m.studentId = :studentId', { studentId })
       .andWhere('m.schoolId = :schoolId', { schoolId });
 
-    if (dateRange) {
+    if (yearDateRange) {
       marksQB = marksQB.andWhere('m.createdAt BETWEEN :startDate AND :endDate', {
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
+        startDate: yearDateRange.startDate,
+        endDate: yearDateRange.endDate,
       });
     }
 
@@ -326,6 +327,7 @@ export class PerformanceService {
     }
 
     const dateRange = this.getDateRange(month, year);
+    const yearDateRange = this.getDateRange(undefined, year || new Date().getFullYear().toString());
 
     // 1. Batch load classes and sections
     const classIdSet = new Set<string>();
@@ -459,10 +461,10 @@ export class PerformanceService {
       .andWhere('m.studentId IS NOT NULL')
       .groupBy('m.studentId');
 
-    if (dateRange) {
+    if (yearDateRange) {
       marksQB = marksQB.andWhere('m.createdAt BETWEEN :startDate AND :endDate', {
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
+        startDate: yearDateRange.startDate,
+        endDate: yearDateRange.endDate,
       });
     }
 
