@@ -233,7 +233,6 @@ export class DashboardService {
       recentHomework,
       recentNotice,
       currentExam,
-      superAdminInfo,
     ] = await Promise.all([
       this.getAdminTeacherAttendance(schoolId, today).catch((err) => {
         console.error('[Dashboard] getAdminTeacherAttendance failed:', err?.message);
@@ -255,20 +254,6 @@ export class DashboardService {
         console.error('[Dashboard] getAdminCurrentExam failed:', err?.message);
         return null;
       }),
-      this.userRepo.findOne({
-        where: { role: UserRole.SUPER_ADMIN },
-        select: [
-          'id',
-          'name',
-          'email',
-          'phone',
-          'lat',
-          'lon',
-          'radius',
-          'role',
-          'isActive',
-        ],
-      }),
     ]);
 
     return {
@@ -277,7 +262,6 @@ export class DashboardService {
       recentHomework,
       recentNotice,
       currentExam,
-      superAdminInfo,
     };
   }
 
@@ -286,18 +270,19 @@ export class DashboardService {
       where: { schoolId, role: UserRole.TEACHER, isActive: true },
     });
 
-    // Fetch attendance records WITHOUT join to avoid varchar vs uuid mismatch
     const presentRecords = await this.teacherAttendanceRepo
       .createQueryBuilder('ta')
       .where('ta.schoolId = :schoolId', { schoolId })
       .andWhere('ta.date = :date', { date })
       .getMany();
 
-    // Manually enrich with teacher info
     const enrichedRecords = await Promise.all(
       presentRecords.map(async (r) => {
         const teacher = r.teacherId
-          ? await this.userRepo.findOne({ where: { id: r.teacherId } })
+          ? await this.userRepo.findOne({
+              where: { id: r.teacherId },
+              select: ['id', 'name', 'avatar', 'lat', 'lon', 'radius'],
+            })
           : null;
         return { ...r, teacher };
       }),
@@ -325,24 +310,33 @@ export class DashboardService {
       where: { schoolId, role: UserRole.STUDENT, isActive: true },
     });
 
-    // Fetch attendance records from period_attendance
     const records = await this.periodAttendanceRepo.find({
       where: { schoolId, date },
     });
 
-    // Manually enrich with student, class, and subject info
     const enrichedRecords = await Promise.all(
       records.map(async (r) => {
         const student = await this.userRepo.findOne({
           where: { id: r.studentId },
+          select: ['id', 'name', 'rollNumber', 'avatar'],
         });
         const classInfo = await this.classRepo.findOne({
           where: { id: r.classId },
+          select: ['id', 'name'],
         });
         const subjectInfo = r.subjectId
-          ? await this.subjectRepo.findOne({ where: { id: r.subjectId } })
+          ? await this.subjectRepo.findOne({
+              where: { id: r.subjectId },
+              select: ['id', 'name', 'code'],
+            })
           : null;
-        return { ...r, student, class: classInfo, subject: subjectInfo };
+        const teacherInfo = r.teacherId
+          ? await this.userRepo.findOne({
+              where: { id: r.teacherId },
+              select: ['id', 'name'],
+            })
+          : null;
+        return { ...r, student, class: classInfo, subject: subjectInfo, teacher: teacherInfo };
       }),
     );
 
@@ -386,12 +380,17 @@ export class DashboardService {
       homeworks.map(async (hw) => {
         const classInfo = await this.classRepo.findOne({
           where: { id: hw.classId },
+          select: ['id', 'name'],
         });
         const subjectInfo = await this.subjectRepo.findOne({
           where: { id: hw.subjectId },
+          select: ['id', 'name', 'code'],
         });
         const sectionInfo = hw.sectionId
-          ? await this.sectionRepo.findOne({ where: { id: hw.sectionId } })
+          ? await this.sectionRepo.findOne({
+              where: { id: hw.sectionId },
+              select: ['id', 'name'],
+            })
           : null;
         return { ...hw, classInfo, subjectInfo, sectionInfo };
       }),
@@ -407,17 +406,14 @@ export class DashboardService {
   }
 
   private async getAdminCurrentExam(schoolId: string) {
-    // Get all class IDs belonging to this school
     const schoolClasses = await this.classRepo.find({
       where: { schoolId },
       select: ['id'],
     });
     const classIds = schoolClasses.map((c) => c.id);
 
-    // If no classes, return empty
     if (classIds.length === 0) return [];
 
-    // Fetch distinct exam IDs directly in SQL
     const relevantAssignments = await this.academicAssignmentRepo
       .createQueryBuilder('aa')
       .select('DISTINCT aa.examId', 'examId')
@@ -428,7 +424,6 @@ export class DashboardService {
       .map((a) => a.examId)
       .filter(Boolean);
 
-    // Fetch those exams
     const exams =
       relevantExamIds.length > 0
         ? await this.examRepo
@@ -437,6 +432,12 @@ export class DashboardService {
             .orderBy('exam.start_date', 'DESC')
             .getMany()
         : [];
+
+    const allAssignmentsForExams = relevantExamIds.length > 0
+      ? await this.academicAssignmentRepo.find({
+          where: { examId: In(relevantExamIds) },
+        })
+      : [];
 
     const today = getLocalDateString();
 
@@ -456,7 +457,7 @@ export class DashboardService {
           status = 'upcoming';
         }
 
-        const examAssignments = relevantAssignments.filter(
+        const examAssignments = allAssignmentsForExams.filter(
           (a) => a.examId === e.id,
         );
 
@@ -469,6 +470,7 @@ export class DashboardService {
 
     return examList;
   }
+
 
   // ─────────────────────────────────────────────────────────────
   // TEACHER DASHBOARD
