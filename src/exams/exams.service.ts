@@ -116,6 +116,8 @@ export class ExamsService {
             id: assignDto.id,
             examId: id,
             date: assignDto.date,
+            start_time: assignDto.start_time ?? null,
+            end_time: assignDto.end_time ?? null,
             syllabus: assignDto.syllabus,
             class: { uuid: classEntity.id, name: classEntity.name },
             subject: { uuid: subjectEntity.id, name: subjectEntity.name },
@@ -197,6 +199,8 @@ export class ExamsService {
     const assignment = this.academicAssignmentRepository.create({
       examId,
       date: data.date,
+      start_time: data.start_time ?? null,
+      end_time: data.end_time ?? null,
       syllabus: data.syllabus,
       class: { uuid: classEntity.id, name: classEntity.name },
       subject: { uuid: subjectEntity.id, name: subjectEntity.name },

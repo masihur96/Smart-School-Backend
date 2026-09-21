@@ -23,6 +23,16 @@ export class CreateAcademicAssignmentDto {
   @IsDateString()
   date: string;
 
+  @ApiPropertyOptional({ example: '09:00:00', description: 'Exam start time (nullable)' })
+  @IsOptional()
+  @IsDateString()
+  start_time?: string | null;
+
+  @ApiPropertyOptional({ example: '11:00:00', description: 'Exam end time (nullable)' })
+  @IsOptional()
+  @IsDateString()
+  end_time?: string | null;
+
   @ApiPropertyOptional({ example: 'Chapter 1 to 5' })
   @IsOptional()
   @IsString()

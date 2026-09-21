@@ -29,6 +29,12 @@ export class AcademicAssignment {
   @Column({ type: 'timestamptz', nullable: true })
   date: string;
 
+  @Column({ type: 'timestamptz', nullable: true })
+  start_time: string | null;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  end_time: string | null;
+
   @Column({ type: 'text', nullable: true })
   syllabus: string;
 
