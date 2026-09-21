@@ -69,15 +69,6 @@ export class UpdateExamDto {
   @IsDateString()
   end_date?: string;
 
-  @ApiPropertyOptional({ example: '09:00:00', description: 'Exam start time (nullable)' })
-  @IsOptional()
-  @IsDateString()
-  start_time?: string | null;
-
-  @ApiPropertyOptional({ example: '11:00:00', description: 'Exam end time (nullable)' })
-  @IsOptional()
-  @IsDateString()
-  end_time?: string | null;
 
   @ApiPropertyOptional({
     example: true,

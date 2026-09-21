@@ -27,12 +27,6 @@ export class Exam {
   @Column({ type: 'timestamptz', nullable: true })
   end_date: string;
 
-  @Column({ type: 'timestamptz', nullable: true })
-  start_time: string | null;
-
-  @Column({ type: 'timestamptz', nullable: true })
-  end_time: string | null;
-
   @Column({ default: false })
   isPublished: boolean;
 
