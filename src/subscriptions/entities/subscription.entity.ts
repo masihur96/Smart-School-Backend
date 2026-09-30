@@ -40,6 +40,16 @@ export class Subscription {
   @Column({ type: 'int', default: 0 })
   lastStudentCount: number;
 
+  @Column({ nullable: true })
+  paymentMethod: string;
+
+  @Index({ unique: true, sparse: true })
+  @Column({ nullable: true, unique: true })
+  transactionId: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  amount: number;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 

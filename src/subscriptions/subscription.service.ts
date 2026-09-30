@@ -21,7 +21,16 @@ export class SubscriptionService {
   ) {}
 
   async assignPlan(dto: AssignSubscriptionDto) {
-    const { schoolId, pricingPlanId, startDate, endDate, isActive } = dto;
+    const {
+      schoolId,
+      pricingPlanId,
+      startDate,
+      endDate,
+      isActive,
+      paymentMethod,
+      transactionId,
+      amount,
+    } = dto;
 
     // 1. Verify Plan exists
     const plan = await this.pricingService.findOne(pricingPlanId);
@@ -55,6 +64,9 @@ export class SubscriptionService {
       endDate,
       isActive: isActive ?? true,
       lastStudentCount: currentStudents,
+      paymentMethod,
+      transactionId,
+      amount,
     });
 
     return await this.subscriptionRepository.save(subscription);
