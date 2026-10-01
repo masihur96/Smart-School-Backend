@@ -926,9 +926,18 @@ export class DashboardService {
         const exam = await this.examRepo.findOne({ where: { id: examId } });
         if (!exam) return null;
 
-        const myMarks = await this.marksRepo.find({
+        const rawMarks = await this.marksRepo.find({
           where: { examId, studentId },
         });
+
+        const myMarks = await Promise.all(
+          rawMarks.map(async (mark) => {
+            const subject = mark.subjectId
+              ? await this.subjectRepo.findOne({ where: { id: mark.subjectId } })
+              : null;
+            return { ...mark, subject };
+          }),
+        );
 
         const totalObtained = myMarks.reduce(
           (sum, m) => sum + parseFloat(m.marksObtained as any),
