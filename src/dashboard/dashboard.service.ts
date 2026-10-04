@@ -224,12 +224,13 @@ export class DashboardService {
   // ADMIN DASHBOARD
   // ─────────────────────────────────────────────────────────────
 
-  async getAdminDashboard(schoolId: string) {
+  async getAdminDashboard(schoolId: string, month?: number, year?: number) {
     const today = getLocalDateString();
 
     const [
       attendTeacher,
       attendStudent,
+      monthlyStudentAttendance,
       recentHomework,
       recentNotice,
       currentExam,
@@ -240,6 +241,10 @@ export class DashboardService {
       }),
       this.getAdminStudentAttendance(schoolId, today).catch((err) => {
         console.error('[Dashboard] getAdminStudentAttendance failed:', err?.message);
+        return null;
+      }),
+      this.getAdminStudentMonthlyAttendance(schoolId, month, year).catch((err) => {
+        console.error('[Dashboard] getAdminStudentMonthlyAttendance failed:', err?.message);
         return null;
       }),
       this.getAdminRecentHomework(schoolId).catch((err) => {
@@ -256,9 +261,15 @@ export class DashboardService {
       }),
     ]);
 
+    if (attendStudent && monthlyStudentAttendance) {
+      (attendStudent as any).monthlySummary = monthlyStudentAttendance.summary;
+      (attendStudent as any).dailyAttendance = monthlyStudentAttendance.daily;
+    }
+
     return {
       attendTeacher,
       attendStudent,
+      monthlyStudentAttendance,
       recentHomework,
       recentNotice,
       currentExam,
@@ -351,6 +362,9 @@ export class DashboardService {
     const leaveCount = enrichedRecords.filter(
       (r) => r.status === PeriodAttendanceStatus.LEAVE,
     ).length;
+    const lateCount = enrichedRecords.filter(
+      (r) => r.status === PeriodAttendanceStatus.LATE,
+    ).length;
 
     return {
       date,
@@ -359,6 +373,7 @@ export class DashboardService {
       present: presentCount,
       absent: absentCount,
       leave: leaveCount,
+      late: lateCount,
       attendanceRate:
         enrichedRecords.length > 0
           ? parseFloat(
@@ -366,6 +381,257 @@ export class DashboardService {
             )
           : 0,
       data: enrichedRecords,
+    };
+  }
+
+  private async getAdminStudentMonthlyAttendance(
+    schoolId: string,
+    month?: number,
+    year?: number,
+  ) {
+    const now = new Date();
+    const targetYear =
+      year && !isNaN(year) && year > 1900 ? Number(year) : now.getFullYear();
+    const targetMonth =
+      month && !isNaN(month) && month >= 1 && month <= 12
+        ? Number(month)
+        : now.getMonth() + 1;
+
+    const daysInMonth = new Date(targetYear, targetMonth, 0).getDate();
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    const monthName = monthNames[targetMonth - 1] || '';
+
+    const allStudents = await this.userRepo.count({
+      where: { schoolId, role: UserRole.STUDENT, isActive: true },
+    });
+
+    const startMonthStr = String(targetMonth).padStart(2, '0');
+    const startDate = `${targetYear}-${startMonthStr}-01`;
+    const nextYear = targetMonth === 12 ? targetYear + 1 : targetYear;
+    const nextMonth = targetMonth === 12 ? 1 : targetMonth + 1;
+    const nextMonthStr = String(nextMonth).padStart(2, '0');
+    const endDate = `${nextYear}-${nextMonthStr}-01`;
+
+    const [periodResults, legacyResults] = await Promise.all([
+      this.periodAttendanceRepo
+        .createQueryBuilder('pa')
+        .select('SUBSTRING(pa.date::text, 1, 10)', 'date')
+        .addSelect('COUNT(*)', 'totalRecords')
+        .addSelect(
+          `SUM(CASE WHEN pa.status = :presentStatus THEN 1 ELSE 0 END)`,
+          'totalPresent',
+        )
+        .addSelect(
+          `SUM(CASE WHEN pa.status = :lateStatus THEN 1 ELSE 0 END)`,
+          'totalLate',
+        )
+        .addSelect(
+          `SUM(CASE WHEN pa.status = :absentStatus THEN 1 ELSE 0 END)`,
+          'totalAbsent',
+        )
+        .addSelect(
+          `SUM(CASE WHEN pa.status = :leaveStatus THEN 1 ELSE 0 END)`,
+          'totalLeave',
+        )
+        .where('pa.schoolId = :schoolId', { schoolId })
+        .andWhere('pa.date >= :startDate', { startDate })
+        .andWhere('pa.date < :endDate', { endDate })
+        .andWhere('pa.deletedAt IS NULL')
+        .setParameters({
+          presentStatus: PeriodAttendanceStatus.PRESENT,
+          lateStatus: PeriodAttendanceStatus.LATE,
+          absentStatus: PeriodAttendanceStatus.ABSENT,
+          leaveStatus: PeriodAttendanceStatus.LEAVE,
+        })
+        .groupBy('SUBSTRING(pa.date::text, 1, 10)')
+        .getRawMany()
+        .catch((err) => {
+          console.error(
+            '[Dashboard] period attendance monthly query error:',
+            err?.message,
+          );
+          return [];
+        }),
+
+      this.attendanceRepo
+        .createQueryBuilder('attendance')
+        .select('SUBSTRING(attendance.date::text, 1, 10)', 'date')
+        .addSelect('COUNT(*)', 'totalRecords')
+        .addSelect(
+          `SUM(CASE WHEN attendance.status::text = :presentStatus THEN 1 ELSE 0 END)`,
+          'totalPresent',
+        )
+        .addSelect(
+          `SUM(CASE WHEN attendance.status::text = :lateStatus THEN 1 ELSE 0 END)`,
+          'totalLate',
+        )
+        .addSelect(
+          `SUM(CASE WHEN attendance.status::text = :absentStatus THEN 1 ELSE 0 END)`,
+          'totalAbsent',
+        )
+        .addSelect(
+          `SUM(CASE WHEN attendance.status::text = :leaveStatus THEN 1 ELSE 0 END)`,
+          'totalLeave',
+        )
+        .where('attendance.schoolId = :schoolId', { schoolId })
+        .andWhere('attendance.date >= :startDate', { startDate })
+        .andWhere('attendance.date < :endDate', { endDate })
+        .andWhere('attendance.deletedAt IS NULL')
+        .setParameters({
+          presentStatus: AttendanceStatus.PRESENT,
+          lateStatus: AttendanceStatus.LATE,
+          absentStatus: AttendanceStatus.ABSENT,
+          leaveStatus: AttendanceStatus.LEAVE,
+        })
+        .groupBy('SUBSTRING(attendance.date::text, 1, 10)')
+        .getRawMany()
+        .catch((err) => {
+          console.error(
+            '[Dashboard] legacy attendance monthly query error:',
+            err?.message,
+          );
+          return [];
+        }),
+    ]);
+
+    const dayMap = new Map<
+      string,
+      {
+        present: number;
+        late: number;
+        absent: number;
+        leave: number;
+        total: number;
+      }
+    >();
+
+    const todayStr = getLocalDateString();
+    const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${targetYear}-${startMonthStr}-${String(day).padStart(2, '0')}`;
+      dayMap.set(dateStr, {
+        present: 0,
+        late: 0,
+        absent: 0,
+        leave: 0,
+        total: 0,
+      });
+    }
+
+    for (const r of periodResults) {
+      const d = r.date;
+      if (d && dayMap.has(d)) {
+        const item = dayMap.get(d)!;
+        item.present += parseInt(r.totalPresent || '0', 10);
+        item.late += parseInt(r.totalLate || '0', 10);
+        item.absent += parseInt(r.totalAbsent || '0', 10);
+        item.leave += parseInt(r.totalLeave || '0', 10);
+        item.total += parseInt(r.totalRecords || '0', 10);
+      }
+    }
+
+    for (const r of legacyResults) {
+      const d = r.date;
+      if (d && dayMap.has(d)) {
+        const item = dayMap.get(d)!;
+        item.present += parseInt(r.totalPresent || '0', 10);
+        item.late += parseInt(r.totalLate || '0', 10);
+        item.absent += parseInt(r.totalAbsent || '0', 10);
+        item.leave += parseInt(r.totalLeave || '0', 10);
+        item.total += parseInt(r.totalRecords || '0', 10);
+      }
+    }
+
+    let monthTotalPresent = 0;
+    let monthTotalLate = 0;
+    let monthTotalAbsent = 0;
+    let monthTotalLeave = 0;
+    let monthTotalRecords = 0;
+    let daysRecordedCount = 0;
+
+    const daily = [];
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${targetYear}-${startMonthStr}-${String(day).padStart(2, '0')}`;
+      const item = dayMap.get(dateStr)!;
+      const dayDate = new Date(targetYear, targetMonth - 1, day);
+      const dayOfWeek = weekdayNames[dayDate.getDay()];
+      const isFuture = dateStr > todayStr;
+      const hasData = item.total > 0;
+
+      if (hasData) {
+        daysRecordedCount++;
+        monthTotalPresent += item.present;
+        monthTotalLate += item.late;
+        monthTotalAbsent += item.absent;
+        monthTotalLeave += item.leave;
+        monthTotalRecords += item.total;
+      }
+
+      const totalPresentAndLate = item.present + item.late;
+      const attendanceRate =
+        item.total > 0
+          ? parseFloat(((totalPresentAndLate / item.total) * 100).toFixed(2))
+          : 0;
+
+      daily.push({
+        date: dateStr,
+        day,
+        dayOfWeek,
+        present: item.present,
+        late: item.late,
+        absent: item.absent,
+        leave: item.leave,
+        totalPresent: totalPresentAndLate,
+        total: item.total,
+        attendanceRate,
+        hasData,
+        isFuture,
+      });
+    }
+
+    const monthTotalPresentAndLate = monthTotalPresent + monthTotalLate;
+    const monthlyAttendanceRate =
+      monthTotalRecords > 0
+        ? parseFloat(
+            ((monthTotalPresentAndLate / monthTotalRecords) * 100).toFixed(2),
+          )
+        : 0;
+
+    const summary = {
+      month: targetMonth,
+      monthName,
+      year: targetYear,
+      totalStudents: allStudents,
+      totalPresent: monthTotalPresent,
+      totalLate: monthTotalLate,
+      totalAbsent: monthTotalAbsent,
+      totalLeave: monthTotalLeave,
+      totalAttended: monthTotalPresentAndLate,
+      totalRecords: monthTotalRecords,
+      attendanceRate: monthlyAttendanceRate,
+      daysRecorded: daysRecordedCount,
+      daysInMonth,
+    };
+
+    return {
+      summary,
+      daily,
+      dailyAttendance: daily,
     };
   }
 
