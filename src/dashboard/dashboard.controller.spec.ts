@@ -52,40 +52,6 @@ describe('DashboardController', () => {
             },
           ],
         },
-        monthlyStudentAttendance: {
-          summary: {
-            month: 10,
-            monthName: 'October',
-            year: 2026,
-            totalStudents: 100,
-            totalPresent: 800,
-            totalLate: 30,
-            totalAbsent: 50,
-            totalLeave: 20,
-            totalAttended: 830,
-            totalRecords: 900,
-            attendanceRate: 92.22,
-            daysRecorded: 10,
-            daysInMonth: 31,
-          },
-          daily: [
-            {
-              date: '2026-10-01',
-              day: 1,
-              dayOfWeek: 'Thu',
-              present: 80,
-              late: 3,
-              absent: 5,
-              leave: 2,
-              totalPresent: 83,
-              total: 90,
-              attendanceRate: 92.22,
-              hasData: true,
-              isFuture: false,
-            },
-          ],
-          dailyAttendance: [],
-        },
         recentHomework: [],
         recentNotice: [],
         currentExam: [],
@@ -116,10 +82,8 @@ describe('DashboardController', () => {
     const result = await controller.getAdminDashboard(req, '10', '2026');
 
     expect(service.getAdminDashboard).toHaveBeenCalledWith('school-123', 10, 2026);
-    expect(result.monthlyStudentAttendance).toBeDefined();
-    expect(result.monthlyStudentAttendance.summary.month).toBe(10);
-    expect(result.monthlyStudentAttendance.daily).toHaveLength(1);
     expect(result.attendStudent.monthlySummary).toBeDefined();
-    expect(result.attendStudent.dailyAttendance).toBeDefined();
+    expect(result.attendStudent.monthlySummary.month).toBe(10);
+    expect(result.attendStudent.dailyAttendance).toHaveLength(1);
   });
 });

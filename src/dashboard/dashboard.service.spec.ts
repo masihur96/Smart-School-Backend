@@ -128,13 +128,17 @@ describe('DashboardService - getAdminDashboard', () => {
     service = module.get<DashboardService>(DashboardService);
   });
 
-  it('should return admin dashboard with monthly student attendance summary and daily chart data', async () => {
+  it('should return admin dashboard with monthly student attendance summary and daily chart data inside attendStudent', async () => {
     const result = await service.getAdminDashboard('school-uuid-1', 10, 2026);
 
     expect(result).toBeDefined();
-    expect(result.monthlyStudentAttendance).toBeDefined();
+    expect((result as any).monthlyStudentAttendance).toBeUndefined();
+    expect(result.attendStudent).toBeDefined();
+    expect(result.attendStudent.monthlySummary).toBeDefined();
+    expect(result.attendStudent.dailyAttendance).toBeDefined();
 
-    const { summary, daily } = result.monthlyStudentAttendance;
+    const summary = result.attendStudent.monthlySummary;
+    const daily = result.attendStudent.dailyAttendance;
 
     // Monthly summary verification
     expect(summary.month).toBe(10);
@@ -179,9 +183,5 @@ describe('DashboardService - getAdminDashboard', () => {
     expect(day3.total).toBe(0);
     expect(day3.attendanceRate).toBe(0);
     expect(day3.hasData).toBe(false);
-
-    // Also check attendStudent has monthlySummary & dailyAttendance attached
-    expect(result.attendStudent.monthlySummary).toEqual(summary);
-    expect(result.attendStudent.dailyAttendance).toEqual(daily);
   });
 });

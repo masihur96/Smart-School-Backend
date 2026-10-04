@@ -269,7 +269,6 @@ export class DashboardService {
     return {
       attendTeacher,
       attendStudent,
-      monthlyStudentAttendance,
       recentHomework,
       recentNotice,
       currentExam,
