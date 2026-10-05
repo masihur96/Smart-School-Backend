@@ -164,7 +164,7 @@ describe('DashboardService - getAdminDashboard', () => {
     expect(result.upcomingMeeting).toBeDefined();
     expect(result.upcomingMeeting).toHaveLength(1);
     expect(result.upcomingMeeting[0].title).toBe('Staff Weekly Meeting');
-    expect(result.upcomingMeetings).toBe(result.upcomingMeeting);
+    expect((result as any).upcomingMeetings).toBeUndefined();
 
     const summary = result.attendStudent.monthlySummary;
     const daily = result.attendStudent.dailyAttendance;

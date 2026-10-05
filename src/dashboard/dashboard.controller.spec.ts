@@ -56,7 +56,6 @@ describe('DashboardController', () => {
         recentNotice: [],
         currentExam: [],
         upcomingMeeting: [],
-        upcomingMeetings: [],
       }),
     };
 

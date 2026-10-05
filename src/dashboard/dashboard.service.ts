@@ -281,7 +281,6 @@ export class DashboardService {
       recentNotice,
       currentExam,
       upcomingMeeting,
-      upcomingMeetings: upcomingMeeting,
     };
   }
 
@@ -901,15 +900,10 @@ export class DashboardService {
         endTime: r.endTime,
         hostId: r.hostId,
         host,
-        hostInfo: host,
         schoolId: r.schoolId,
         class: classInfo,
-        classInfo,
         section: sectionInfo,
-        sectionInfo,
         subject: subjectInfo,
-        subjectInfo,
-        participantUuids: r.participantUuids,
         participants,
         status: 'upcoming',
         createdAt: r.createdAt,
