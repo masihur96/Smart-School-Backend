@@ -28,6 +28,7 @@ import { Marquee, MarqueeType } from '../general/entities/marquee.entity';
 import { Class } from '../classes/entities/class.entity';
 import { Subject } from '../subjects/entities/subject.entity';
 import { Section } from '../sections/entities/section.entity';
+import { OnlineClass } from '../online-classes/entities/online-class.entity';
 
 @Injectable()
 export class DashboardService {
@@ -66,6 +67,8 @@ export class DashboardService {
     private readonly sectionRepo: Repository<Section>,
     @InjectRepository(PeriodAttendance)
     private readonly periodAttendanceRepo: Repository<PeriodAttendance>,
+    @InjectRepository(OnlineClass)
+    private readonly onlineClassRepo: Repository<OnlineClass>,
   ) {}
 
   // ─────────────────────────────────────────────────────────────
@@ -234,6 +237,7 @@ export class DashboardService {
       recentHomework,
       recentNotice,
       currentExam,
+      upcomingMeeting,
     ] = await Promise.all([
       this.getAdminTeacherAttendance(schoolId, today).catch((err) => {
         console.error('[Dashboard] getAdminTeacherAttendance failed:', err?.message);
@@ -259,6 +263,10 @@ export class DashboardService {
         console.error('[Dashboard] getAdminCurrentExam failed:', err?.message);
         return null;
       }),
+      this.getAdminUpcomingMeeting(schoolId).catch((err) => {
+        console.error('[Dashboard] getAdminUpcomingMeeting failed:', err?.message);
+        return [];
+      }),
     ]);
 
     if (attendStudent && monthlyStudentAttendance) {
@@ -272,6 +280,8 @@ export class DashboardService {
       recentHomework,
       recentNotice,
       currentExam,
+      upcomingMeeting,
+      upcomingMeetings: upcomingMeeting,
     };
   }
 
@@ -740,6 +750,172 @@ export class DashboardService {
     examList.sort((a, b) => order[a.status] - order[b.status]);
 
     return examList;
+  }
+
+  private async getAdminUpcomingMeeting(schoolId: string) {
+    const today = getLocalDateString();
+    const startOfToday = `${today} 00:00:00`;
+
+    const records = await this.onlineClassRepo
+      .createQueryBuilder('oc')
+      .where('oc.schoolId = :schoolId', { schoolId })
+      .andWhere('oc.date >= :startOfToday', { startOfToday })
+      .orderBy('oc.date', 'ASC')
+      .addOrderBy('oc.startTime', 'ASC')
+      .take(10)
+      .getMany();
+
+    if (!records || records.length === 0) {
+      return [];
+    }
+
+    // Collect unique IDs for batch fetching
+    const classIds = [...new Set(records.map((r) => r.classId).filter(Boolean))];
+    const sectionIds = [...new Set(records.map((r) => r.sectionId).filter(Boolean))];
+    const subjectIds = [...new Set(records.map((r) => r.subjectId).filter(Boolean))];
+    const userIds = [
+      ...new Set([
+        ...records.map((r) => r.hostId),
+        ...records.flatMap((r) => {
+          if (Array.isArray(r.participantUuids)) {
+            return r.participantUuids;
+          }
+          if (typeof r.participantUuids === 'string') {
+            try {
+              return JSON.parse(r.participantUuids);
+            } catch {
+              return (r.participantUuids as string)
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean);
+            }
+          }
+          return [];
+        }),
+      ].filter(Boolean)),
+    ];
+
+    const [classes, sections, subjects, users] = await Promise.all([
+      classIds.length
+        ? this.classRepo.find({
+            where: { id: In(classIds) },
+            select: ['id', 'name'],
+          })
+        : [],
+      sectionIds.length
+        ? this.sectionRepo.find({
+            where: { id: In(sectionIds) },
+            select: ['id', 'name'],
+          })
+        : [],
+      subjectIds.length
+        ? this.subjectRepo.find({
+            where: { id: In(subjectIds) },
+            select: ['id', 'name', 'code'],
+          })
+        : [],
+      userIds.length
+        ? this.userRepo.find({
+            where: { id: In(userIds) },
+            select: ['id', 'name', 'avatar', 'email', 'phone', 'role'],
+          })
+        : [],
+    ]);
+
+    const classMap = new Map<string, { id: string; name: string }>();
+    for (const c of classes) {
+      classMap.set(c.id, { id: c.id, name: c.name });
+    }
+
+    const sectionMap = new Map<string, { id: string; name: string }>();
+    for (const s of sections) {
+      sectionMap.set(s.id, { id: s.id, name: s.name });
+    }
+
+    const subjectMap = new Map<string, { id: string; name: string; code?: string }>();
+    for (const sub of subjects) {
+      subjectMap.set(sub.id, { id: sub.id, name: sub.name, code: sub.code });
+    }
+
+    const userMap = new Map<
+      string,
+      {
+        id: string;
+        name: string;
+        avatar: string | null;
+        email?: string;
+        phone?: string;
+        role?: string;
+      }
+    >();
+    for (const u of users) {
+      userMap.set(u.id, {
+        id: u.id,
+        name: u.name,
+        avatar: u.avatar,
+        email: u.email,
+        phone: u.phone,
+        role: u.role,
+      });
+    }
+
+    return records.map((r) => {
+      let participantList: string[] = [];
+      if (Array.isArray(r.participantUuids)) {
+        participantList = r.participantUuids;
+      } else if (typeof r.participantUuids === 'string') {
+        try {
+          participantList = JSON.parse(r.participantUuids);
+        } catch {
+          participantList = (r.participantUuids as string)
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean);
+        }
+      }
+
+      const host = r.hostId
+        ? (userMap.get(r.hostId) ?? { id: r.hostId, name: null, avatar: null })
+        : null;
+      const classInfo = r.classId
+        ? (classMap.get(r.classId) ?? { id: r.classId, name: null })
+        : null;
+      const sectionInfo = r.sectionId
+        ? (sectionMap.get(r.sectionId) ?? { id: r.sectionId, name: null })
+        : null;
+      const subjectInfo = r.subjectId
+        ? (subjectMap.get(r.subjectId) ?? { id: r.subjectId, name: null })
+        : null;
+      const participants = participantList.map(
+        (uid) =>
+          userMap.get(uid) ?? { id: uid, name: null, avatar: null },
+      );
+
+      return {
+        id: r.id,
+        title: r.title,
+        description: r.description,
+        meetLink: r.meetLink,
+        date: r.date,
+        startTime: r.startTime,
+        endTime: r.endTime,
+        hostId: r.hostId,
+        host,
+        hostInfo: host,
+        schoolId: r.schoolId,
+        class: classInfo,
+        classInfo,
+        section: sectionInfo,
+        sectionInfo,
+        subject: subjectInfo,
+        subjectInfo,
+        participantUuids: r.participantUuids,
+        participants,
+        status: 'upcoming',
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+      };
+    });
   }
 
 

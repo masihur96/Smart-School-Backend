@@ -18,6 +18,7 @@ import { Marquee } from '../general/entities/marquee.entity';
 import { Class } from '../classes/entities/class.entity';
 import { Subject } from '../subjects/entities/subject.entity';
 import { Section } from '../sections/entities/section.entity';
+import { OnlineClass } from '../online-classes/entities/online-class.entity';
 
 describe('DashboardService - getAdminDashboard', () => {
   let service: DashboardService;
@@ -25,6 +26,7 @@ describe('DashboardService - getAdminDashboard', () => {
   const mockUserRepo = {
     count: jest.fn().mockResolvedValue(100),
     findOne: jest.fn().mockResolvedValue({ id: 'u1', name: 'Student 1' }),
+    find: jest.fn().mockResolvedValue([{ id: 'u1', name: 'Teacher 1', avatar: null }]),
   };
   const mockSchoolRepo = { find: jest.fn().mockResolvedValue([]), count: jest.fn().mockResolvedValue(1) };
   const mockSubscriptionRepo = { find: jest.fn().mockResolvedValue([]), count: jest.fn().mockResolvedValue(1) };
@@ -98,8 +100,30 @@ describe('DashboardService - getAdminDashboard', () => {
   const mockMarksRepo = { find: jest.fn().mockResolvedValue([]) };
   const mockMarqueeRepo = { findOne: jest.fn().mockResolvedValue(null) };
   const mockClassRepo = { find: jest.fn().mockResolvedValue([]), findOne: jest.fn().mockResolvedValue(null) };
-  const mockSubjectRepo = { findOne: jest.fn().mockResolvedValue(null) };
-  const mockSectionRepo = { findOne: jest.fn().mockResolvedValue(null) };
+  const mockSubjectRepo = { find: jest.fn().mockResolvedValue([]), findOne: jest.fn().mockResolvedValue(null) };
+  const mockSectionRepo = { find: jest.fn().mockResolvedValue([]), findOne: jest.fn().mockResolvedValue(null) };
+  const mockOnlineClassRepo = {
+    createQueryBuilder: jest.fn().mockReturnValue({
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      addOrderBy: jest.fn().mockReturnThis(),
+      take: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue([
+        {
+          id: 'meet-1',
+          title: 'Staff Weekly Meeting',
+          meetLink: 'https://meet.google.com/abc-defg-hij',
+          date: new Date('2026-10-10T10:00:00Z'),
+          startTime: '10:00 AM',
+          endTime: '11:00 AM',
+          hostId: 'u1',
+          schoolId: 'school-uuid-1',
+          participantUuids: ['u1'],
+        },
+      ]),
+    }),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -122,6 +146,7 @@ describe('DashboardService - getAdminDashboard', () => {
         { provide: getRepositoryToken(Class), useValue: mockClassRepo },
         { provide: getRepositoryToken(Subject), useValue: mockSubjectRepo },
         { provide: getRepositoryToken(Section), useValue: mockSectionRepo },
+        { provide: getRepositoryToken(OnlineClass), useValue: mockOnlineClassRepo },
       ],
     }).compile();
 
@@ -136,6 +161,10 @@ describe('DashboardService - getAdminDashboard', () => {
     expect(result.attendStudent).toBeDefined();
     expect(result.attendStudent.monthlySummary).toBeDefined();
     expect(result.attendStudent.dailyAttendance).toBeDefined();
+    expect(result.upcomingMeeting).toBeDefined();
+    expect(result.upcomingMeeting).toHaveLength(1);
+    expect(result.upcomingMeeting[0].title).toBe('Staff Weekly Meeting');
+    expect(result.upcomingMeetings).toBe(result.upcomingMeeting);
 
     const summary = result.attendStudent.monthlySummary;
     const daily = result.attendStudent.dailyAttendance;

@@ -19,6 +19,7 @@ import { Class } from '../classes/entities/class.entity';
 import { Subject } from '../subjects/entities/subject.entity';
 import { Section } from '../sections/entities/section.entity';
 import { PeriodAttendance } from '../attendance/entities/period-attendance.entity';
+import { OnlineClass } from '../online-classes/entities/online-class.entity';
 
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
@@ -43,6 +44,7 @@ import { DashboardService } from './dashboard.service';
       Subject,
       Section,
       PeriodAttendance,
+      OnlineClass,
     ]),
   ],
   controllers: [DashboardController],

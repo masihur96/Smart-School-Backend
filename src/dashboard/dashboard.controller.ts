@@ -43,7 +43,7 @@ export class DashboardController {
   @ApiOperation({
     summary: 'Get Admin Dashboard data',
     description:
-      'Returns teacher attendance, today student attendance, monthly student attendance summary with daily attendance chart data, recent homework, notices, and exams.',
+      'Returns teacher attendance, today student attendance, monthly student attendance summary with daily attendance chart data, recent homework, notices, exams, and upcoming meetings.',
   })
   @ApiQuery({
     name: 'month',
