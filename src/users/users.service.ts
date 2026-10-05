@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User, UserRole } from './entities/user.entity';
+import { School } from '../schools/entities/school.entity';
 import { ClassesService } from '../classes/classes.service';
 import { SectionsService } from '../sections/sections.service';
 
@@ -13,35 +14,91 @@ export class UsersService {
     private userRepository: Repository<User>,
     private readonly classesService: ClassesService,
     private readonly sectionsService: SectionsService,
+    @Optional()
+    @InjectRepository(School)
+    private schoolRepository?: Repository<School>,
   ) { }
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
   /** Attach full class/section objects to a user (non-mutating). */
-  public async enrichUser(user: User) {
+  public async enrichUser(
+    user: User,
+    preferredClassId?: string,
+    preferredSectionId?: string,
+  ) {
     const classIds: string[] = user.classIds ?? [];
     const sectionIds: string[] = user.sectionIds ?? [];
 
-    const [classes, sections] = await Promise.all([
+    const [classes, sections, school] = await Promise.all([
       classIds.length
-        ? Promise.all(classIds.map((id) => this.classesService.findById(id)))
+        ? Promise.all(
+            classIds.map((id) =>
+              Promise.resolve(this.classesService.findById(id)).catch(() => null),
+            ),
+          )
         : Promise.resolve([]),
       sectionIds.length
-        ? Promise.all(sectionIds.map((id) =>
-            this.sectionsService.findOne(id).catch(() => null),
-          ))
+        ? Promise.all(
+            sectionIds.map((id) =>
+              Promise.resolve(this.sectionsService.findOne(id)).catch(() => null),
+            ),
+          )
         : Promise.resolve([]),
+      user.schoolId && this.schoolRepository
+        ? Promise.resolve(
+            this.schoolRepository.findOne({ where: { schoolId: user.schoolId } }),
+          ).catch(() => null)
+        : Promise.resolve(null),
     ]);
 
     const validClasses = classes.filter(Boolean);
     const validSections = sections.filter(Boolean);
 
+    let targetClass =
+      (preferredClassId &&
+        validClasses.find(
+          (c) =>
+            c.id === preferredClassId || (c as any).uuid === preferredClassId,
+        )) ||
+      validClasses[0] ||
+      null;
+
+    if (!targetClass && preferredClassId) {
+      targetClass = await Promise.resolve(
+        this.classesService.findById(preferredClassId),
+      ).catch(() => null);
+    }
+
+    let targetSection =
+      (preferredSectionId &&
+        validSections.find(
+          (s) =>
+            s.id === preferredSectionId ||
+            (s as any).uuid === preferredSectionId,
+        )) ||
+      (targetClass &&
+        validSections.find(
+          (s) =>
+            s.classId === targetClass.id ||
+            s.classId === (targetClass as any).uuid,
+        )) ||
+      validSections[0] ||
+      null;
+
+    if (!targetSection && preferredSectionId) {
+      targetSection = await Promise.resolve(
+        this.sectionsService.findOne(preferredSectionId),
+      ).catch(() => null);
+    }
+
     return {
       ...user,
       classes: validClasses,
       sections: validSections,
-      class: validClasses[0] || null,
-      section: validSections[0] || null,
+      class: targetClass,
+      section: targetSection,
+      school: school ?? null,
     };
   }
 
@@ -132,7 +189,9 @@ export class UsersService {
       .take(limit)
       .getMany();
 
-    const data = await Promise.all(users.map((u) => this.enrichUser(u)));
+    const data = await Promise.all(
+      users.map((u) => this.enrichUser(u, classId, sectionId)),
+    );
 
     return { total, page, limit, data };
   }
@@ -189,7 +248,36 @@ export class UsersService {
       query.andWhere('user.sectionIds LIKE :sectionId', { sectionId: `%${sectionId}%` });
     }
 
-    return await query.getMany();
+    const users = await query.getMany();
+
+    const enrichedUsers = await Promise.all(
+      users.map((u) => this.enrichUser(u, classId, sectionId)),
+    );
+
+    return enrichedUsers.map((enriched) => {
+      const { password, ...userWithoutPassword } = enriched;
+      return {
+        ...userWithoutPassword,
+        userId: enriched.id,
+        rollId: enriched.rollNumber || '',
+        classId: enriched.class?.id || classId,
+        sectionId: enriched.section?.id || sectionId || '',
+        guardianContact: enriched.phone || '',
+        isActive: enriched.isActive,
+        user: {
+          ...userWithoutPassword,
+          class: enriched.class,
+          section: enriched.section,
+          classes: enriched.classes,
+          sections: enriched.sections,
+          school: enriched.school ?? null,
+        },
+        class: enriched.class,
+        section: enriched.section,
+        classes: enriched.classes,
+        sections: enriched.sections,
+      };
+    });
   }
 
   async countStudentsBySchool(schoolId: string): Promise<number> {
