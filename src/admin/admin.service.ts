@@ -26,6 +26,8 @@ import {
   CreateHomeworkDto,
   UpdateHomeworkDto,
 } from '../homework/dto/create-homework.dto';
+import { SubscriptionService } from '../subscriptions/subscription.service';
+import { QuerySubscriptionHistoryDto } from '../subscriptions/dto/query-subscription-history.dto';
 
 @Injectable()
 export class AdminService {
@@ -38,6 +40,7 @@ export class AdminService {
     private examsService: ExamsService,
     private marksService: MarksService,
     private homeworkService: HomeworkService,
+    private subscriptionService: SubscriptionService,
   ) {}
 
   // ─── Helpers ────────────────────────────────────
@@ -272,5 +275,16 @@ export class AdminService {
 
   async deleteHomework(id: string) {
     return await this.homeworkService.delete(id);
+  }
+
+  // ─── Subscription History ────────────────────────
+  async getSchoolSubscriptionHistory(
+    schoolId: string | null | undefined,
+    query: QuerySubscriptionHistoryDto,
+  ) {
+    return await this.subscriptionService.getSchoolSubscriptionHistory(
+      schoolId || undefined,
+      query,
+    );
   }
 }

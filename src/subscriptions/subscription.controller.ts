@@ -7,10 +7,12 @@ import {
   NotFoundException,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { AssignSubscriptionDto } from './dto/assign-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
+import { QuerySubscriptionHistoryDto } from './dto/query-subscription-history.dto';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Subscriptions')
@@ -23,6 +25,15 @@ export class SubscriptionController {
   @ApiOperation({ summary: 'Assign or upgrade a pricing plan to a school' })
   assignPlan(@Body() dto: AssignSubscriptionDto) {
     return this.subscriptionService.assignPlan(dto);
+  }
+
+  @Get('school/:schoolId/history')
+  @ApiOperation({ summary: 'Get subscription history for a specific school' })
+  getSchoolHistory(
+    @Param('schoolId') schoolId: string,
+    @Query() query: QuerySubscriptionHistoryDto,
+  ) {
+    return this.subscriptionService.getSchoolSubscriptionHistory(schoolId, query);
   }
 
   @Get('school/:schoolId')

@@ -9,8 +9,10 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  ForbiddenException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { QuerySubscriptionHistoryDto } from '../subscriptions/dto/query-subscription-history.dto';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -347,5 +349,92 @@ export class AdminController {
       dto,
       user.schoolId,
     );
+  }
+
+  // ─── School Subscription History ─────────────────
+  @Get('subscriptions/history')
+  @ApiOperation({
+    summary: 'Get school subscription history',
+    description:
+      'Returns subscription history (active and past subscriptions) for the authenticated admin school, or for a specified schoolId (superadmin only). Includes pagination, status calculation, days remaining, and payment details.',
+  })
+  async getSubscriptionHistory(
+    @CurrentUser() user: JwtUser,
+    @Query() query: QuerySubscriptionHistoryDto,
+  ) {
+    const effectiveSchoolId =
+      user.role === UserRole.SUPER_ADMIN
+        ? query.schoolId || user.schoolId
+        : user.schoolId;
+
+    if (!effectiveSchoolId && user.role !== UserRole.SUPER_ADMIN) {
+      throw new ForbiddenException('Admin must be associated with a school');
+    }
+
+    if (
+      user.role !== UserRole.SUPER_ADMIN &&
+      query.schoolId &&
+      query.schoolId !== user.schoolId
+    ) {
+      throw new ForbiddenException(
+        'You can only view subscription history for your own school',
+      );
+    }
+
+    return await this.adminService.getSchoolSubscriptionHistory(
+      effectiveSchoolId,
+      query,
+    );
+  }
+
+  @Get('subscription-history')
+  @ApiOperation({
+    summary: 'Get school subscription history (alias)',
+    description: 'Alias endpoint for GET /admin/subscriptions/history',
+  })
+  async getSubscriptionHistoryAlias(
+    @CurrentUser() user: JwtUser,
+    @Query() query: QuerySubscriptionHistoryDto,
+  ) {
+    return this.getSubscriptionHistory(user, query);
+  }
+
+  @Get('subscriptions/history/:schoolId')
+  @ApiOperation({
+    summary: 'Get subscription history for a specific school by schoolId param',
+  })
+  @ApiParam({ name: 'schoolId', description: 'School logical ID' })
+  async getSubscriptionHistoryByParam(
+    @Param('schoolId') schoolId: string,
+    @CurrentUser() user: JwtUser,
+    @Query() query: QuerySubscriptionHistoryDto,
+  ) {
+    return this.getSubscriptionHistory(user, { ...query, schoolId });
+  }
+
+  @Get('schools/:schoolId/subscription-history')
+  @ApiOperation({
+    summary: 'Get subscription history for a specific school under schools path',
+  })
+  @ApiParam({ name: 'schoolId', description: 'School logical ID' })
+  async getSchoolSubscriptionHistoryByParam(
+    @Param('schoolId') schoolId: string,
+    @CurrentUser() user: JwtUser,
+    @Query() query: QuerySubscriptionHistoryDto,
+  ) {
+    return this.getSubscriptionHistory(user, { ...query, schoolId });
+  }
+
+  @Get('schools/:schoolId/subscriptions')
+  @ApiOperation({
+    summary: 'Get all subscriptions for a specific school',
+  })
+  @ApiParam({ name: 'schoolId', description: 'School logical ID' })
+  async getSchoolSubscriptions(
+    @Param('schoolId') schoolId: string,
+    @CurrentUser() user: JwtUser,
+    @Query() query: QuerySubscriptionHistoryDto,
+  ) {
+    return this.getSubscriptionHistory(user, { ...query, schoolId });
   }
 }

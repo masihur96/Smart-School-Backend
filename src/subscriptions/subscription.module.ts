@@ -6,9 +6,11 @@ import { SubscriptionController } from './subscription.controller';
 import { PricingModule } from '../pricing/pricing.module';
 import { UsersModule } from '../users/users.module';
 
+import { School } from '../schools/entities/school.entity';
+
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Subscription]),
+    TypeOrmModule.forFeature([Subscription, School]),
     PricingModule,
     UsersModule,
   ],
