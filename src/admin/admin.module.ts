@@ -9,6 +9,7 @@ import { MarksModule } from '../marks/marks.module';
 import { HomeworkModule } from '../homework/homework.module';
 import { AttendanceModule } from '../attendance/attendance.module';
 import { SubscriptionModule } from '../subscriptions/subscription.module';
+import { AcademicCalendarModule } from '../academic-calendar/academic-calendar.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { School } from '../schools/entities/school.entity';
 
@@ -23,6 +24,7 @@ import { School } from '../schools/entities/school.entity';
     HomeworkModule,
     AttendanceModule,
     SubscriptionModule,
+    AcademicCalendarModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

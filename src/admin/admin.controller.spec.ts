@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { AttendanceService } from '../attendance/attendance.service';
+import { AcademicCalendarService } from '../academic-calendar/academic-calendar.service';
 import { UserRole } from '../users/entities/user.entity';
 
 describe('AdminController', () => {
@@ -16,6 +17,15 @@ describe('AdminController', () => {
     adminCreateTeacherAttendance: jest.fn(),
   };
 
+  const mockAcademicCalendarService = {
+    findAll: jest.fn(),
+    create: jest.fn(),
+    bulkCreate: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
+    getSummary: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AdminController],
@@ -27,6 +37,10 @@ describe('AdminController', () => {
         {
           provide: AttendanceService,
           useValue: mockAttendanceService,
+        },
+        {
+          provide: AcademicCalendarService,
+          useValue: mockAcademicCalendarService,
         },
       ],
     }).compile();
@@ -51,7 +65,9 @@ describe('AdminController', () => {
         subscriptions: [],
         data: [],
       };
-      mockAdminService.getSchoolSubscriptionHistory.mockResolvedValue(mockResult);
+      mockAdminService.getSchoolSubscriptionHistory.mockResolvedValue(
+        mockResult,
+      );
 
       const user = {
         id: 'user-uuid',
@@ -62,10 +78,9 @@ describe('AdminController', () => {
 
       const result = await controller.getSubscriptionHistory(user, {});
       expect(result).toEqual(mockResult);
-      expect(mockAdminService.getSchoolSubscriptionHistory).toHaveBeenCalledWith(
-        'SCH-001',
-        {},
-      );
+      expect(
+        mockAdminService.getSchoolSubscriptionHistory,
+      ).toHaveBeenCalledWith('SCH-001', {});
     });
 
     it('should throw ForbiddenException if regular admin has no schoolId', async () => {
@@ -107,7 +122,9 @@ describe('AdminController', () => {
         subscriptions: [],
         data: [],
       };
-      mockAdminService.getSchoolSubscriptionHistory.mockResolvedValue(mockResult);
+      mockAdminService.getSchoolSubscriptionHistory.mockResolvedValue(
+        mockResult,
+      );
 
       const user = {
         id: 'super-uuid',
@@ -120,10 +137,9 @@ describe('AdminController', () => {
         schoolId: 'SCH-999',
       });
       expect(result).toEqual(mockResult);
-      expect(mockAdminService.getSchoolSubscriptionHistory).toHaveBeenCalledWith(
-        'SCH-999',
-        { schoolId: 'SCH-999' },
-      );
+      expect(
+        mockAdminService.getSchoolSubscriptionHistory,
+      ).toHaveBeenCalledWith('SCH-999', { schoolId: 'SCH-999' });
     });
   });
 });

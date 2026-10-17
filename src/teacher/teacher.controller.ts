@@ -38,13 +38,19 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 
+import { AcademicCalendarService } from '../academic-calendar/academic-calendar.service';
+import { FilterAcademicCalendarDto } from '../academic-calendar/dto/filter-academic-calendar.dto';
+
 @ApiTags('Teacher')
 @ApiBearerAuth('bearer')
 @Roles(UserRole.TEACHER, UserRole.SUPER_ADMIN)
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('teacher')
 export class TeacherController {
-  constructor(private teacherService: TeacherService) {}
+  constructor(
+    private teacherService: TeacherService,
+    private academicCalendarService: AcademicCalendarService,
+  ) {}
 
   @Post()
   @Public()
@@ -295,7 +301,12 @@ export class TeacherController {
     @Query('sectionId') sectionId?: string,
     @Query('subjectId') subjectId?: string,
   ) {
-    return await this.teacherService.getHomework(classId, subjectId, sectionId, req.user?.schoolId);
+    return await this.teacherService.getHomework(
+      classId,
+      subjectId,
+      sectionId,
+      req.user?.schoolId,
+    );
   }
 
   @Get('homework/:id')
@@ -402,5 +413,28 @@ export class TeacherController {
   async getTodaysClasses(@Request() req, @Query('date') date?: string) {
     const teacherId = req.user.userId;
     return await this.teacherService.getTodaysClasses(teacherId, date);
+  }
+
+  // ─── Academic Calendar ──────────────────────────────
+  @Get('academic-calendar')
+  @ApiOperation({ summary: 'Get academic calendar events for teacher' })
+  async getAcademicCalendar(
+    @Request() req: any,
+    @Query() filters: FilterAcademicCalendarDto,
+  ) {
+    return await this.academicCalendarService.findAll(filters, req.user);
+  }
+
+  @Get('academic-calendar/upcoming')
+  @ApiOperation({ summary: 'Get upcoming academic calendar events for teacher' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getUpcomingAcademicCalendar(
+    @Request() req: any,
+    @Query('limit') limit?: number,
+  ) {
+    return await this.academicCalendarService.getUpcomingEvents(
+      req.user,
+      limit ? Number(limit) : 10,
+    );
   }
 }

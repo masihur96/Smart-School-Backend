@@ -68,6 +68,11 @@ import { Wallet } from './wallet/entities/wallet.entity';
 import { WalletTransaction } from './wallet/entities/wallet-transaction.entity';
 import { CreateWalletAndTransactions1787100000000 } from './migrations/1787100000000-CreateWalletAndTransactions';
 import { RecreateOnlineClass1787850000000 } from './migrations/1787850000000-RecreateOnlineClass';
+import { AddStartEndTimeToAcademicAssignment1787900000000 } from './migrations/1787900000000-AddStartEndTimeToAcademicAssignment';
+import { AddPaymentFieldsToSubscription1787950000000 } from './migrations/1787950000000-AddPaymentFieldsToSubscription';
+import { CreateAcademicCalendar1788000000000 } from './migrations/1788000000000-CreateAcademicCalendar';
+import { AcademicCalendarModule } from './academic-calendar/academic-calendar.module';
+import { AcademicCalendarEvent } from './academic-calendar/entities/academic-calendar-event.entity';
 
 @Module({
   imports: [
@@ -78,8 +83,6 @@ import { RecreateOnlineClass1787850000000 } from './migrations/1787850000000-Rec
       type: 'postgres',
       url: process.env.DATABASE_URL, // ✅ use full connection string
       extra: { options: '-c timezone=UTC' }, // ✅ Store and retrieve all timestamps in UTC
-
-
 
       // host: process.env.DB_HOST,
       // port: parseInt(process.env.DB_PORT, 10),
@@ -110,6 +113,7 @@ import { RecreateOnlineClass1787850000000 } from './migrations/1787850000000-Rec
         AcademicBookReadingProgress,
         Wallet,
         WalletTransaction,
+        AcademicCalendarEvent,
       ],
       migrations: [
         AlterTeacherAttendanceTimeToTimestamptz1716566400000,
@@ -124,6 +128,9 @@ import { RecreateOnlineClass1787850000000 } from './migrations/1787850000000-Rec
         CreateWalletAndTransactions1787100000000,
         CreateAcademicBooksAndProgress1787200000000,
         RecreateOnlineClass1787850000000,
+        AddStartEndTimeToAcademicAssignment1787900000000,
+        AddPaymentFieldsToSubscription1787950000000,
+        CreateAcademicCalendar1788000000000,
       ],
       autoLoadEntities: true,
       synchronize: false,
@@ -160,6 +167,7 @@ import { RecreateOnlineClass1787850000000 } from './migrations/1787850000000-Rec
     AcademicEbooksModule,
     AcademicBooksModule,
     WalletModule,
+    AcademicCalendarModule,
   ],
   controllers: [AppController],
   providers: [
@@ -174,6 +182,4 @@ import { RecreateOnlineClass1787850000000 } from './migrations/1787850000000-Rec
     },
   ],
 })
-
-
-export class AppModule { }
+export class AppModule {}

@@ -7,6 +7,7 @@ import { HomeworkModule } from '../homework/homework.module';
 import { ExamsModule } from '../exams/exams.module';
 import { UsersModule } from '../users/users.module';
 import { GeneralModule } from '../general/general.module';
+import { AcademicCalendarModule } from '../academic-calendar/academic-calendar.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { GeneralModule } from '../general/general.module';
     ExamsModule,
     UsersModule,
     GeneralModule,
+    AcademicCalendarModule,
   ],
   providers: [TeacherService],
   controllers: [TeacherController],

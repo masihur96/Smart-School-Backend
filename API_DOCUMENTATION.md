@@ -535,6 +535,221 @@ The Academic Books module allows schools to store, organize, and serve class-wis
 
 ---
 
+## Academic Calendar Module
+
+The **Academic Calendar** module provides comprehensive calendar and event management for every school in the multi-tenant system. It supports school-wide and class-specific events, holidays, exam schedules, vacations, meetings, and academic milestones with tailored views for **Admin**, **Teacher**, and **Student** roles.
+
+### Supported Event Categories
+- `HOLIDAY` (School holiday / day off)
+- `EXAM` (Mid-term, final examinations, mock tests)
+- `EVENT` (Cultural events, celebrations, exhibitions)
+- `VACATION` (Summer vacation, winter break, festive holidays)
+- `ACADEMIC` (Semester start/end, result publishing, enrollment deadlines)
+- `MEETING` (PTA meetings, teacher conferences)
+- `SPORTS` (Sports day, athletic tournaments)
+- `OTHER` (General school events)
+
+### Target Audiences
+- `ALL`: Visible to students, teachers, and admins
+- `STUDENTS`: Visible to students and admins
+- `TEACHERS`: Visible to teachers and admins
+- `ADMIN`: Visible to admins only
+
+---
+
+### Endpoints Overview
+
+| Role | Method | Endpoint | Description |
+|---|---|---|---|
+| **Admin** | `POST` | `/academic-calendar` | Create a new calendar event |
+| **Admin** | `POST` | `/academic-calendar/bulk` | Bulk create events (e.g., annual holiday list import) |
+| **Admin** | `PATCH` / `PUT` | `/academic-calendar/:id` | Update an existing event |
+| **Admin** | `DELETE` | `/academic-calendar/:id` | Soft-delete a calendar event |
+| **Admin** | `GET` | `/academic-calendar/summary` | Get calendar statistics & counts |
+| **Admin** | `GET` | `/academic-calendar/admin` | List all events with admin filters |
+| **Admin** | `GET` | `/admin/academic-calendar` | Shortcut in Admin API route |
+| **Admin** | `POST` | `/admin/academic-calendar` | Create event via Admin API route |
+| **Admin** | `PUT` | `/admin/academic-calendar/:id` | Update event via Admin API route |
+| **Admin** | `DELETE` | `/admin/academic-calendar/:id` | Delete event via Admin API route |
+| **Teacher** | `GET` | `/academic-calendar/teacher` | View calendar events for teachers |
+| **Teacher** | `GET` | `/academic-calendar/teacher/upcoming` | View upcoming events for teacher |
+| **Teacher** | `GET` | `/teacher/academic-calendar` | Shortcut in Teacher API route |
+| **Teacher** | `GET` | `/teacher/academic-calendar/upcoming` | Shortcut in Teacher API route |
+| **Student** | `GET` | `/academic-calendar/student` | View student calendar (enrolled classes + school-wide) |
+| **Student** | `GET` | `/academic-calendar/student/upcoming` | View student upcoming events |
+| **Student** | `GET` | `/student/academic-calendar` | Shortcut in Student API route |
+| **Student** | `GET` | `/student/academic-calendar/upcoming` | Shortcut in Student API route |
+| **All Roles** | `GET` | `/academic-calendar` | Contextual calendar events by role |
+| **All Roles** | `GET` | `/academic-calendar/upcoming` | Upcoming events from today onwards |
+| **All Roles** | `GET` | `/academic-calendar/holidays` | List all school holidays |
+| **All Roles** | `GET` | `/academic-calendar/:id` | Get event details by ID |
+
+---
+
+### Admin APIs
+
+#### 1. Create Calendar Event
+- **Endpoint**: `POST /academic-calendar` or `POST /admin/academic-calendar`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Request Body**:
+  ```json
+  {
+    "title": "Summer Vacation 2026",
+    "description": "School will remain closed for summer recess.",
+    "category": "VACATION",
+    "startDate": "2026-06-01",
+    "endDate": "2026-06-15",
+    "startTime": "09:00",
+    "endTime": "14:00",
+    "isAllDay": true,
+    "isHoliday": true,
+    "targetAudience": "ALL",
+    "classIds": [],
+    "color": "#FB8C00",
+    "location": "School Campus",
+    "attachmentUrl": "https://example.com/calendar-notice.pdf",
+    "academicYear": "2026-2027",
+    "term": "Summer Term"
+  }
+  ```
+
+#### 2. Bulk Create Calendar Events
+- **Endpoint**: `POST /academic-calendar/bulk` or `POST /admin/academic-calendar/bulk`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Request Body**:
+  ```json
+  {
+    "events": [
+      {
+        "title": "New Year Holiday",
+        "startDate": "2026-01-01",
+        "category": "HOLIDAY",
+        "isHoliday": true,
+        "academicYear": "2026"
+      },
+      {
+        "title": "First Term Examination",
+        "startDate": "2026-04-10",
+        "endDate": "2026-04-22",
+        "category": "EXAM",
+        "isHoliday": false,
+        "academicYear": "2026"
+      }
+    ]
+  }
+  ```
+
+#### 3. Update Calendar Event
+- **Endpoint**: `PATCH /academic-calendar/:id` or `PUT /academic-calendar/:id` (or `/admin/academic-calendar/:id`)
+- **Roles**: `Admin`, `SuperAdmin`
+- **Request Body**: Partial fields of Create Event DTO.
+
+#### 4. Delete Calendar Event
+- **Endpoint**: `DELETE /academic-calendar/:id` or `DELETE /admin/academic-calendar/:id`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Response**:
+  ```json
+  {
+    "statusCode": 200,
+    "message": "Academic calendar event successfully deleted",
+    "data": { "id": "uuid-of-event" }
+  }
+  ```
+
+#### 5. Get Calendar Summary & Statistics
+- **Endpoint**: `GET /academic-calendar/summary` or `GET /admin/academic-calendar/summary`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Query Parameters**:
+  - `year`: Optional calendar year filter (e.g. `2026`)
+  - `academicYear`: Optional academic year filter (e.g. `2026-2027`)
+  - `schoolId`: Optional school UUID (SuperAdmin only)
+- **Response**:
+  ```json
+  {
+    "statusCode": 200,
+    "message": "Success",
+    "data": {
+      "schoolId": "uuid-school-id",
+      "academicYear": "2026-2027",
+      "year": 2026,
+      "totalEvents": 28,
+      "totalHolidays": 14,
+      "totalExams": 4,
+      "totalVacations": 2,
+      "upcomingEventsCount": 8,
+      "categoryBreakdown": {
+        "HOLIDAY": 14,
+        "EXAM": 4,
+        "VACATION": 2,
+        "EVENT": 5,
+        "ACADEMIC": 3
+      }
+    }
+  }
+  ```
+
+---
+
+### Teacher APIs
+
+#### 1. Get Teacher Calendar
+- **Endpoint**: `GET /academic-calendar/teacher` or `GET /teacher/academic-calendar`
+- **Roles**: `Teacher`, `Admin`, `SuperAdmin`
+- **Query Parameters**:
+  - `month`: (1-12)
+  - `year`: (e.g. `2026`)
+  - `startDate`: ISO date string
+  - `endDate`: ISO date string
+  - `category`: `HOLIDAY`, `EXAM`, `EVENT`, etc.
+  - `isHoliday`: `true` or `false`
+  - `academicYear`: `2026-2027`
+  - `classId`: Filter events relevant to a specific class
+
+#### 2. Get Teacher Upcoming Events
+- **Endpoint**: `GET /academic-calendar/teacher/upcoming` or `GET /teacher/academic-calendar/upcoming`
+- **Roles**: `Teacher`, `Admin`, `SuperAdmin`
+- **Query Parameters**:
+  - `limit`: Number of upcoming events to return (default: `10`)
+
+---
+
+### Student APIs
+
+#### 1. Get Student Calendar
+- **Endpoint**: `GET /academic-calendar/student` or `GET /student/academic-calendar`
+- **Roles**: `Student`, `Admin`, `SuperAdmin`
+- **Behavior**:
+  - Automatically filters events for `targetAudience` in (`ALL`, `STUDENTS`).
+  - Automatically matches events applicable school-wide OR matching the student's enrolled `classIds`.
+- **Query Parameters**: `month`, `year`, `startDate`, `endDate`, `category`, `isHoliday`, `academicYear`.
+
+#### 2. Get Student Upcoming Events
+- **Endpoint**: `GET /academic-calendar/student/upcoming` or `GET /student/academic-calendar/upcoming`
+- **Roles**: `Student`, `Admin`, `SuperAdmin`
+- **Query Parameters**:
+  - `limit`: Number of upcoming events to return (default: `10`)
+
+---
+
+### Shared / Universal APIs
+
+#### 1. List Calendar Events
+- **Endpoint**: `GET /academic-calendar`
+- **Roles**: `Admin`, `Teacher`, `Student`, `SuperAdmin`
+- Automatically applies audience and class visibility according to the authenticated user's role.
+
+#### 2. Get School Holidays
+- **Endpoint**: `GET /academic-calendar/holidays`
+- **Roles**: `Admin`, `Teacher`, `Student`, `SuperAdmin`
+- **Query Parameters**: `year`, `academicYear`
+
+#### 3. Get Single Event Details
+- **Endpoint**: `GET /academic-calendar/:id`
+- **Roles**: `Admin`, `Teacher`, `Student`, `SuperAdmin`
+- Returns enriched event details with assigned class names and creator details.
+
+---
+
 ## Support & Contribution
 
 For issues, feature requests, or contributions, please contact the development team.

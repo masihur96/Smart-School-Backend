@@ -7,6 +7,7 @@ import { HomeworkModule } from '../homework/homework.module';
 import { MarksModule } from '../marks/marks.module';
 import { UsersModule } from '../users/users.module';
 import { ExamsModule } from '../exams/exams.module';
+import { AcademicCalendarModule } from '../academic-calendar/academic-calendar.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ExamsModule } from '../exams/exams.module';
     MarksModule,
     UsersModule,
     ExamsModule,
+    AcademicCalendarModule,
   ],
   providers: [StudentService],
   controllers: [StudentController],

@@ -20,7 +20,10 @@ import {
   ApiResponse,
   ApiTags,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
+import { AcademicCalendarService } from '../academic-calendar/academic-calendar.service';
+import { FilterAcademicCalendarDto } from '../academic-calendar/dto/filter-academic-calendar.dto';
 
 @ApiTags('Student')
 @ApiBearerAuth('bearer')
@@ -28,7 +31,10 @@ import {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('student')
 export class StudentController {
-  constructor(private studentService: StudentService) {}
+  constructor(
+    private studentService: StudentService,
+    private academicCalendarService: AcademicCalendarService,
+  ) {}
 
   @Post()
   @Public()
@@ -88,5 +94,30 @@ export class StudentController {
   @ApiOperation({ summary: 'Get results for a specific exam' })
   async getExamResults(@Request() req: any, @Param('examId') examId: string) {
     return await this.studentService.getExamResults(req.user.userId, examId);
+  }
+
+  // ─── Academic Calendar ──────────────────────────────
+  @Get('academic-calendar')
+  @ApiOperation({
+    summary: 'Get academic calendar for student (enrolled class & school-wide)',
+  })
+  async getAcademicCalendar(
+    @Request() req: any,
+    @Query() filters: FilterAcademicCalendarDto,
+  ) {
+    return await this.academicCalendarService.findAll(filters, req.user);
+  }
+
+  @Get('academic-calendar/upcoming')
+  @ApiOperation({ summary: 'Get upcoming academic calendar events for student' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getUpcomingAcademicCalendar(
+    @Request() req: any,
+    @Query('limit') limit?: number,
+  ) {
+    return await this.academicCalendarService.getUpcomingEvents(
+      req.user,
+      limit ? Number(limit) : 10,
+    );
   }
 }

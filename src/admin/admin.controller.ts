@@ -11,7 +11,14 @@ import {
   HttpStatus,
   ForbiddenException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiOperation, ApiBody, ApiParam, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { QuerySubscriptionHistoryDto } from '../subscriptions/dto/query-subscription-history.dto';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -32,13 +39,21 @@ import {
 import { CreateExamDto, UpdateExamDto } from '../exams/dto/create-exam.dto';
 import { CreateAcademicAssignmentDto } from '../exams/dto/create-academic-assignment.dto';
 import { SubmitMarksDto } from '../marks/dto/submit-marks.dto';
-import { CreateSchoolDto, UpdateSchoolDto } from '../schools/dto/create-school.dto';
+import {
+  CreateSchoolDto,
+  UpdateSchoolDto,
+} from '../schools/dto/create-school.dto';
 import {
   CreateHomeworkDto,
   UpdateHomeworkDto,
 } from '../homework/dto/create-homework.dto';
 import { AttendanceService } from '../attendance/attendance.service';
 import { AdminCreateTeacherAttendanceDto } from '../attendance/dto/admin-create-teacher-attendance.dto';
+import { AcademicCalendarService } from '../academic-calendar/academic-calendar.service';
+import { CreateAcademicCalendarEventDto } from '../academic-calendar/dto/create-academic-calendar-event.dto';
+import { UpdateAcademicCalendarEventDto } from '../academic-calendar/dto/update-academic-calendar-event.dto';
+import { BulkCreateAcademicCalendarDto } from '../academic-calendar/dto/bulk-create-academic-calendar.dto';
+import { FilterAcademicCalendarDto } from '../academic-calendar/dto/filter-academic-calendar.dto';
 
 /** Shape returned by JwtStrategy.validate() */
 interface JwtUser {
@@ -57,6 +72,7 @@ export class AdminController {
   constructor(
     private adminService: AdminService,
     private attendanceService: AttendanceService,
+    private academicCalendarService: AcademicCalendarService,
   ) {}
 
   // ─── Schools ───────────────────────────────────────
@@ -77,7 +93,12 @@ export class AdminController {
     @Body() dto: UpdateSchoolDto,
     @CurrentUser() user: JwtUser,
   ) {
-    return await this.adminService.updateSchool(id, dto, user.schoolId, user.role);
+    return await this.adminService.updateSchool(
+      id,
+      dto,
+      user.schoolId,
+      user.role,
+    );
   }
 
   @Delete('schools/:id')
@@ -122,8 +143,6 @@ export class AdminController {
     return await this.adminService.updateUser(id, dto);
   }
 
-  
-
   @Delete('users/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id') id: string) {
@@ -140,7 +159,10 @@ export class AdminController {
   @HttpCode(HttpStatus.CREATED)
   async createClass(@Body() dto: CreateClassDto, @CurrentUser() user: JwtUser) {
     // Always stamp the logged-in admin's schoolId so classes are never orphaned
-    return await this.adminService.createClass({ ...dto, schoolId: user.schoolId ?? dto.schoolId });
+    return await this.adminService.createClass({
+      ...dto,
+      schoolId: user.schoolId ?? dto.schoolId,
+    });
   }
 
   @Put('classes/:id')
@@ -200,7 +222,9 @@ export class AdminController {
 
   @Post('exams/:id/duplicate')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Duplicate an existing exam with all its assignments' })
+  @ApiOperation({
+    summary: 'Duplicate an existing exam with all its assignments',
+  })
   async duplicateExam(@Param('id') id: string) {
     return await this.adminService.duplicateExam(id);
   }
@@ -325,7 +349,10 @@ export class AdminController {
   }
 
   @Put('homework/:id')
-  async updateHomework(@Param('id') id: string, @Body() dto: UpdateHomeworkDto) {
+  async updateHomework(
+    @Param('id') id: string,
+    @Body() dto: UpdateHomeworkDto,
+  ) {
     return await this.adminService.updateHomework(id, dto);
   }
 
@@ -339,7 +366,8 @@ export class AdminController {
   @Post('teacher-attendance')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: 'Create or update a teacher attendance record (admin, no geo-check)',
+    summary:
+      'Create or update a teacher attendance record (admin, no geo-check)',
   })
   async createTeacherAttendance(
     @Body() dto: AdminCreateTeacherAttendanceDto,
@@ -414,7 +442,8 @@ export class AdminController {
 
   @Get('schools/:schoolId/subscription-history')
   @ApiOperation({
-    summary: 'Get subscription history for a specific school under schools path',
+    summary:
+      'Get subscription history for a specific school under schools path',
   })
   @ApiParam({ name: 'schoolId', description: 'School logical ID' })
   async getSchoolSubscriptionHistoryByParam(
@@ -437,4 +466,89 @@ export class AdminController {
   ) {
     return this.getSubscriptionHistory(user, { ...query, schoolId });
   }
+
+  // ─── Academic Calendar ──────────────────────────────
+  @Get('academic-calendar')
+  @ApiOperation({ summary: 'Get academic calendar events for the school (Admin)' })
+  async getAcademicCalendar(
+    @CurrentUser() user: any,
+    @Query() filters: FilterAcademicCalendarDto,
+  ) {
+    return await this.academicCalendarService.findAll(filters, user);
+  }
+
+  @Post('academic-calendar')
+  @ApiOperation({ summary: 'Create a new academic calendar event (Admin)' })
+  async createAcademicCalendarEvent(
+    @Body() dto: CreateAcademicCalendarEventDto,
+    @CurrentUser() user: any,
+    @Query('schoolId') querySchoolId?: string,
+  ) {
+    const schoolId =
+      user.role === UserRole.SUPER_ADMIN && querySchoolId
+        ? querySchoolId
+        : user.schoolId;
+    return await this.academicCalendarService.create(
+      dto,
+      schoolId,
+      user.id || user.userId,
+    );
+  }
+
+  @Post('academic-calendar/bulk')
+  @ApiOperation({ summary: 'Bulk create academic calendar events (Admin)' })
+  async bulkCreateAcademicCalendarEvents(
+    @Body() dto: BulkCreateAcademicCalendarDto,
+    @CurrentUser() user: any,
+    @Query('schoolId') querySchoolId?: string,
+  ) {
+    const schoolId =
+      user.role === UserRole.SUPER_ADMIN && querySchoolId
+        ? querySchoolId
+        : user.schoolId;
+    return await this.academicCalendarService.bulkCreate(
+      dto,
+      schoolId,
+      user.id || user.userId,
+    );
+  }
+
+  @Put('academic-calendar/:id')
+  @ApiOperation({ summary: 'Update an academic calendar event (Admin)' })
+  async updateAcademicCalendarEvent(
+    @Param('id') id: string,
+    @Body() dto: UpdateAcademicCalendarEventDto,
+    @CurrentUser() user: any,
+  ) {
+    return await this.academicCalendarService.update(id, dto, user);
+  }
+
+  @Delete('academic-calendar/:id')
+  @ApiOperation({ summary: 'Delete an academic calendar event (Admin)' })
+  async deleteAcademicCalendarEvent(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+  ) {
+    return await this.academicCalendarService.remove(id, user);
+  }
+
+  @Get('academic-calendar/summary')
+  @ApiOperation({ summary: 'Get academic calendar summary statistics (Admin)' })
+  async getAcademicCalendarSummary(
+    @CurrentUser() user: any,
+    @Query('schoolId') querySchoolId?: string,
+    @Query('academicYear') academicYear?: string,
+    @Query('year') year?: number,
+  ) {
+    const schoolId =
+      user.role === UserRole.SUPER_ADMIN && querySchoolId
+        ? querySchoolId
+        : user.schoolId;
+    return await this.academicCalendarService.getSummary(
+      schoolId,
+      academicYear,
+      year ? Number(year) : undefined,
+    );
+  }
 }
+
