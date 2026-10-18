@@ -37,6 +37,18 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
+  @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  fatherName: string;
+
+  @Column({ nullable: true })
+  motherName: string;
+
+  @Column({ nullable: true })
+  guardianPhone: string;
+
   @Column({ type: 'simple-json', nullable: true })
   classIds: string[];
 

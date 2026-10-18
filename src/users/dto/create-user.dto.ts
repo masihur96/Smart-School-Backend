@@ -58,6 +58,42 @@ export class CreateUserDto {
   phone?: string;
 
   @ApiProperty({
+    example: '123 Main St, Springfield',
+    description: 'The address of the user',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @ApiProperty({
+    example: 'Robert Doe',
+    description: "The father's name of the user",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  fatherName?: string;
+
+  @ApiProperty({
+    example: 'Jane Doe',
+    description: "The mother's name of the user",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  motherName?: string;
+
+  @ApiProperty({
+    example: '+1234567890',
+    description: 'The guardian phone number',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  guardianPhone?: string;
+
+  @ApiProperty({
     example: ['uuid-of-class-1', 'uuid-of-class-2'],
     description: 'The class IDs (a user can belong to multiple classes)',
     required: false,
@@ -186,6 +222,42 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @ApiProperty({
+    example: '123 Main St, Springfield',
+    description: 'The address of the user',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @ApiProperty({
+    example: 'Robert Doe',
+    description: "The father's name of the user",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  fatherName?: string;
+
+  @ApiProperty({
+    example: 'Jane Doe',
+    description: "The mother's name of the user",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  motherName?: string;
+
+  @ApiProperty({
+    example: '+1234567890',
+    description: 'The guardian phone number',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  guardianPhone?: string;
 
   @ApiProperty({
     example: ['uuid-of-class-1', 'uuid-of-class-2'],

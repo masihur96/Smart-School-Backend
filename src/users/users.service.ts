@@ -262,7 +262,7 @@ export class UsersService {
         rollId: enriched.rollNumber || '',
         classId: enriched.class?.id || classId,
         sectionId: enriched.section?.id || sectionId || '',
-        guardianContact: enriched.phone || '',
+        guardianContact: enriched.guardianPhone || enriched.phone || '',
         isActive: enriched.isActive,
         user: {
           ...userWithoutPassword,

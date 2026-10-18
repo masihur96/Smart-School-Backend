@@ -71,6 +71,7 @@ import { RecreateOnlineClass1787850000000 } from './migrations/1787850000000-Rec
 import { AddStartEndTimeToAcademicAssignment1787900000000 } from './migrations/1787900000000-AddStartEndTimeToAcademicAssignment';
 import { AddPaymentFieldsToSubscription1787950000000 } from './migrations/1787950000000-AddPaymentFieldsToSubscription';
 import { CreateAcademicCalendar1788000000000 } from './migrations/1788000000000-CreateAcademicCalendar';
+import { AddAddressFatherMotherGuardianPhoneToUser1788100000000 } from './migrations/1788100000000-AddAddressFatherMotherGuardianPhoneToUser';
 import { AcademicCalendarModule } from './academic-calendar/academic-calendar.module';
 import { AcademicCalendarEvent } from './academic-calendar/entities/academic-calendar-event.entity';
 
@@ -131,6 +132,7 @@ import { AcademicCalendarEvent } from './academic-calendar/entities/academic-cal
         AddStartEndTimeToAcademicAssignment1787900000000,
         AddPaymentFieldsToSubscription1787950000000,
         CreateAcademicCalendar1788000000000,
+        AddAddressFatherMotherGuardianPhoneToUser1788100000000,
       ],
       autoLoadEntities: true,
       synchronize: false,

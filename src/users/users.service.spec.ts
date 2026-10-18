@@ -123,4 +123,46 @@ describe('UsersService', () => {
     expect(student.user.classes).toHaveLength(2);
     expect(student.user.sections).toHaveLength(2);
   });
+
+  it('should prioritize guardianPhone over phone for guardianContact and return address, fatherName, motherName', async () => {
+    const mockClassId = 'ebe68f77-62c8-40b5-b9bc-0a10bf3a16e1';
+    const mockUser: Partial<User> = {
+      id: 'f0465b20-eddc-443a-8940-173ecd2bb840',
+      name: 'Rahat Hossen',
+      email: 'rahat2@gmail.com',
+      role: UserRole.STUDENT,
+      schoolId: '29f05edb-8e0b-434c-a471-aa776308a1c1',
+      classIds: [mockClassId],
+      sectionIds: [],
+      phone: '01329291947',
+      guardianPhone: '01711112233',
+      address: '123 Main St, Springfield',
+      fatherName: 'Father Name',
+      motherName: 'Mother Name',
+      rollNumber: '08',
+      isActive: true,
+    };
+
+    const qb: any = {
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue([mockUser]),
+    };
+
+    const userRepo = moduleRef.get(getRepositoryToken(User));
+    jest.spyOn(userRepo, 'createQueryBuilder').mockReturnValue(qb);
+
+    const classesService = moduleRef.get(ClassesService);
+    jest.spyOn(classesService, 'findById').mockResolvedValue({ id: mockClassId, name: 'Class 10' } as any);
+
+    const result = await service.findStudentsByClass(mockClassId);
+
+    expect(result).toHaveLength(1);
+    const student = result[0];
+    expect(student.guardianContact).toBe('01711112233');
+    expect(student.guardianPhone).toBe('01711112233');
+    expect(student.address).toBe('123 Main St, Springfield');
+    expect(student.fatherName).toBe('Father Name');
+    expect(student.motherName).toBe('Mother Name');
+  });
 });
