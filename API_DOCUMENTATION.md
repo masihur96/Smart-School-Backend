@@ -750,6 +750,97 @@ The **Academic Calendar** module provides comprehensive calendar and event manag
 
 ---
 
+### Request & Complaint System APIs
+
+The Request & Complaint module enables students, teachers, and admins to submit requests and complaints with strict permission routing, status workflows, conversation threads, and notification dispatching.
+
+#### Routing Permission Matrix:
+- **Student**: Can submit requests/complaints **ONLY** to their assigned **Class Teachers** (via enrolled `classIds` or weekly routine schedule) and **Admin**. Direct submissions to other teachers or students are strictly blocked with `403 Forbidden`. If `recipientId` is omitted, the request routes to the School Admin queue.
+- **Teacher**: Can submit requests/complaints **ONLY** to **Admin**. Direct submissions to other teachers or students are blocked with `403 Forbidden`. If `recipientId` is omitted, the request routes to the School Admin queue.
+- **Admin / SuperAdmin**: Can submit requests/complaints to **Teachers** and **Students** (and other Admins).
+
+#### 1. Submit Request or Complaint
+- **Endpoint**: `POST /request-complaints`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Request Body**:
+  ```json
+  {
+    "type": "REQUEST", // "REQUEST" | "COMPLAINT"
+    "title": "Medical Leave Application",
+    "description": "Requesting 3 days leave from Oct 25 to Oct 27 due to fever.",
+    "category": "LEAVE", // "ACADEMIC" | "ATTENDANCE" | "LEAVE" | "FACILITY" | "FEE" | "DISCIPLINE" | "BEHAVIOR" | "EXAM" | "OTHER"
+    "priority": "MEDIUM", // "LOW" | "MEDIUM" | "HIGH" | "URGENT"
+    "recipientId": "teacher-or-admin-uuid", // Optional for student/teacher (defaults to Admin queue)
+    "attachments": ["https://example.com/uploads/doctor-note.pdf"]
+  }
+  ```
+
+#### 2. Get Available Recipients
+- **Endpoint**: `GET /request-complaints/recipients`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Query Parameters**: `search` (string), `classId` (string, for admin filtering)
+- **Response**:
+  - For **Student**: Returns `{ admins: [...], classTeachers: [...] }` with teacher designations and subjects taught.
+  - For **Teacher**: Returns `{ admins: [...] }`.
+  - For **Admin**: Returns `{ teachers: [...], students: [...] }`.
+
+#### 3. List Requests and Complaints
+- **Endpoint**: `GET /request-complaints`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Query Parameters**:
+  - `type`: `REQUEST` | `COMPLAINT`
+  - `status`: `PENDING` | `IN_PROGRESS` | `RESOLVED` | `REJECTED` | `CANCELLED`
+  - `priority`: `LOW` | `MEDIUM` | `HIGH` | `URGENT`
+  - `category`: category string
+  - `scope`: `sent` | `received` | `unassigned` | `all`
+  - `search`: title or description keyword
+  - `page`: Page number (default: `1`)
+  - `limit`: Items per page (default: `10`)
+- **Scoping**: Automatically scopes to caller's identity (students/teachers see requests they sent or received; admin sees school-wide).
+
+#### 4. Get Single Request / Complaint with Discussion Thread
+- **Endpoint**: `GET /request-complaints/:id`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Access**: Creator, assigned recipient, or school admin. Includes discussion thread with messages and attachments.
+
+#### 5. Update Status
+- **Endpoint**: `PATCH /request-complaints/:id/status`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Permissions**:
+  - `Student`: Can set status to `CANCELLED` only on their own pending requests.
+  - `Teacher`: Can update status (`IN_PROGRESS`, `RESOLVED`, `REJECTED`) if they are the assigned recipient.
+  - `Admin`: Can update status (`IN_PROGRESS`, `RESOLVED`, `REJECTED`, `CANCELLED`) for any ticket in their school.
+- **Request Body**:
+  ```json
+  {
+    "status": "RESOLVED",
+    "resolutionNote": "Application approved for requested dates."
+  }
+  ```
+
+#### 6. Add Comment / Reply
+- **Endpoint**: `POST /request-complaints/:id/comments`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Request Body**:
+  ```json
+  {
+    "message": "Please attach the doctor's prescription note.",
+    "attachments": []
+  }
+  ```
+
+#### 7. Get Statistical Summary
+- **Endpoint**: `GET /request-complaints/stats/summary`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Response**: Aggregated counts of total, pending, inProgress, resolved, rejected, cancelled, requests, complaints, and breakdown by priority.
+
+#### 8. Delete Request or Complaint
+- **Endpoint**: `DELETE /request-complaints/:id`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Permissions**: Creator can soft-delete while `PENDING`; Admins can soft-delete anytime.
+
+---
+
 ## Support & Contribution
 
 For issues, feature requests, or contributions, please contact the development team.
@@ -760,7 +851,7 @@ UNLICENSED
 
 ---
 
-**Last Updated**: August 2026
-**Version**: 1.2.0
+**Last Updated**: October 2026
+**Version**: 1.3.0
 
 

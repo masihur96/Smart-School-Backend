@@ -1,4 +1,4 @@
-import { Injectable, Optional } from '@nestjs/common';
+import { Injectable, Optional, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -105,6 +105,34 @@ export class UsersService {
   // ── CRUD ─────────────────────────────────────────────────────────────────
 
   async create(data: Partial<User>) {
+    const errors: { field: string; message: string }[] = [];
+
+    // Check for duplicate email
+    if (data.email) {
+      const existingEmail = await this.userRepository.findOne({
+        where: { email: data.email },
+        withDeleted: false,
+      });
+      if (existingEmail) {
+        errors.push({ field: 'email', message: 'Email is already in use' });
+      }
+    }
+
+    // Check for duplicate phone
+    if (data.phone) {
+      const existingPhone = await this.userRepository.findOne({
+        where: { phone: data.phone },
+        withDeleted: false,
+      });
+      if (existingPhone) {
+        errors.push({ field: 'phone', message: 'Phone number is already in use' });
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new ConflictException({ errors });
+    }
+
     const { password, ...rest } = data;
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = this.userRepository.create({

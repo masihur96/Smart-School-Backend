@@ -24,10 +24,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const res = exception.getResponse();
-      message = typeof res === 'string' ? res : (res as any).message || message;
+      if (typeof res === 'string') {
+        message = res;
+      } else {
+        const resObj = res as any;
+        message = resObj.message || message;
+        // Pass through a nested errors array (e.g. from ConflictException)
+        if (resObj.errors) {
+          detail = resObj.errors;
+        }
+      }
     } else if (exception instanceof Error) {
       message = exception.message;
-      detail = exception.stack;
+      detail = process.env.NODE_ENV !== 'production' ? exception.stack : undefined;
     }
 
     // Always log the full error on server side
@@ -39,7 +48,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     response.status(status).json({
       statusCode: status,
       message,
-      ...(process.env.NODE_ENV !== 'production' && detail ? { detail } : {}),
+      ...(detail ? { errors: detail } : {}),
     });
   }
 }

@@ -74,6 +74,10 @@ import { CreateAcademicCalendar1788000000000 } from './migrations/1788000000000-
 import { AddAddressFatherMotherGuardianPhoneToUser1788100000000 } from './migrations/1788100000000-AddAddressFatherMotherGuardianPhoneToUser';
 import { AcademicCalendarModule } from './academic-calendar/academic-calendar.module';
 import { AcademicCalendarEvent } from './academic-calendar/entities/academic-calendar-event.entity';
+import { RequestComplaintsModule } from './request-complaints/request-complaints.module';
+import { RequestComplaint } from './request-complaints/entities/request-complaint.entity';
+import { RequestComplaintComment } from './request-complaints/entities/request-complaint-comment.entity';
+import { CreateRequestComplaintSystem1788200000000 } from './migrations/1788200000000-CreateRequestComplaintSystem';
 
 @Module({
   imports: [
@@ -115,6 +119,8 @@ import { AcademicCalendarEvent } from './academic-calendar/entities/academic-cal
         Wallet,
         WalletTransaction,
         AcademicCalendarEvent,
+        RequestComplaint,
+        RequestComplaintComment,
       ],
       migrations: [
         AlterTeacherAttendanceTimeToTimestamptz1716566400000,
@@ -133,6 +139,7 @@ import { AcademicCalendarEvent } from './academic-calendar/entities/academic-cal
         AddPaymentFieldsToSubscription1787950000000,
         CreateAcademicCalendar1788000000000,
         AddAddressFatherMotherGuardianPhoneToUser1788100000000,
+        CreateRequestComplaintSystem1788200000000,
       ],
       autoLoadEntities: true,
       synchronize: false,
@@ -170,6 +177,7 @@ import { AcademicCalendarEvent } from './academic-calendar/entities/academic-cal
     AcademicBooksModule,
     WalletModule,
     AcademicCalendarModule,
+    RequestComplaintsModule,
   ],
   controllers: [AppController],
   providers: [
