@@ -1,0 +1,46 @@
+export enum FeeType {
+  TUITION = 'TUITION',
+  ADMISSION = 'ADMISSION',
+  EXAM = 'EXAM',
+  REGISTRATION = 'REGISTRATION',
+  SESSION = 'SESSION',
+  LAB = 'LAB',
+  LIBRARY = 'LIBRARY',
+  TRANSPORT = 'TRANSPORT',
+  SPORTS = 'SPORTS',
+  HOSTEL = 'HOSTEL',
+  FINE = 'FINE',
+  OTHER = 'OTHER',
+}
+
+export enum FeeFrequency {
+  MONTHLY = 'MONTHLY',
+  TERM = 'TERM',
+  ANNUAL = 'ANNUAL',
+  ONE_TIME = 'ONE_TIME',
+}
+
+export enum FeeStatus {
+  UNPAID = 'UNPAID',
+  PARTIALLY_PAID = 'PARTIALLY_PAID',
+  PAID = 'PAID',
+  OVERDUE = 'OVERDUE',
+  WAIVED = 'WAIVED',
+}
+
+export enum PaymentMode {
+  PERSONAL_PAYMENT = 'PERSONAL_PAYMENT',
+  SCHOOL_CARE_PAYMENT = 'SCHOOL_CARE_PAYMENT',
+}
+
+export enum FeePaymentMethod {
+  CASH = 'CASH',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  BKASH = 'BKASH',
+  NAGAD = 'NAGAD',
+  ROCKET = 'ROCKET',
+  ONLINE = 'ONLINE',
+  WALLET = 'WALLET',
+  CHEQUE = 'CHEQUE',
+  OTHER = 'OTHER',
+}

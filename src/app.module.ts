@@ -78,6 +78,16 @@ import { RequestComplaintsModule } from './request-complaints/request-complaints
 import { RequestComplaint } from './request-complaints/entities/request-complaint.entity';
 import { RequestComplaintComment } from './request-complaints/entities/request-complaint-comment.entity';
 import { CreateRequestComplaintSystem1788200000000 } from './migrations/1788200000000-CreateRequestComplaintSystem';
+import { ChatModule } from './chat/chat.module';
+import { Conversation } from './chat/entities/conversation.entity';
+import { ChatMessage } from './chat/entities/chat-message.entity';
+import { CreateChatSystem1788300000000 } from './migrations/1788300000000-CreateChatSystem';
+import { FeesModule } from './fees/fees.module';
+import { FeeStructure } from './fees/entities/fee-structure.entity';
+import { FeeInvoice } from './fees/entities/fee-invoice.entity';
+import { FeePayment } from './fees/entities/fee-payment.entity';
+import { FeeSetting } from './fees/entities/fee-setting.entity';
+import { CreateFeesManagementSystem1788400000000 } from './migrations/1788400000000-CreateFeesManagementSystem';
 
 @Module({
   imports: [
@@ -121,6 +131,12 @@ import { CreateRequestComplaintSystem1788200000000 } from './migrations/17882000
         AcademicCalendarEvent,
         RequestComplaint,
         RequestComplaintComment,
+        Conversation,
+        ChatMessage,
+        FeeStructure,
+        FeeInvoice,
+        FeePayment,
+        FeeSetting,
       ],
       migrations: [
         AlterTeacherAttendanceTimeToTimestamptz1716566400000,
@@ -140,6 +156,8 @@ import { CreateRequestComplaintSystem1788200000000 } from './migrations/17882000
         CreateAcademicCalendar1788000000000,
         AddAddressFatherMotherGuardianPhoneToUser1788100000000,
         CreateRequestComplaintSystem1788200000000,
+        CreateChatSystem1788300000000,
+        CreateFeesManagementSystem1788400000000,
       ],
       autoLoadEntities: true,
       synchronize: false,
@@ -178,6 +196,8 @@ import { CreateRequestComplaintSystem1788200000000 } from './migrations/17882000
     WalletModule,
     AcademicCalendarModule,
     RequestComplaintsModule,
+    ChatModule,
+    FeesModule,
   ],
   controllers: [AppController],
   providers: [

@@ -841,6 +841,264 @@ The Request & Complaint module enables students, teachers, and admins to submit 
 
 ---
 
+### Chat & Messaging System APIs
+
+The Chat & Messaging module provides real-time and REST-based 1-on-1 messaging between permitted school members, with unread tracking, conversation previews, and push notifications.
+
+#### Chat Permission Matrix:
+- **Student**:
+  - Can chat with:
+    - **Class Teachers**: Teachers assigned to the student's enrolled classes (via `teacher.classIds` or weekly routine schedule).
+    - **Admin / Principal**: Users with role `ADMIN` or `SUPER_ADMIN`, or designation 'Principal'.
+  - Cannot chat with: Other students or teachers of classes they are not in.
+- **Teacher**:
+  - Can chat with:
+    - **Principal / Admin**: Users with role `ADMIN`, `SUPER_ADMIN`, or designation 'Principal'.
+    - **Only Her Assigned Classes Students**: Students whose enrolled classes match the teacher's assigned classes (via `teacher.classIds` or weekly routine schedule).
+  - Cannot chat with: Students from unassigned classes or other teachers (unless Admin/Principal).
+- **Admin / SuperAdmin**:
+  - Can chat with:
+    - **Anyone in this school**: All teachers, all students, and other administrators.
+
+#### 1. Get Permitted Chat Contacts
+- **Endpoint**: `GET /chat/contacts`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Query Parameters**:
+  - `search`: Filter by name, email, or roll number.
+  - `role`: Filter by role (`teacher`, `student`, `admin`) - for Admin only.
+  - `classId`: Filter students by class UUID.
+- **Response**:
+  - For **Student**: `{ role: "student", admins: [...], classTeachers: [...] }` with subjects taught.
+  - For **Teacher**: `{ role: "teacher", principalsAndAdmins: [...], assignedStudents: [...] }` with roll numbers and class info.
+  - For **Admin**: `{ role: "admin", admins: [...], teachers: [...], students: [...] }`.
+
+#### 2. Start Conversation / Open Existing
+- **Endpoint**: `POST /chat/conversations`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Request Body**:
+  ```json
+  {
+    "recipientId": "teacher-or-admin-uuid",
+    "message": "Hello Sir, I have a doubt regarding homework.", // Optional initial message
+    "attachments": []
+  }
+  ```
+
+#### 3. List User Conversations
+- **Endpoint**: `GET /chat/conversations`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Description**: Returns all conversations for the user sorted by `lastMessageAt DESC`, including the other participant's profile (name, avatar, role, designation), last message preview, and unread message count.
+
+#### 4. Get Messages in a Conversation
+- **Endpoint**: `GET /chat/conversations/:id/messages`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Query Parameters**:
+  - `page`: Page number (default `1`)
+  - `limit`: Messages per page (default `50`)
+  - `before`: ISO date string for cursor pagination
+- **Behavior**: Retrieves messages chronologically and automatically marks incoming unread messages as read.
+
+#### 5. Send Message
+- **Endpoint**: `POST /chat/conversations/:id/messages` or `POST /chat/messages`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Request Body**:
+  ```json
+  {
+    "conversationId": "uuid-of-conversation", // Optional if posting to /chat/conversations/:id/messages
+    "recipientId": "uuid-of-recipient",       // Optional if conversationId is provided
+    "message": "Thank you for the explanation!",
+    "attachments": ["https://example.com/uploads/photo.jpg"]
+  }
+  ```
+- **Behavior**: Verifies permissions, saves message, updates conversation last message preview, dispatches Firebase push notification, and emits WebSocket event if recipient is connected.
+
+#### 6. Mark Conversation as Read
+- **Endpoint**: `PATCH /chat/conversations/:id/read`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Description**: Marks all unread messages received by caller in this conversation as read.
+
+#### 7. Get Total Unread Count
+- **Endpoint**: `GET /chat/unread-count`
+- **Roles**: `Student`, `Teacher`, `Admin`, `SuperAdmin`
+- **Response**: `{ "unreadCount": 3 }`
+
+#### 8. Real-Time WebSocket Connection
+- **Endpoint**: `ws://<host>:<port>/chat?token=<jwt_bearer_token>`
+- **Events**:
+  - Incoming from Server:
+    - `{ "event": "connected", "data": { "userId": "..." } }`
+    - `{ "event": "new_message", "data": { ...chatMessageObject } }`
+  - Outgoing from Client:
+    - `{ "action": "send_message", "data": { "recipientId": "...", "message": "..." } }`
+    - `{ "action": "ping" }` -> Server responds with `{ "event": "pong" }`
+
+---
+
+### Fees Management System APIs
+
+The Fees Management module allows school administrators to define fee structures, generate school fees in bulk by class or for specific students, configure collection modes (**Personal Payment** vs **School Care Payment**), record payments, generate printable invoice slips, and provides complete historical fee ledgers for students.
+
+#### Payment Collection Modes:
+1. **Personal Payment (`PERSONAL_PAYMENT`)**:
+   - Admin configures personal/school bank account details (Bank name, account number, branch, routing number) and mobile financial services (bKash, Nagad, Rocket numbers) or physical cash counter instructions.
+   - Payments are collected directly by the school and recorded with transaction IDs or receipt references.
+2. **School Care Payment (`SCHOOL_CARE_PAYMENT`)**:
+   - Automated online payment gateway provided by the centralized School Care platform.
+
+---
+
+#### 1. Payment Settings (Personal Payment vs School Care Payment)
+- **Get School Payment Settings**:
+  - **Endpoint**: `GET /fees/settings`
+  - **Roles**: `Admin`, `SuperAdmin`, `Student`, `Teacher`
+  - **Description**: Returns active payment mode, banking details, mobile money numbers, and gateway configuration.
+- **Update School Payment Settings**:
+  - **Endpoint**: `PATCH /fees/settings`
+  - **Roles**: `Admin`, `SuperAdmin`
+  - **Request Body**:
+    ```json
+    {
+      "defaultPaymentMode": "PERSONAL_PAYMENT", // or "SCHOOL_CARE_PAYMENT"
+      "personalPaymentInfo": {
+        "bankName": "Sonali Bank PLC",
+        "accountName": "Dhaka Ideal School & College",
+        "accountNumber": "1234567890123",
+        "branch": "Motijheel Branch",
+        "routingNumber": "125272635",
+        "bkashNumber": "01712345678",
+        "nagadNumber": "01812345678",
+        "cashCounterLocation": "Accounts Office, Room 102",
+        "instructions": "Send via bKash personal with student roll number as reference or pay at counter."
+      },
+      "schoolCarePaymentInfo": {
+        "enabled": true,
+        "merchantId": "MERCHANT_001",
+        "instructions": "Pay online via School Care automated gateway."
+      },
+      "lateFeeFinePerDay": 10,
+      "currency": "BDT"
+    }
+    ```
+
+---
+
+#### 2. Generate School Fees (Admin)
+- **Endpoint**: `POST /fees/generate`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Description**: Generates invoices in bulk for all students in a class or for single/multiple individual students with auto-generated unique invoice numbers (e.g. `INV-202610-1234`) and dispatches push notifications.
+- **Request Body (Bulk Class Generation)**:
+  ```json
+  {
+    "classId": "class-uuid-1",
+    "sectionId": "optional-section-uuid",
+    "title": "Monthly Tuition Fee - October 2026",
+    "feeType": "TUITION", // "TUITION" | "ADMISSION" | "EXAM" | "REGISTRATION" | "SESSION" | "LAB" | "LIBRARY" | "TRANSPORT" | "SPORTS" | "HOSTEL" | "FINE" | "OTHER"
+    "amount": 1500,
+    "discountAmount": 0,
+    "month": "October",
+    "year": 2026,
+    "dueDate": "2026-10-31T23:59:59.000Z",
+    "paymentMode": "PERSONAL_PAYMENT" // Optional (defaults to school setting)
+  }
+  ```
+- **Request Body (Single Student Generation)**:
+  ```json
+  {
+    "studentId": "student-uuid-1",
+    "title": "Annual Exam Fee 2026",
+    "feeType": "EXAM",
+    "amount": 800,
+    "discountAmount": 50,
+    "year": 2026,
+    "dueDate": "2026-11-15T23:59:59.000Z"
+  }
+  ```
+
+---
+
+#### 3. Student Historical Fee Data
+- **Student View (Own History)**:
+  - **Endpoint**: `GET /fees/student/history`
+  - **Roles**: `Student`, `Admin`, `SuperAdmin`
+  - **Query Parameters**: `year`, `month`
+  - **Response**: Complete financial ledger:
+    ```json
+    {
+      "summary": {
+        "totalInvoiced": 18000,
+        "totalDiscount": 500,
+        "totalFine": 50,
+        "totalPayable": 17550,
+        "totalPaid": 16050,
+        "totalDue": 1500,
+        "totalOverdue": 1500,
+        "invoicesCount": 12,
+        "paidInvoicesCount": 11,
+        "pendingInvoicesCount": 1,
+        "currency": "BDT"
+      },
+      "invoices": [ /* all historical invoices with nested payment installments */ ],
+      "payments": [ /* chronological payment transactions log */ ],
+      "activePaymentInstructions": { /* active payment instructions for student */ }
+    }
+    ```
+- **Admin View (Any Student History)**:
+  - **Endpoint**: `GET /fees/students/:studentId/history`
+  - **Roles**: `Admin`, `SuperAdmin`
+
+---
+
+#### 4. Print Fee Invoice & Receipt Slip ("Print")
+- **Endpoint**: `GET /fees/invoices/:id/print`
+- **Roles**: `Admin`, `SuperAdmin`, `Student` (own invoice)
+- **Description**: Returns structured printable invoice data along with ready-to-render professional HTML (`htmlTemplate`) formatted for A4 or thermal receipt printing, with school header, student info, fee breakdown, payment history receipts, and signature placeholders.
+
+---
+
+#### 5. Record / Collect Fee Payment (Admin)
+- **Endpoint**: `POST /fees/invoices/:id/payments`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Description**: Collects full or partial payment towards an invoice, updates invoice status (`PARTIALLY_PAID` or `PAID`), generates unique `receiptNumber` (`REC-YYYYMMDD-XXXX`), dispatches confirmation push notification, and optionally credits the school Treasury Wallet.
+- **Request Body**:
+  ```json
+  {
+    "amount": 1500,
+    "paymentMode": "PERSONAL_PAYMENT", // or "SCHOOL_CARE_PAYMENT"
+    "paymentMethod": "BKASH", // "CASH" | "BANK_TRANSFER" | "BKASH" | "NAGAD" | "ROCKET" | "ONLINE" | "WALLET"
+    "transactionId": "TRX-BKASH-987654321",
+    "note": "Paid by parent via personal bKash",
+    "syncToWallet": true
+  }
+  ```
+
+---
+
+#### 6. List & Search Fee Invoices
+- **Endpoint**: `GET /fees/invoices`
+- **Roles**: `Admin`, `SuperAdmin`, `Student` (student only sees own)
+- **Query Parameters**:
+  - `studentId`, `classId`, `feeType`, `status` (`UNPAID`, `PARTIALLY_PAID`, `PAID`, `OVERDUE`, `WAIVED`)
+  - `month`, `year`, `search` (invoice number or student name/roll)
+  - `page` (default `1`), `limit` (default `10`)
+
+---
+
+#### 7. Fee Structure Templates (Admin)
+- `POST /fees/structures` - Create reusable fee template (e.g. Monthly Tuition Fee $1500)
+- `GET /fees/structures` - List all fee templates
+- `GET /fees/structures/:id` - Get template details
+- `PATCH /fees/structures/:id` - Update template
+- `DELETE /fees/structures/:id` - Soft delete template
+
+---
+
+#### 8. Fees Dashboard Analytics Summary (Admin)
+- **Endpoint**: `GET /fees/stats/summary`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Response**: Aggregated stats: `totalInvoiced`, `totalCollected`, `totalDue`, `totalOverdue`, `collectionRate`, `invoicesCount`, and breakdown by fee type.
+
+---
+
 ## Support & Contribution
 
 For issues, feature requests, or contributions, please contact the development team.
@@ -852,6 +1110,6 @@ UNLICENSED
 ---
 
 **Last Updated**: October 2026
-**Version**: 1.3.0
+**Version**: 1.5.0
 
 
