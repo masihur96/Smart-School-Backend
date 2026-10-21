@@ -31,6 +31,7 @@ export class DashboardController {
     return this.dashboardService.getSuperAdminDashboard();
   }
 
+  
   /**
    * Admin Dashboard
    * GET /dashboard/admin
