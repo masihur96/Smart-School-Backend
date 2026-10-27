@@ -673,8 +673,14 @@ export class FeesService {
 
     const [invoices, total] = await qb.getManyAndCount();
 
+    const enrichedInvoices = invoices.map((inv) => ({
+      ...inv,
+      studentName: inv.student?.name || (inv as any).studentName,
+      studentRoll: inv.student?.rollNumber || (inv as any).studentRoll,
+    }));
+
     return {
-      data: invoices,
+      data: enrichedInvoices,
       total,
       page,
       limit,
@@ -696,7 +702,11 @@ export class FeesService {
       throw new ForbiddenException('You do not have permission to view this invoice.');
     }
 
-    return invoice;
+    return {
+      ...invoice,
+      studentName: invoice.student?.name || (invoice as any).studentName,
+      studentRoll: invoice.student?.rollNumber || (invoice as any).studentRoll,
+    };
   }
 
   // ═════════════════════════════════════════════════════════════════════════
