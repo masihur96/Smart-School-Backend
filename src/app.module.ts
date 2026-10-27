@@ -88,6 +88,8 @@ import { FeeInvoice } from './fees/entities/fee-invoice.entity';
 import { FeePayment } from './fees/entities/fee-payment.entity';
 import { FeeSetting } from './fees/entities/fee-setting.entity';
 import { CreateFeesManagementSystem1788400000000 } from './migrations/1788400000000-CreateFeesManagementSystem';
+import { SmsLog } from './sms/entities/sms-log.entity';
+import { CreateSmsLogsTable1788500000000 } from './migrations/1788500000000-CreateSmsLogsTable';
 
 @Module({
   imports: [
@@ -137,6 +139,7 @@ import { CreateFeesManagementSystem1788400000000 } from './migrations/1788400000
         FeeInvoice,
         FeePayment,
         FeeSetting,
+        SmsLog,
       ],
       migrations: [
         AlterTeacherAttendanceTimeToTimestamptz1716566400000,
@@ -158,6 +161,7 @@ import { CreateFeesManagementSystem1788400000000 } from './migrations/1788400000
         CreateRequestComplaintSystem1788200000000,
         CreateChatSystem1788300000000,
         CreateFeesManagementSystem1788400000000,
+        CreateSmsLogsTable1788500000000,
       ],
       autoLoadEntities: true,
       synchronize: false,

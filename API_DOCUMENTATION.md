@@ -1099,6 +1099,117 @@ The Fees Management module allows school administrators to define fee structures
 
 ---
 
+## 📲 Bulk SMS Module (White Info BD & Proxy Integration)
+
+A high-performance Bulk SMS system integrated with **White Info BD Gateway** (`https://sms.whiteinfobd.com`) routed through Cloudflare Proxy (`https://sms-api-proxy.masihur96.workers.dev`).
+
+### Gateway Architecture & Settings
+- **Primary Proxy Endpoint**: `https://sms-api-proxy.masihur96.workers.dev`
+- **Direct Gateway Endpoint**: `https://sms.whiteinfobd.com`
+- **API Token**: Configurable via `SMS_API_KEY` (Bearer auth or query param `api_key`)
+- **Default Sender ID**: `8809639228910` (or masking / non-masking sender IDs)
+- **Security / IP Whitelist**: In accordance with BTRC regulations, White Info BD requires origin server IPs to be approved under **Developer Settings > IP Whitelist**.
+
+### Available Endpoints
+
+#### 1. Send Direct Bulk SMS
+- **Endpoint**: `POST /sms/send`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Request Body**:
+  ```json
+  {
+    "numbers": ["01713252758", "01812345678"],
+    "message": "Notice: School will remain closed tomorrow.",
+    "senderId": "8809639228910",
+    "campaignName": "Rainy Day Notice"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "logId": "uuid-of-sms-log",
+    "batchId": "285",
+    "messageId": "SMS285",
+    "recipientCount": 2,
+    "gatewayResponse": {
+      "status": "processing",
+      "code": 1000,
+      "message": "SMS submitted successfully",
+      "batch_id": 285
+    }
+  }
+  ```
+
+#### 2. Send Targeted Bulk SMS to School Groups
+- **Endpoint**: `POST /sms/send-targeted`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Target Audiences**:
+  - `ALL_STUDENTS`: Sends to parents/guardians (`guardianPhone`) and/or student phones.
+  - `CLASS`: Sends to all students/parents in a specific `classId`.
+  - `SECTION`: Sends to all students/parents in a specific `sectionId`.
+  - `ALL_TEACHERS`: Sends to all registered teachers.
+  - `ALL_PARENTS`: Sends to all guardian contacts.
+  - `ALL_USERS`: Sends to all registered school accounts.
+- **Request Body**:
+  ```json
+  {
+    "targetAudience": "CLASS",
+    "classId": "d9b2d63d-a233-4f9e-bb9e-28b9fb6b6e40",
+    "sendToGuardians": true,
+    "sendToStudents": false,
+    "message": "Dear Parent, First term examination starts from Monday.",
+    "campaignName": "Class 9 Exam Notice"
+  }
+  ```
+
+#### 3. Check SMS Balance
+- **Endpoint**: `GET /sms/balance`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Response**:
+  ```json
+  {
+    "status": "success",
+    "code": 1002,
+    "message": "Balance retrieved successfully",
+    "balance": 96.5,
+    "currency": "BDT"
+  }
+  ```
+
+#### 4. Get Approved Senders
+- **Endpoint**: `GET /sms/senders`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Response**: List of approved masked/non-masked CLI sender IDs.
+
+#### 5. Get Delivery Report by Batch ID
+- **Endpoint**: `GET /sms/batches/:batchId`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Response**:
+  ```json
+  {
+    "status": "success",
+    "code": 1003,
+    "message": "Delivery Report Available",
+    "batch_id": 285,
+    "status": "completed",
+    "total_recipients": 2,
+    "valid_count": 2,
+    "invalid_count": 0
+  }
+  ```
+
+#### 6. SMS Campaign Logs (History)
+- **Endpoint**: `GET /sms/logs?page=1&limit=20&status=PROCESSING&search=Notice`
+- **Roles**: `Admin`, `SuperAdmin`
+- **Response**: Paginated campaign logs including delivery statistics, timestamps, and recipient counts.
+
+#### 7. Single SMS Campaign Details
+- **Endpoint**: `GET /sms/logs/:id`
+- **Roles**: `Admin`, `SuperAdmin`
+
+---
+
 ## Support & Contribution
 
 For issues, feature requests, or contributions, please contact the development team.

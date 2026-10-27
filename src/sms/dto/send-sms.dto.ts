@@ -1,31 +1,57 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class SendSmsDto {
-  @ApiProperty({
-    description: 'Array of mobile numbers to send SMS to',
-    example: ['8801XXXXXXXXX', '8801YYYYYYYYY'],
+  @ApiPropertyOptional({
+    description: 'Array or comma-separated list of mobile numbers',
+    example: ['01713252758', '01800000000'],
   })
-  @IsArray()
-  @IsString({ each: true })
-  @IsNotEmpty()
-  mobNumbers: string[];
+  @IsOptional()
+  mobNumbers?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Array or comma-separated string of mobile numbers (White Info BD format)',
+    example: ['01713252758', '8801812345678'],
+  })
+  @IsOptional()
+  numbers?: string[] | string;
 
   @ApiProperty({
-    description: 'The SMS message content',
-    example: 'Hello from Smart School!',
+    description: 'The SMS message content (English up to 160 chars / Bangla up to 70 chars per SMS)',
+    example: 'Notice: School will remain closed tomorrow due to heavy rain.',
   })
   @IsString()
   @IsNotEmpty()
   message: string;
 
-  @ApiProperty({
-    description: 'Whether to use the masked sender name (true) or non-masked (false)',
+  @ApiPropertyOptional({
+    description: 'Sender ID / Mask / CLI registered in White Info BD portal',
+    example: '8809639228910',
+  })
+  @IsString()
+  @IsOptional()
+  senderId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Optional campaign or batch title for record-keeping',
+    example: 'Emergency Weather Notice',
+  })
+  @IsString()
+  @IsOptional()
+  campaignName?: string;
+
+  @ApiPropertyOptional({
+    description: 'Whether to use masked sender name (legacy compatibility)',
     example: false,
-    required: false,
+    default: false,
   })
   @IsBoolean()
   @IsOptional()
   isMasked?: boolean = false;
 }
-
