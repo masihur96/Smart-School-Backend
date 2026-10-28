@@ -18,8 +18,7 @@ import { User, UserRole } from '../users/entities/user.entity';
 export class SmsService {
   private readonly logger = new Logger(SmsService.name);
 
-  private readonly gatewayUrl: string;
-  private readonly directUrl: string;
+  private readonly baseUrl: string;
   private readonly apiKey: string;
   private readonly defaultSenderId: string;
 
@@ -30,23 +29,25 @@ export class SmsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {
-    this.gatewayUrl = (
+    this.baseUrl = (
+      this.configService.get<string>('SMS_API_BASE_URL') ||
       this.configService.get<string>('SMS_GATEWAY_URL') ||
+      process.env.SMS_API_BASE_URL ||
+      process.env.SMS_GATEWAY_URL ||
       'https://sms-api-proxy.masihur96.workers.dev'
-    ).replace(/\/+$/, '');
-
-    this.directUrl = (
-      this.configService.get<string>('SMS_DIRECT_URL') ||
-      'https://sms.whiteinfobd.com'
     ).replace(/\/+$/, '');
 
     this.apiKey =
       this.configService.get<string>('SMS_API_KEY') ||
       this.configService.get<string>('SMS_API_TOKEN') ||
+      process.env.SMS_API_KEY ||
+      process.env.SMS_API_TOKEN ||
       'r74NjxN9j7QblXNtGMU9FoNoNLtR9yUT2jso3OKV9699ff42';
 
     this.defaultSenderId =
-      this.configService.get<string>('SMS_DEFAULT_SENDER_ID') || '8809639228910';
+      this.configService.get<string>('SMS_DEFAULT_SENDER_ID') ||
+      process.env.SMS_DEFAULT_SENDER_ID ||
+      '8809639228910';
   }
 
   /**
@@ -80,8 +81,7 @@ export class SmsService {
   }
 
   /**
-   * Internal dispatcher: sends SMS payload to White Info BD.
-   * Tries primary proxy first (Cloudflare Worker), falls back to direct URL if needed.
+   * Internal dispatcher: sends SMS payload to SMS gateway via Cloudflare Worker proxy.
    */
   private async dispatchToGateway(
     senderId: string,
@@ -104,11 +104,10 @@ export class SmsService {
       Accept: 'application/json',
     };
 
-    // Attempt 1: Call via configured gateway (Cloudflare Worker proxy)
-    const primaryEndpoint = `${this.gatewayUrl}/api/v1/messages?api_key=${encodeURIComponent(this.apiKey)}`;
+    const endpoint = `${this.baseUrl}/api/v1/messages?api_key=${encodeURIComponent(this.apiKey)}`;
     try {
-      this.logger.log(`Dispatching ${numbers.length} SMS via ${this.gatewayUrl}`);
-      const res = await fetch(primaryEndpoint, {
+      this.logger.log(`Dispatching ${numbers.length} SMS via proxy: ${endpoint}`);
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload),
@@ -124,39 +123,11 @@ export class SmsService {
 
       this.logger.log(`Gateway response [${res.status}]: ${JSON.stringify(parsed)}`);
       return { ok: res.ok, status: res.status, data: parsed };
-    } catch (primaryErr: any) {
-      this.logger.warn(
-        `Primary gateway failed (${primaryErr.message}). Attempting fallback to direct URL...`,
+    } catch (err: any) {
+      this.logger.error(`SMS gateway proxy request failed: ${err.message}`);
+      throw new InternalServerErrorException(
+        `SMS gateway communication failure: ${err.message}`,
       );
-
-      // Attempt 2: Direct White Info BD fallback
-      try {
-        const fallbackEndpoint = `${this.directUrl}/api/v1/messages?api_key=${encodeURIComponent(this.apiKey)}`;
-        const fallbackRes = await fetch(fallbackEndpoint, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(payload),
-        });
-
-        const fallbackText = await fallbackRes.text();
-        let fallbackParsed: any;
-        try {
-          fallbackParsed = JSON.parse(fallbackText);
-        } catch {
-          fallbackParsed = { raw: fallbackText };
-        }
-
-        return {
-          ok: fallbackRes.ok,
-          status: fallbackRes.status,
-          data: fallbackParsed,
-        };
-      } catch (fallbackErr: any) {
-        this.logger.error(`Direct fallback failed: ${fallbackErr.message}`);
-        throw new InternalServerErrorException(
-          `SMS gateway communication failure: ${fallbackErr.message}`,
-        );
-      }
     }
   }
 
@@ -390,92 +361,72 @@ export class SmsService {
    * 3. Check SMS Account Balance
    */
   async checkBalance(): Promise<any> {
-    const urls = [
-      `${this.gatewayUrl}/api/v1/balance?api_key=${encodeURIComponent(this.apiKey)}`,
-      `${this.directUrl}/api/v1/balance?api_key=${encodeURIComponent(this.apiKey)}`,
-    ];
-
-    let lastError: any;
-    for (const url of urls) {
-      try {
-        const res = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            Accept: 'application/json',
-          },
-        });
-        const data = await res.json();
-        return data;
-      } catch (err) {
-        lastError = err;
-      }
+    const url = `${this.baseUrl}/api/v1/balance?api_key=${encodeURIComponent(this.apiKey)}`;
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Accept: 'application/json',
+        },
+      });
+      const data = await res.json();
+      return data;
+    } catch (err: any) {
+      this.logger.error(`Failed to connect to SMS balance API: ${err.message}`);
+      throw new InternalServerErrorException(
+        `Failed to connect to SMS balance API: ${err.message}`,
+      );
     }
-
-    throw new InternalServerErrorException(
-      `Failed to connect to White Info BD balance API: ${lastError?.message}`,
-    );
   }
 
   /**
    * 4. Get Approved Senders
    */
   async getSenders(): Promise<any> {
-    const urls = [
-      `${this.gatewayUrl}/api/v1/senders?api_key=${encodeURIComponent(this.apiKey)}`,
-      `${this.directUrl}/api/v1/senders?api_key=${encodeURIComponent(this.apiKey)}`,
-    ];
-
-    let lastError: any;
-    for (const url of urls) {
-      try {
-        const res = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            Accept: 'application/json',
-          },
-        });
-        const data = await res.json();
-        return data;
-      } catch (err) {
-        lastError = err;
-      }
+    const url = `${this.baseUrl}/api/v1/senders?api_key=${encodeURIComponent(this.apiKey)}`;
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Accept: 'application/json',
+        },
+      });
+      const data = await res.json();
+      return data;
+    } catch (err: any) {
+      this.logger.error(`Failed to fetch senders from SMS gateway: ${err.message}`);
+      throw new InternalServerErrorException(
+        `Failed to fetch senders from SMS gateway: ${err.message}`,
+      );
     }
-
-    throw new InternalServerErrorException(
-      `Failed to fetch senders from White Info BD: ${lastError?.message}`,
-    );
   }
 
   /**
    * 5. Get Delivery Status for a Batch ID and sync with SmsLog
    */
   async getBatchReport(batchId: string): Promise<any> {
-    const urls = [
-      `${this.gatewayUrl}/api/v1/batches/${encodeURIComponent(batchId)}?api_key=${encodeURIComponent(this.apiKey)}`,
-      `${this.directUrl}/api/v1/batches/${encodeURIComponent(batchId)}?api_key=${encodeURIComponent(this.apiKey)}`,
-    ];
-
-    let report: any = null;
-    let lastError: any;
-
-    for (const url of urls) {
-      try {
-        const res = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            Accept: 'application/json',
-          },
-        });
-        report = await res.json();
-        if (report) break;
-      } catch (err) {
-        lastError = err;
-      }
+    const url = `${this.baseUrl}/api/v1/batches/${encodeURIComponent(batchId)}?api_key=${encodeURIComponent(this.apiKey)}`;
+    let report: any;
+    try {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Accept: 'application/json',
+        },
+      });
+      report = await res.json();
+    } catch (err: any) {
+      this.logger.error(
+        `Failed to retrieve batch report for ID ${batchId}: ${err.message}`,
+      );
+      throw new InternalServerErrorException(
+        `Failed to retrieve batch report for ID ${batchId}: ${err.message}`,
+      );
     }
 
     if (!report) {
       throw new InternalServerErrorException(
-        `Failed to retrieve batch report for ID ${batchId}: ${lastError?.message}`,
+        `Failed to retrieve batch report for ID ${batchId}: Empty response received`,
       );
     }
 
@@ -484,9 +435,9 @@ export class SmsService {
       where: { batchId },
     });
     if (existingLog) {
-      if (report.status === 'completed') {
+      if (report?.status === 'completed') {
         existingLog.status = SmsStatus.COMPLETED;
-      } else if (report.status === 'failed') {
+      } else if (report?.status === 'failed') {
         existingLog.status = SmsStatus.FAILED;
       }
       existingLog.rawResponse = {

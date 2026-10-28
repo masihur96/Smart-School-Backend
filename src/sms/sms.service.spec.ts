@@ -21,8 +21,8 @@ describe('SmsService', () => {
 
   const mockConfigService = {
     get: jest.fn((key: string, defaultVal?: string) => {
+      if (key === 'SMS_API_BASE_URL') return 'https://sms-api-proxy.masihur96.workers.dev';
       if (key === 'SMS_GATEWAY_URL') return 'https://sms-api-proxy.masihur96.workers.dev';
-      if (key === 'SMS_DIRECT_URL') return 'https://sms.whiteinfobd.com';
       if (key === 'SMS_API_KEY') return 'r74NjxN9j7QblXNtGMU9FoNoNLtR9yUT2jso3OKV9699ff42';
       if (key === 'SMS_DEFAULT_SENDER_ID') return '8809639228910';
       return defaultVal;
