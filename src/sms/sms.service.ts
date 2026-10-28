@@ -14,6 +14,8 @@ import { SendTargetedSmsDto } from './dto/send-targeted-sms.dto';
 import { FilterSmsLogsDto } from './dto/filter-sms-logs.dto';
 import { User, UserRole } from '../users/entities/user.entity';
 
+export const CLOUDFLARE_PROXY_URL = 'https://sms-api-proxy.masihur96.workers.dev';
+
 @Injectable()
 export class SmsService {
   private readonly logger = new Logger(SmsService.name);
@@ -40,7 +42,7 @@ export class SmsService {
       process.env.SMS_GATEWAY_URL ||
       process.env.MIM_SMS_URL ||
       process.env.SMS_URL ||
-      'https://sms-api-proxy.masihur96.workers.dev';
+      CLOUDFLARE_PROXY_URL;
 
     resolvedUrl = resolvedUrl.trim().replace(/\/+$/, '');
 
@@ -50,9 +52,9 @@ export class SmsService {
       resolvedUrl.includes('mimsms.com')
     ) {
       this.logger.warn(
-        `[SMS PROXY GUARD] Configured SMS gateway URL (${resolvedUrl}) bypasses proxy. Overriding to 'https://sms-api-proxy.masihur96.workers.dev' to prevent dynamic IP rejection on Railway.`,
+        `[SMS PROXY GUARD] Configured SMS gateway URL (${resolvedUrl}) bypasses proxy. Overriding to '${CLOUDFLARE_PROXY_URL}' to prevent dynamic IP rejection on Railway.`,
       );
-      resolvedUrl = 'https://sms-api-proxy.masihur96.workers.dev';
+      resolvedUrl = CLOUDFLARE_PROXY_URL;
     }
 
     this.baseUrl = resolvedUrl;
@@ -163,7 +165,7 @@ export class SmsService {
       }
 
       this.logger.log(`Gateway response [${res.status}]: ${JSON.stringify(parsed)}`);
-      return { ok: res.ok, status: res.status, data: parsed };
+      return { ok: res.ok, status: res.status, data: parsed, calledUrl: endpoint };
     } catch (err: any) {
       this.logger.error(`SMS gateway proxy request failed: ${err.message}`);
       throw new InternalServerErrorException(
@@ -242,6 +244,7 @@ export class SmsService {
     return {
       success: isSuccess,
       logId: log.id,
+      calledUrl: result.calledUrl,
       batchId: log.batchId,
       messageId: log.messageId,
       recipientCount: sanitizedNumbers.length,
@@ -390,6 +393,7 @@ export class SmsService {
     return {
       success: isSuccess,
       logId: log.id,
+      calledUrl: result.calledUrl,
       batchId: log.batchId,
       messageId: log.messageId,
       targetAudience: dto.targetAudience,
