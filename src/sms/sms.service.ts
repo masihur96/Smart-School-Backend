@@ -104,6 +104,26 @@ export class SmsService {
   }
 
   /**
+   * Helper to construct headers with optional whitelisted IP forwarding
+   */
+  private getHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${this.apiKey}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+
+    const whitelistedIp =
+      this.configService.get<string>('SMS_WHITELISTED_IP') ||
+      process.env.SMS_WHITELISTED_IP;
+    if (whitelistedIp) {
+      headers['X-Proxy-Client-IP'] = whitelistedIp;
+    }
+
+    return headers;
+  }
+
+  /**
    * Internal dispatcher: sends SMS payload to SMS gateway via Cloudflare Worker proxy.
    */
   private async dispatchToGateway(
@@ -121,11 +141,7 @@ export class SmsService {
       body: message,
     };
 
-    const headers = {
-      Authorization: `Bearer ${this.apiKey}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
+    const headers = this.getHeaders();
 
     const endpoint = `${this.baseUrl}/api/v1/messages?api_key=${encodeURIComponent(this.apiKey)}`;
     console.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${endpoint}`);
@@ -391,10 +407,7 @@ export class SmsService {
     this.logger.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${url}`);
     try {
       const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          Accept: 'application/json',
-        },
+        headers: this.getHeaders(),
       });
       const data = await res.json();
       return data;
@@ -415,10 +428,7 @@ export class SmsService {
     this.logger.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${url}`);
     try {
       const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          Accept: 'application/json',
-        },
+        headers: this.getHeaders(),
       });
       const data = await res.json();
       return data;
@@ -440,10 +450,7 @@ export class SmsService {
     let report: any;
     try {
       const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          Accept: 'application/json',
-        },
+        headers: this.getHeaders(),
       });
       report = await res.json();
     } catch (err: any) {
