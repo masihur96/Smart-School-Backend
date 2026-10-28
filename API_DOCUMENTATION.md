@@ -1101,11 +1101,10 @@ The Fees Management module allows school administrators to define fee structures
 
 ## 📲 Bulk SMS Module (White Info BD & Proxy Integration)
 
-A high-performance Bulk SMS system integrated with **White Info BD Gateway** (`https://sms.whiteinfobd.com`) routed through Cloudflare Proxy (`https://sms-api-proxy.masihur96.workers.dev`).
+A high-performance Bulk SMS system routed through your Cloudflare Worker Proxy (`https://sms-api-proxy.masihur96.workers.dev`).
 
 ### Gateway Architecture & Settings
-- **Primary Proxy Endpoint**: `https://sms-api-proxy.masihur96.workers.dev`
-- **Direct Gateway Endpoint**: `https://sms.whiteinfobd.com`
+- **SMS Proxy Base URL**: `https://sms-api-proxy.masihur96.workers.dev` (Configurable via `SMS_API_BASE_URL`)
 - **API Token**: Configurable via `SMS_API_KEY` (Bearer auth or query param `api_key`)
 - **Default Sender ID**: `8809639228910` (or masking / non-masking sender IDs)
 - **Security / IP Whitelist**: In accordance with BTRC regulations, White Info BD requires origin server IPs to be approved under **Developer Settings > IP Whitelist**.

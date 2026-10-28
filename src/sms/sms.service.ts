@@ -29,13 +29,36 @@ export class SmsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {
-    this.baseUrl = (
+    let resolvedUrl =
       this.configService.get<string>('SMS_API_BASE_URL') ||
+      this.configService.get<string>('SMS_BASE_URL') ||
       this.configService.get<string>('SMS_GATEWAY_URL') ||
+      this.configService.get<string>('MIM_SMS_URL') ||
+      this.configService.get<string>('SMS_URL') ||
       process.env.SMS_API_BASE_URL ||
+      process.env.SMS_BASE_URL ||
       process.env.SMS_GATEWAY_URL ||
-      'https://sms-api-proxy.masihur96.workers.dev'
-    ).replace(/\/+$/, '');
+      process.env.MIM_SMS_URL ||
+      process.env.SMS_URL ||
+      'https://sms-api-proxy.masihur96.workers.dev';
+
+    resolvedUrl = resolvedUrl.trim().replace(/\/+$/, '');
+
+    // Safety guard: prevent direct SMS gateway calls that trigger dynamic IP rejection on Railway
+    if (
+      resolvedUrl.includes('sms.whiteinfobd.com') ||
+      resolvedUrl.includes('mimsms.com')
+    ) {
+      this.logger.warn(
+        `[SMS PROXY GUARD] Configured SMS gateway URL (${resolvedUrl}) bypasses proxy. Overriding to 'https://sms-api-proxy.masihur96.workers.dev' to prevent dynamic IP rejection on Railway.`,
+      );
+      resolvedUrl = 'https://sms-api-proxy.masihur96.workers.dev';
+    }
+
+    this.baseUrl = resolvedUrl;
+
+    this.logger.log(`[SMS PROXY INITIALIZED] Active Base URL: ${this.baseUrl}`);
+    console.log(`[SMS PROXY INITIALIZED] Active Base URL: ${this.baseUrl}`);
 
     this.apiKey =
       this.configService.get<string>('SMS_API_KEY') ||
@@ -105,6 +128,8 @@ export class SmsService {
     };
 
     const endpoint = `${this.baseUrl}/api/v1/messages?api_key=${encodeURIComponent(this.apiKey)}`;
+    console.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${endpoint}`);
+    this.logger.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${endpoint}`);
     try {
       this.logger.log(`Dispatching ${numbers.length} SMS via proxy: ${endpoint}`);
       const res = await fetch(endpoint, {
@@ -362,6 +387,8 @@ export class SmsService {
    */
   async checkBalance(): Promise<any> {
     const url = `${this.baseUrl}/api/v1/balance?api_key=${encodeURIComponent(this.apiKey)}`;
+    console.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${url}`);
+    this.logger.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${url}`);
     try {
       const res = await fetch(url, {
         headers: {
@@ -384,6 +411,8 @@ export class SmsService {
    */
   async getSenders(): Promise<any> {
     const url = `${this.baseUrl}/api/v1/senders?api_key=${encodeURIComponent(this.apiKey)}`;
+    console.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${url}`);
+    this.logger.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${url}`);
     try {
       const res = await fetch(url, {
         headers: {
@@ -406,6 +435,8 @@ export class SmsService {
    */
   async getBatchReport(batchId: string): Promise<any> {
     const url = `${this.baseUrl}/api/v1/batches/${encodeURIComponent(batchId)}?api_key=${encodeURIComponent(this.apiKey)}`;
+    console.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${url}`);
+    this.logger.log(`[SMS OUTGOING HTTP REQUEST] Target URL: ${url}`);
     let report: any;
     try {
       const res = await fetch(url, {

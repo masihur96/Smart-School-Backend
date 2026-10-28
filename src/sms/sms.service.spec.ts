@@ -55,6 +55,33 @@ describe('SmsService', () => {
     expect(service).toBeDefined();
   });
 
+  describe('Proxy URL and Guard', () => {
+    it('sets baseUrl to proxy URL', () => {
+      expect((service as any).baseUrl).toBe('https://sms-api-proxy.masihur96.workers.dev');
+    });
+
+    it('overrides direct gateway URL to proxy URL to prevent dynamic IP rejection', async () => {
+      const directMockConfig = {
+        get: jest.fn((key: string) => {
+          if (key === 'SMS_API_BASE_URL') return 'https://sms.whiteinfobd.com';
+          return null;
+        }),
+      };
+
+      const testModule = await Test.createTestingModule({
+        providers: [
+          SmsService,
+          { provide: ConfigService, useValue: directMockConfig },
+          { provide: getRepositoryToken(SmsLog), useValue: mockSmsLogRepository },
+          { provide: getRepositoryToken(User), useValue: mockUserRepository },
+        ],
+      }).compile();
+
+      const directService = testModule.get<SmsService>(SmsService);
+      expect((directService as any).baseUrl).toBe('https://sms-api-proxy.masihur96.workers.dev');
+    });
+  });
+
   describe('normalizePhoneNumber', () => {
     it('normalizes 11-digit Bangladeshi mobile number', () => {
       expect(service.normalizePhoneNumber('01713252758')).toBe('01713252758');
